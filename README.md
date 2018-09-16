@@ -1,5 +1,5 @@
 # Welcome to Ryu64!
-![alt](https://cdn.discordapp.com/icons/490752174461157379/58b8ba4423c43149036a2a1a1ace7c6d.png)
+![alt](https://cdn.discordapp.com/icons/490752174461157379/58b8ba4423c43149036a2a1a1ace7c6d.png?size=256)
 
 Hello, and welcome, to Ryu64!  This emulator aims to emulate the Nintendo 64, well, hopefully, right now it's just aiming to emulate the CPU of the Nintendo 64, the NEC vr4300 (aka the MIPS R4300i) don't expect much right now, nothing works at the time of writing this.  But hopefully, that is soon to change, if you want to help just make a PR, we'll be glad to accept improvements to the emulator.
 
