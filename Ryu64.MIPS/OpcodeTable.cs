@@ -21,12 +21,42 @@ namespace Ryu64.MIPS
             }
         }
 
+        public struct OpcodeDesc
+        {
+            public uint Opcode;
+
+            public byte  op1;
+            public byte  op2;
+            public byte  op3;
+            public byte  op4;
+            public short Imm;
+            public uint  Target;
+            public uint  ExceptionCode20bit;
+            public uint  ExceptionCode10bit;
+
+            public OpcodeDesc(uint Opcode)
+            {
+                this.Opcode = Opcode;
+
+                op1 = (byte)        ((Opcode & 0b00000011111000000000000000000000) >> 19);
+                op2 = (byte)        ((Opcode & 0b00000000000111110000000000000000) >> 14);
+                op3 = (byte)        ((Opcode & 0b00000000000000001111100000000000) >> 9);
+                op4 = (byte)        ((Opcode & 0b00000000000000000000011111000000) >> 4);
+                Imm = (short)       ((Opcode & 0b00000000000000001111111111111111));
+                Target =             (Opcode & 0b00000011111111111111111111111111);
+                ExceptionCode20bit = (Opcode & 0b00000011111111111111111111000000) >> 4;
+                ExceptionCode10bit = (Opcode & 0b00000000000000001111111111000000) >> 4;
+            }
+        }
+
         private static List<InstInfo> AllInsts;
 
         public static void Init()
         {
             AllInsts = new List<InstInfo>();
 
+            // Load / Store Instructions
+            SetOpcode("10000000000000000000000000000000", InstInterp.LB);
         }
 
         public static InstInterp.InterpretOpcode GetInterpreterMethod(uint Opcode)

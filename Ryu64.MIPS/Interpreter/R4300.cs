@@ -6,7 +6,7 @@ namespace Ryu64.MIPS
     {
         public static void InterpretOpcode(uint Opcode)
         {
-            OpcodeTable.GetInterpreterMethod(Opcode)(Opcode);
+            OpcodeTable.GetInterpreterMethod(Opcode)(new OpcodeTable.OpcodeDesc(Opcode));
         }
 
         public static void PowerOnR4300()
