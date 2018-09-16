@@ -49,5 +49,10 @@ namespace Ryu64.MIPS
 
             public static ulong[] Reg = new ulong[32];
         }
+
+        public class COP1
+        {
+            public static double[] Reg = new double[32];
+        }
     }
 }
