@@ -56,7 +56,7 @@ namespace Ryu64.MIPS
             AllInsts = new List<InstInfo>();
 
             // Load / Store Instructions
-            SetOpcode("10000000000000000000000000000000", InstInterp.LB);
+            SetOpcode("100000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LB);
         }
 
         public static InstInterp.InterpretOpcode GetInterpreterMethod(uint Opcode)
