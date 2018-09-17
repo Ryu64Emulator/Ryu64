@@ -7,8 +7,8 @@ Hello, and welcome, to Ryu64!  This emulator aims to emulate the Nintendo 64, we
 ### What does the name "Ryu64" derive from?
 Simply put, the name just comes from the RyuJIT which is what .NET uses to run applications built in both Visual Basic and C#, we use the latter.
 ### Is there anywhere I can see your guys work on the emulator, and communicate, all in real time?
-There is!  We have a discord where all the developers hang out, talk about development, etc.  [Join here.](https://discord.gg/3GQskCR)
+There is!  We have a discord where all the developers hang out, talk about development, etc.  [Join here.](https://discord.gg/pZfNZyD)
 ### What is 86RYU?
 86RYU is the x86 JIT currently developing along side this emulator, it aims to give some functionality C# it'd otherwise lack, aka, a functional x86 JIT that isn't RyuJIT and doesn't use MSIL.  For maximum efficiency the JIT is programmed in C, compiled using GCC, the GNU Compiler, then linked in via a DLL / SO.  The Github for that project is [here.](https://github.com/Ryu64Emulator/86RYU)
 
-Okay hopefully that answered most of your questions, if it didn't, [join the discord and ask](https://discord.gg/3GQskCR), go ahead, don't be shy!
+Okay hopefully that answered most of your questions, if it didn't, [join the discord and ask](https://discord.gg/pZfNZyD), go ahead, don't be shy!
