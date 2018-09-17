@@ -6,7 +6,7 @@ namespace Ryu64.MIPS
 {
     public class OpcodeTable
     {
-        struct InstInfo
+        public struct InstInfo
         {
             public uint Mask;
             public uint Value;
@@ -38,14 +38,14 @@ namespace Ryu64.MIPS
             {
                 this.Opcode = Opcode;
 
-                op1 = (byte)        ((Opcode & 0b00000011111000000000000000000000) >> 19);
-                op2 = (byte)        ((Opcode & 0b00000000000111110000000000000000) >> 14);
-                op3 = (byte)        ((Opcode & 0b00000000000000001111100000000000) >> 9);
-                op4 = (byte)        ((Opcode & 0b00000000000000000000011111000000) >> 4);
+                op1 = (byte)        ((Opcode & 0b00000011111000000000000000000000) >> 21);
+                op2 = (byte)        ((Opcode & 0b00000000000111110000000000000000) >> 16);
+                op3 = (byte)        ((Opcode & 0b00000000000000001111100000000000) >> 11);
+                op4 = (byte)        ((Opcode & 0b00000000000000000000011111000000) >> 6);
                 Imm = (ushort)      ((Opcode & 0b00000000000000001111111111111111));
                 Target =             (Opcode & 0b00000011111111111111111111111111);
-                ExceptionCode20bit = (Opcode & 0b00000011111111111111111111000000) >> 4;
-                ExceptionCode10bit = (Opcode & 0b00000000000000001111111111000000) >> 4;
+                ExceptionCode20bit = (Opcode & 0b00000011111111111111111111000000) >> 6;
+                ExceptionCode10bit = (Opcode & 0b00000000000000001111111111000000) >> 6;
             }
         }
 
@@ -71,13 +71,27 @@ namespace Ryu64.MIPS
             SetOpcode("111111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SD);
             SetOpcode("101100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDL);
             SetOpcode("101101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDR);
+
+            // Arithmetic Instructions
+            SetOpcode("001001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDIU);
+            SetOpcode("00111100000XXXXXXXXXXXXXXXXXXXXX", InstInterp.LUI);
+
+            // Branch / Jump Instructions
+            SetOpcode("000101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNE);
+
+            // COP0 Instructions
+            SetOpcode("01000000000XXXXXXXXXXXXXXXXXXXXX", InstInterp.MFC0);
+            SetOpcode("01000000100XXXXXXXXXXXXXXXXXXXXX", InstInterp.MTC0);
+
+            // Other Instructions
+            SetOpcode("00000000000000000000000000000000", InstInterp.NOP);
         }
 
-        public static InstInterp.InterpretOpcode GetInterpreterMethod(uint Opcode)
+        public static InstInfo GetOpcodeInfo(uint Opcode)
         {
             foreach (InstInfo info in AllInsts)
                 if ((Opcode & info.Mask) == info.Value)
-                    return info.Interpret;
+                    return info;
 
             throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction.");
         }

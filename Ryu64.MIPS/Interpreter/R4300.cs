@@ -9,8 +9,9 @@ namespace Ryu64.MIPS
 
         public static void InterpretOpcode(uint Opcode)
         {
-            OpcodeTable.GetInterpreterMethod(Opcode)(new OpcodeTable.OpcodeDesc(Opcode));
-            Registers.R4300.PC += 4;
+            if (Registers.R4300.Reg[0] != 0) Registers.R4300.Reg[0] = 0;
+
+            OpcodeTable.GetOpcodeInfo(Opcode).Interpret(new OpcodeTable.OpcodeDesc(Opcode));
         }
 
         public static void PowerOnR4300(ulong PC)
@@ -33,7 +34,7 @@ namespace Ryu64.MIPS
                 while (R4300_ON)
                 {
                     uint Opcode = Memory.ReadUInt32(Registers.R4300.PC);
-                    Console.WriteLine($"0x{Registers.R4300.PC:x}: {Convert.ToString(Opcode, 2)}");
+                    Common.Logger.PrintInfoLine($"0x{Registers.R4300.PC:x}: {Convert.ToString(Opcode, 2).PadLeft(32, '0')}");
                     InterpretOpcode(Opcode);
                 }
             });

@@ -36,7 +36,7 @@ namespace Ryu64
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Please specify a .z64 file to open.");
+                Common.Logger.PrintErrorLine("Please specify a .z64 file to open.");
                 Environment.Exit(-1);
             }
 
@@ -45,18 +45,14 @@ namespace Ryu64
 
             if (!Rom.HasBeenParsed)
             {
-                Console.WriteLine("Can't open .z64, it's either, a bad .z64 or it is in Little Endian.");
+                Common.Logger.PrintErrorLine("Can't open .z64, it's either, a bad .z64 or it is in Little Endian.");
                 Environment.Exit(-1);
             }
 
             for (ulong i = 0x40, j = 0x0; i < 0x1000; ++i, ++j)
-            {
                 MIPS.Memory.WriteUInt8(j, Rom.AllData[i]);
-            }
 
             MIPS.R4300.PowerOnR4300(Rom.Header.ProgramCounter);
-
-            while (true);
         }
     }
 }
