@@ -6,7 +6,7 @@ namespace Ryu64.MIPS
 {
     public static class Memory
     {
-        private static readonly byte[] Mem = new byte[4194304];
+        private static readonly byte[] Mem = new byte[16777216];
 
         public static byte ReadUInt8(ulong Position)
         {

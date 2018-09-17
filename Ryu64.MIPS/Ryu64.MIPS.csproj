@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ryu64.Common\Ryu64.Common.csproj" />
+  </ItemGroup>
+
 </Project>

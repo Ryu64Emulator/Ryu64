@@ -40,21 +40,21 @@ namespace Ryu64
                 Environment.Exit(-1);
             }
 
-            Z64 Test = new Z64(args[0]);
-            Test.Parse();
+            Z64 Rom = new Z64(args[0]);
+            Rom.Parse();
 
-            if (!Test.HasBeenParsed)
+            if (!Rom.HasBeenParsed)
             {
                 Console.WriteLine("Can't open .z64, it's either, a bad .z64 or it is in Little Endian.");
                 Environment.Exit(-1);
             }
 
-            foreach (byte b in Test.AllData)
+            for (ulong i = 0x40, j = 0x0; i < 0x1000; ++i, ++j)
             {
-                Console.WriteLine($"0x{b:x2}");
+                MIPS.Memory.WriteUInt8(j, Rom.AllData[i]);
             }
 
-            MIPS.R4300.PowerOnR4300();
+            MIPS.R4300.PowerOnR4300(Rom.Header.ProgramCounter);
 
             while (true);
         }
