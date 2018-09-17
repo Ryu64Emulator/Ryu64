@@ -49,8 +49,7 @@ namespace Ryu64
                 Environment.Exit(-1);
             }
 
-            for (ulong i = 0x40, j = 0x0; i < 0x1000; ++i, ++j)
-                MIPS.Memory.WriteUInt8(j, Rom.AllData[i]);
+            MIPS.Memory.Init(Rom.AllData);
 
             MIPS.R4300.PowerOnR4300(Rom.Header.ProgramCounter);
         }

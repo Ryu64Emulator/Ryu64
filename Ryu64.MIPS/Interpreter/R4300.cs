@@ -19,14 +19,20 @@ namespace Ryu64.MIPS
             for (int i = 0; i < Registers.R4300.Reg.Length; ++i)
                 Registers.R4300.Reg[i] = 0; // Clear Registers
 
+            Registers.R4300.Reg[20] = 0x1;
+            Registers.R4300.Reg[22] = 0x3F;
+            Registers.R4300.Reg[29] = 0xA4001FF0;
+            Registers.R4300.PC      = 0xA4000040;
+
+            for (ulong i = 0xB0000000, j = 0xA4000000; j < 0xA4000000 + 0x1000; ++i, ++j)
+                Memory.WriteUInt8(j, Memory.ReadUInt8(i)); // Load the rom into the correct memory address
+
             R4300_ON = true;
 
             COP0.PowerOnCOP0();
             COP1.PowerOnCOP1();
 
             OpcodeTable.Init();
-
-            Registers.R4300.PC = 0x0;
 
             Thread CPUThread = 
             new Thread(() => 

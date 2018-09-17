@@ -50,10 +50,5 @@ namespace Ryu64.Common
         {
             PrintSuccess(Success + '\n');
         }
-
-        public static void DumpLog()
-        {
-            File.WriteAllText($"./Ryu64Log_{DateTime.Now.ToString("dddd_MM-dd-yyyy_HH-mm-ss_tt")}.log", Log);
-        }
     }
 }

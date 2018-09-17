@@ -43,7 +43,7 @@ namespace Ryu64.MIPS
                 op3 = (byte)        ((Opcode & 0b00000000000000001111100000000000) >> 11);
                 op4 = (byte)        ((Opcode & 0b00000000000000000000011111000000) >> 6);
                 Imm = (ushort)      ((Opcode & 0b00000000000000001111111111111111));
-                Target =             (Opcode & 0b00000011111111111111111111111111);
+                Target             =((Opcode & 0b00000011111111111111111111111111) << 2);
                 ExceptionCode20bit = (Opcode & 0b00000011111111111111111111000000) >> 6;
                 ExceptionCode10bit = (Opcode & 0b00000000000000001111111111000000) >> 6;
             }
@@ -71,13 +71,23 @@ namespace Ryu64.MIPS
             SetOpcode("111111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SD);
             SetOpcode("101100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDL);
             SetOpcode("101101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDR);
+            SetOpcode("101001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SH);
+            SetOpcode("101011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SW);
+            SetOpcode("101010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SWL);
+            SetOpcode("101110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SWR);
 
             // Arithmetic Instructions
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100000", InstInterp.ADD);
+            SetOpcode("001000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDI);
             SetOpcode("001001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDIU);
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100110", InstInterp.XOR);
             SetOpcode("00111100000XXXXXXXXXXXXXXXXXXXXX", InstInterp.LUI);
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100101", InstInterp.OR);
+            SetOpcode("001101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ORI);
 
             // Branch / Jump Instructions
             SetOpcode("000101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNE);
+            SetOpcode("000011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.JAL);
 
             // COP0 Instructions
             SetOpcode("01000000000XXXXXXXXXXXXXXXXXXXXX", InstInterp.MFC0);

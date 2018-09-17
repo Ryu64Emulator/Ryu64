@@ -8,7 +8,7 @@ namespace Ryu64.MIPS
     {
         public class R4300
         {
-            public static ulong[] Reg = new ulong[32];
+            public static long[] Reg = new long[32];
             public static ulong PC;
         }
 
@@ -47,7 +47,7 @@ namespace Ryu64.MIPS
             public const int ERROREPC_REG  = 0x1E;
             public const int RESERVED6_REG = 0x1F;
 
-            public static ulong[] Reg = new ulong[32];
+            public static long[] Reg = new long[32];
         }
 
         public class COP1
