@@ -11,5 +11,75 @@ namespace Ryu64.MIPS
         {
             Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt8((ulong)(Desc.op1 + Desc.Imm));
         }
+
+        public static void LBU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = Memory.ReadUInt8((ulong)(Desc.op1 + Desc.Imm));
+        }
+
+        public static void LD(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt64((ulong)(Desc.op1 + Desc.Imm));
+        }
+
+        public static void LDL(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt64((ulong)(Desc.op1 + Desc.Imm)) & 0xFFFFFFFF00000000;
+        }
+
+        public static void LDR(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt64((ulong)(Desc.op1 + Desc.Imm)) & 0x00000000FFFFFFFF;
+        }
+
+        public static void LH(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt16((ulong)(Desc.op1 + Desc.Imm));
+        }
+
+        public static void LHU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = Memory.ReadUInt16((ulong)(Desc.op1 + Desc.Imm));
+        }
+
+        public static void LW(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt32((ulong)(Desc.op1 + Desc.Imm));
+        }
+
+        public static void LWL(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt16((ulong)(Desc.op1 + Desc.Imm)) & 0xFFFF;
+        }
+
+        public static void LWR(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)Memory.ReadInt16((ulong)((Desc.op1 + Desc.Imm) + 2)) & 0xFFFF;
+        }
+
+        public static void LWU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = Memory.ReadUInt32((ulong)(Desc.op1 + Desc.Imm));
+        }
+
+        public static void SB(OpcodeTable.OpcodeDesc Desc)
+        {
+            Memory.WriteInt8((ulong)(Desc.op1 + Desc.Imm), (sbyte)(Registers.R4300.Reg[Desc.op2] & 0xFF));
+        }
+
+        public static void SD(OpcodeTable.OpcodeDesc Desc)
+        {
+            Memory.WriteInt64((ulong)(Desc.op1 + Desc.Imm), (long)Registers.R4300.Reg[Desc.op2]);
+        }
+
+        public static void SDL(OpcodeTable.OpcodeDesc Desc)
+        {
+            Memory.WriteInt32((ulong)(Desc.op1 + Desc.Imm), (int)((Registers.R4300.Reg[Desc.op2] & 0xFFFFFFFF00000000) >> 32));
+        }
+
+        public static void SDR(OpcodeTable.OpcodeDesc Desc)
+        {
+            Memory.WriteInt32((ulong)((Desc.op1 + Desc.Imm) + 2), (int)(Registers.R4300.Reg[Desc.op2] & 0x00000000FFFFFFFF));
+        }
     }
 }
