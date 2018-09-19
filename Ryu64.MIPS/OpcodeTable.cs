@@ -98,6 +98,7 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXXXXXXX00000100000", InstInterp.ADD,   "ADD R[{2}], R[{0}], R[{1}]");
             SetOpcode("001000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDI,  "ADDI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("001001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDIU, "ADDIU R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100100", InstInterp.AND,   "AND R[{2}], R[{0}], R[{1}]");
             SetOpcode("001100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ANDI,  "ANDI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100110", InstInterp.XOR,   "XOR R[{2}], R[{0}], R[{1}]");
             SetOpcode("001110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.XORI,  "XORI R[{1}], R[{0}], 0x{4:x4}");

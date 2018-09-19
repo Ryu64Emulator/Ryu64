@@ -28,6 +28,12 @@ namespace Ryu64.MIPS
             Registers.R4300.PC += 4;
         }
 
+        public static void AND(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op1] & Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.PC += 4;
+        }
+
         public static void ANDI(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op2] = Registers.R4300.Reg[Desc.op1] & Desc.Imm;

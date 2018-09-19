@@ -12,8 +12,8 @@ namespace Ryu64.MIPS
             public ulong StartAddress;
             public ulong EndAddress;
             public byte[] OutputArray;
-            public bool CanRead;
-            public bool CanWrite;
+            public bool   CanRead;
+            public bool   CanWrite;
             public string Name;
 
             public MemEntry(ulong StartAddress, ulong EndAddress, byte[] OutputArray, bool CanRead, bool CanWrite, string Name)
@@ -21,9 +21,9 @@ namespace Ryu64.MIPS
                 this.StartAddress = StartAddress;
                 this.EndAddress   = EndAddress;
                 this.OutputArray  = OutputArray;
-                this.CanRead  = CanRead;
-                this.CanWrite = CanWrite;
-                this.Name     = Name;
+                this.CanRead      = CanRead;
+                this.CanWrite     = CanWrite;
+                this.Name         = Name;
             }
         }
 
@@ -38,6 +38,8 @@ namespace Ryu64.MIPS
                 this.RemapAddress = RemapAddress;
             }
         }
+
+        public const ulong RI_SELECT_REG = 0x0470000C;
 
         private static readonly byte[] RDRAM       = new byte[8388608];
         private static readonly byte[] RDRAMReg    = new byte[1048575];
@@ -77,7 +79,7 @@ namespace Ryu64.MIPS
             // TODO: Add the TLB mapped regions (ksseg and kseg3) plus emulate the TLB.
 
             // Set up Memory Registers
-            WriteUInt32(0x0470000C, 14); // RI_SELECT_REG
+            WriteUInt32(RI_SELECT_REG, 14);
         }
 
         public static byte ReadUInt8(ulong Position)
