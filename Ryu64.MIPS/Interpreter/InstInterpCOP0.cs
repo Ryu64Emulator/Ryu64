@@ -17,5 +17,10 @@ namespace Ryu64.MIPS
             Registers.COP0.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op2];
             Registers.R4300.PC += 4;
         }
+
+        public static void CACHE(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.PC += 4; // Stubbed.
+        }
     }
 }

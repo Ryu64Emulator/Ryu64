@@ -51,7 +51,7 @@ namespace Ryu64
 
             MIPS.Memory.Init(Rom.AllData);
 
-            MIPS.R4300.PowerOnR4300(Rom.Header.ProgramCounter);
+            MIPS.R4300.PowerOnR4300(Rom.header.ProgramCounter);
         }
     }
 }

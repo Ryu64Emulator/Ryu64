@@ -75,6 +75,9 @@ namespace Ryu64.MIPS
             MirrorMap.Add(new MirrorEntry(0x80000000, 0x9FFFFFFF, 0x00000000)); // kseg0
             MirrorMap.Add(new MirrorEntry(0xA0000000, 0xBFFFFFFF, 0x00000000)); // kseg1
             // TODO: Add the TLB mapped regions (ksseg and kseg3) plus emulate the TLB.
+
+            // Set up Memory Registers
+            WriteUInt32(0x0470000C, 14); // RI_SELECT_REG
         }
 
         public static byte ReadUInt8(ulong Position)
