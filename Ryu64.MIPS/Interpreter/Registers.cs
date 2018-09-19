@@ -9,6 +9,8 @@ namespace Ryu64.MIPS
         public class R4300
         {
             public static long[] Reg = new long[32];
+            public static long HI;
+            public static long LO;
             public static ulong PC;
         }
 

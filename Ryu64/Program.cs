@@ -1,5 +1,6 @@
 ﻿using Ryu64.Formats;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 /*
@@ -34,9 +35,10 @@ namespace Ryu64
     {
         static void Main(string[] args)
         {
-            if (args.Length < 1)
+            if (args.Length < (Common.Settings.LOAD_PIF ? 2 : 1))
             {
-                Common.Logger.PrintErrorLine("Please specify a .z64 file to open.");
+                Common.Logger.PrintErrorLine(Common.Settings.LOAD_PIF ? 
+                    "Please specify a .z64 file and a PIF Rom to open." : "Please specify a .z64 file to open.");
                 Environment.Exit(-1);
             }
 
@@ -48,6 +50,29 @@ namespace Ryu64
                 Common.Logger.PrintErrorLine("Can't open .z64, it's either, a bad .z64 or it is in Little Endian.");
                 Environment.Exit(-1);
             }
+
+            Common.Settings.Parse();
+
+            if (Common.Settings.MEASURE_SPEED)
+            {
+                Common.Measure.InstructionCount = 0;
+
+                Console.CancelKeyPress += delegate
+                {
+                    Common.Measure.MeasureTime.Stop();
+                    Common.Logger.PrintSuccessLine($"Took {Common.Measure.MeasureTime.Elapsed:c}, Instructions Executed: {Common.Measure.InstructionCount}, stopped preemptively.");
+                };
+            }
+
+            if (Common.Settings.LOG_MEM_USAGE)
+            {
+                Console.CancelKeyPress += delegate
+                {
+                    Common.Logger.PrintSuccessLine($"Allocated: {GC.GetTotalMemory(false) / 1024:#,#} kb");
+                };
+            }
+
+            Common.Settings.PIF_ROM = Common.Settings.LOAD_PIF ? args[1] : "";
 
             MIPS.Memory.Init(Rom.AllData);
 

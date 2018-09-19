@@ -27,42 +27,31 @@ namespace Ryu64.MIPS
             }
         }
 
-        struct MirrorEntry
-        {
-            public ulong StartAddress, EndAddress, RemapAddress;
-
-            public MirrorEntry(ulong StartAddress, ulong EndAddress, ulong RemapAddress)
-            {
-                this.StartAddress = StartAddress;
-                this.EndAddress   = EndAddress;
-                this.RemapAddress = RemapAddress;
-            }
-        }
-
         public const ulong RI_SELECT_REG = 0x0470000C;
+        public const ulong SP_STATUS_REG = 0x04040010;
 
-        private static readonly byte[] RDRAM       = new byte[8388608];
-        private static readonly byte[] RDRAMReg    = new byte[1048575];
-        private static readonly byte[] SPReg       = new byte[65535];
-        private static readonly byte[] DPCMDReg    = new byte[1048575];
-        private static readonly byte[] DPSPANREG   = new byte[1048575];
-        private static readonly byte[] MIREG       = new byte[1048575];
-        private static readonly byte[] VIREG       = new byte[1048575];
-        private static readonly byte[] AIREG       = new byte[1048575];
-        private static readonly byte[] PIREG       = new byte[1048575];
-        private static readonly byte[] RIREG       = new byte[1048575];
-        private static readonly byte[] SIREG       = new byte[1048575];
-        
+        private static readonly byte[] RDRAM     = new byte[8388608];
+        private static readonly byte[] RDRAMReg  = new byte[1048575];
+        private static readonly byte[] SPReg     = new byte[1048575];
+        private static readonly byte[] DPCMDReg  = new byte[1048575];
+        private static readonly byte[] DPSPANREG = new byte[1048575];
+        private static readonly byte[] MIREG     = new byte[1048575];
+        private static readonly byte[] VIREG     = new byte[1048575];
+        private static readonly byte[] AIREG     = new byte[1048575];
+        private static readonly byte[] PIREG     = new byte[1048575];
+        private static readonly byte[] RIREG     = new byte[1048575];
+        private static readonly byte[] SIREG     = new byte[1048575];
+        private static readonly byte[] PIFROM    = new byte[1984];
+        private static readonly byte[] PIFRAM    = new byte[64];
 
         private static List<MemEntry>    MemoryMap = new List<MemEntry>();
-        private static List<MirrorEntry> MirrorMap = new List<MirrorEntry>();
 
         public static void Init(byte[] Rom)
         {
             // Main Memory Map Entries
             MemoryMap.Add(new MemEntry(0x00000000, 0x007FFFFF,  RDRAM,     true, true, "RDRAM"));
             MemoryMap.Add(new MemEntry(0x03F00000, 0x03FFFFFF,  RDRAMReg,  true, true, "RDRAM Registers"));
-            MemoryMap.Add(new MemEntry(0x04000000, 0x0400FFFF,  SPReg,     true, true, "SP Registers"));
+            MemoryMap.Add(new MemEntry(0x04000000, 0x040FFFFF,  SPReg,     true, true, "SP Registers"));
             MemoryMap.Add(new MemEntry(0x04100000, 0x041FFFFF,  DPCMDReg,  true, true, "DP Command Registers"));
             MemoryMap.Add(new MemEntry(0x04200000, 0x042FFFFF,  DPSPANREG, true, true, "DP Span Registers"));
             MemoryMap.Add(new MemEntry(0x04300000, 0x043FFFFF,  MIREG,     true, true, "MI Registers"));
@@ -72,34 +61,27 @@ namespace Ryu64.MIPS
             MemoryMap.Add(new MemEntry(0x04700000, 0x047FFFFF,  RIREG,     true, true, "RI Registers"));
             MemoryMap.Add(new MemEntry(0x04800000, 0x048FFFFF,  SIREG,     true, true, "SI Registers"));
             MemoryMap.Add(new MemEntry(0x10000000, 0x1F39FFFF,  Rom,       true, true, "Cartridge Domain 1 (Address 2)"));
-
-            // Mirror Entry
-            MirrorMap.Add(new MirrorEntry(0x80000000, 0x9FFFFFFF, 0x00000000)); // kseg0
-            MirrorMap.Add(new MirrorEntry(0xA0000000, 0xBFFFFFFF, 0x00000000)); // kseg1
-            // TODO: Add the TLB mapped regions (ksseg and kseg3) plus emulate the TLB.
+            MemoryMap.Add(new MemEntry(0x1FC00000, 0x1FC007BF,  PIFROM,    true, true, "PIF Rom"));
+            MemoryMap.Add(new MemEntry(0x1FC007C0, 0x1FC007FF,  PIFRAM,    true, true, "PIF Ram"));
 
             // Set up Memory Registers
-            WriteUInt32(RI_SELECT_REG, 14);
+            if (!Common.Settings.LOAD_PIF)
+                WriteUInt32(RI_SELECT_REG, 14);
+            WriteUInt32(SP_STATUS_REG, 1);
         }
 
-        public static byte ReadUInt8(ulong Position)
+        public static byte ReadUInt8(ulong Position, bool IsPositionAlreadyTranslated = false)
         {
-            ulong TranslatedPosition = Position;
-            foreach (MirrorEntry CurrentEntry in MirrorMap)
-            {
-                if (Position >= CurrentEntry.StartAddress && Position <= CurrentEntry.EndAddress)
-                {
-                    TranslatedPosition = (Position - CurrentEntry.StartAddress) + CurrentEntry.RemapAddress;
-                    break;
-                }
-            }
+            ulong TranslatedPosition = Position & 0x1FFFFFFF;
 
             MemEntry MemoryEntry = new MemEntry();
-            bool FoundMemEntry = false;
+            bool FoundMemEntry   = false;
 
             foreach (MemEntry CurrentEntry in MemoryMap)
             {
-                if (TranslatedPosition >= CurrentEntry.StartAddress && TranslatedPosition <= CurrentEntry.EndAddress)
+                if (TranslatedPosition > CurrentEntry.EndAddress || TranslatedPosition < CurrentEntry.StartAddress) continue;
+
+                if (TranslatedPosition <= CurrentEntry.EndAddress)
                 {
                     MemoryEntry = CurrentEntry;
                     FoundMemEntry = true;
@@ -109,34 +91,31 @@ namespace Ryu64.MIPS
 
             if (!FoundMemEntry)
             {
-                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{TranslatedPosition:x8}\" is not within range of any mapped memory.");
+                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{TranslatedPosition:x16}\" is not within range of any mapped memory.");
             }
             else if (!MemoryEntry.CanRead)
             {
-                throw new Common.Exceptions.MemoryProtectionViolation($"\"{MemoryEntry.Name}\" (0x{MemoryEntry.StartAddress:x8} to 0x{MemoryEntry.EndAddress:x8}) does not have read privileges.  Address at: 0x{TranslatedPosition:x8}");
+                throw new Common.Exceptions.MemoryProtectionViolation($"\"{MemoryEntry.Name}\" (0x{MemoryEntry.StartAddress:x16} to 0x{MemoryEntry.EndAddress:x16}) does not have read privileges.  Address at: 0x{TranslatedPosition:x16}");
             }
 
-            return MemoryEntry.OutputArray[TranslatedPosition - MemoryEntry.StartAddress];
+            ulong FullAddress = TranslatedPosition - MemoryEntry.StartAddress;
+            if (Common.Settings.LOG_MEM_ACCESS) Common.Logger.PrintInfoLine($"Tried to Read at Address \"0x{FullAddress:x16}\", Section \"{MemoryEntry.Name}\"");
+
+            return MemoryEntry.OutputArray[FullAddress];
         }
 
         public static void WriteUInt8(ulong Position, byte Value)
         {
-            ulong TranslatedPosition = Position;
-            foreach (MirrorEntry CurrentEntry in MirrorMap)
-            {
-                if (Position >= CurrentEntry.StartAddress && Position <= CurrentEntry.EndAddress)
-                {
-                    TranslatedPosition = (Position - CurrentEntry.StartAddress) + CurrentEntry.RemapAddress;
-                    break;
-                }
-            }
+            ulong TranslatedPosition = Position & 0x1FFFFFFF;
 
             MemEntry MemoryEntry = new MemEntry();
-            bool FoundMemEntry = false;
+            bool FoundMemEntry   = false;
 
             foreach (MemEntry CurrentEntry in MemoryMap)
             {
-                if (TranslatedPosition >= CurrentEntry.StartAddress && TranslatedPosition <= CurrentEntry.EndAddress)
+                if (TranslatedPosition > CurrentEntry.EndAddress || TranslatedPosition < CurrentEntry.StartAddress) continue;
+
+                if (TranslatedPosition <= CurrentEntry.EndAddress)
                 {
                     MemoryEntry = CurrentEntry;
                     FoundMemEntry = true;
@@ -146,14 +125,17 @@ namespace Ryu64.MIPS
 
             if (!FoundMemEntry)
             {
-                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{TranslatedPosition:x8}\" is not within range of any mapped memory.");
+                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{TranslatedPosition:x16}\" is not within range of any mapped memory.");
             }
             else if (!MemoryEntry.CanWrite)
             {
-                throw new Common.Exceptions.MemoryProtectionViolation($"\"{MemoryEntry.Name}\" (0x{MemoryEntry.StartAddress:x8} to 0x{MemoryEntry.EndAddress:x8}) does not have write privileges.  Address at: 0x{TranslatedPosition:x8}");
+                throw new Common.Exceptions.MemoryProtectionViolation($"\"{MemoryEntry.Name}\" (0x{MemoryEntry.StartAddress:x16} to 0x{MemoryEntry.EndAddress:x16}) does not have write privileges.  Address at: 0x{TranslatedPosition:x16}");
             }
 
-            MemoryEntry.OutputArray[TranslatedPosition - MemoryEntry.StartAddress] = Value;
+            ulong FullAddress = TranslatedPosition - MemoryEntry.StartAddress;
+            if (Common.Settings.LOG_MEM_ACCESS) Common.Logger.PrintInfoLine($"Tried to Write at Address \"0x{FullAddress:x16}\", Value \"0x{Value:x16}\", Section \"{MemoryEntry.Name}\"");
+
+            MemoryEntry.OutputArray[FullAddress] = Value;
         }
 
         public static sbyte ReadInt8(ulong Position)
@@ -168,7 +150,7 @@ namespace Ryu64.MIPS
 
         public static ushort ReadUInt16(ulong Position)
         {
-            return (ushort)(ReadUInt8(Position) << 8 | ReadUInt8(Position + 1));
+            return (ushort)(ReadUInt8(Position, true) << 8 | ReadUInt8(Position + 1, true));
         }
 
         public static void WriteUInt16(ulong Position, ushort Value)

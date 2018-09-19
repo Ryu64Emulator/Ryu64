@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace Ryu64.MIPS
@@ -9,22 +10,24 @@ namespace Ryu64.MIPS
         public static void ADD(OpcodeTable.OpcodeDesc Desc)
         {
             // TODO: Correctly check for Overflow and Underflow
-            uint Res = (uint)((int)Registers.R4300.Reg[Desc.op1] + (int)Registers.R4300.Reg[Desc.op2]);
-            Registers.R4300.Reg[Desc.op3] = Res;
-            Registers.R4300.PC += 4;
+            ADDU(Desc);
         }
 
         public static void ADDI(OpcodeTable.OpcodeDesc Desc)
         {
             // TODO: Correctly check for Overflow and Underflow
-            uint Res = (uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm);
-            Registers.R4300.Reg[Desc.op2] = Res;
-            Registers.R4300.PC += 4;
+            ADDIU(Desc);
         }
 
         public static void ADDIU(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op2] = (uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm);
+            Registers.R4300.PC += 4;
+        }
+
+        public static void ADDU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = (uint)((int)Registers.R4300.Reg[Desc.op1] + (int)Registers.R4300.Reg[Desc.op2]);
             Registers.R4300.PC += 4;
         }
 
@@ -37,6 +40,12 @@ namespace Ryu64.MIPS
         public static void ANDI(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op2] = Registers.R4300.Reg[Desc.op1] & Desc.Imm;
+            Registers.R4300.PC += 4;
+        }
+
+        public static void SUBU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = (int)(Registers.R4300.Reg[Desc.op1] & 0xFFFFFFFF) - (int)(Registers.R4300.Reg[Desc.op2] & 0xFFFFFFFF);
             Registers.R4300.PC += 4;
         }
 
@@ -58,6 +67,18 @@ namespace Ryu64.MIPS
             Registers.R4300.PC += 4;
         }
 
+        public static void MFHI(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.HI;
+            Registers.R4300.PC += 4;
+        }
+
+        public static void MFLO(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.LO;
+            Registers.R4300.PC += 4;
+        }
+
         public static void OR(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op1] | Registers.R4300.Reg[Desc.op2];
@@ -70,15 +91,41 @@ namespace Ryu64.MIPS
             Registers.R4300.PC += 4;
         }
 
+        public static void MTLO(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.LO = Registers.R4300.Reg[Desc.op1];
+            Registers.R4300.PC += 4;
+        }
+
+        public static void MULTU(OpcodeTable.OpcodeDesc Desc)
+        {
+            ulong Res = (uint)(Registers.R4300.Reg[Desc.op1] & 0xFFFFFFFF) * (uint)(Registers.R4300.Reg[Desc.op2] & 0xFFFFFFFF);
+            Registers.R4300.LO = (uint)(Res & 0x00000000FFFFFFFF);
+            Registers.R4300.HI = (uint)(Res >> 32);
+            Registers.R4300.PC += 4;
+        }
+
         public static void SLL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = (int)Registers.R4300.Reg[Desc.op2] << Desc.op4;
             Registers.R4300.PC += 4;
         }
 
+        public static void SLLV(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = (long)((ulong)Registers.R4300.Reg[Desc.op2] << (byte)(Registers.R4300.Reg[Desc.op1] & 0x0000001F));
+            Registers.R4300.PC += 4;
+        }
+
         public static void SRL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = (int)Registers.R4300.Reg[Desc.op2] >> Desc.op4;
+            Registers.R4300.PC += 4;
+        }
+
+        public static void SRLV(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = (long)((ulong)Registers.R4300.Reg[Desc.op2] >> (byte)(Registers.R4300.Reg[Desc.op1] & 0x0000001F));
             Registers.R4300.PC += 4;
         }
 

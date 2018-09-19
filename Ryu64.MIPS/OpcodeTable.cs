@@ -98,27 +98,36 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXXXXXXX00000100000", InstInterp.ADD,   "ADD R[{2}], R[{0}], R[{1}]");
             SetOpcode("001000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDI,  "ADDI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("001001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDIU, "ADDIU R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100001", InstInterp.ADDU,  "ADDU R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100100", InstInterp.AND,   "AND R[{2}], R[{0}], R[{1}]");
             SetOpcode("001100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ANDI,  "ANDI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100011", InstInterp.SUBU,  "SUBU R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100110", InstInterp.XOR,   "XOR R[{2}], R[{0}], R[{1}]");
             SetOpcode("001110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.XORI,  "XORI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("00111100000XXXXXXXXXXXXXXXXXXXXX", InstInterp.LUI,   "LUI R[{1}], 0x{4:x4}");
+            SetOpcode("0000000000000000XXXXX00000010000", InstInterp.MFHI,  "MFHI R[{2}]");
+            SetOpcode("0000000000000000XXXXX00000010010", InstInterp.MFLO,  "MFLO R[{2}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100101", InstInterp.OR,    "OR R[{2}], R[{0}], R[{1}]");
             SetOpcode("001101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ORI,   "ORI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXX000000000000000010011", InstInterp.MTLO,  "MTLO R[{0}]");
+            SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU, "MULTU R[{0}], R[{1}]");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,   "SLL R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,  "SLLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000010", InstInterp.SRL,   "SRL R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000000110", InstInterp.SRLV,  "SRLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("001010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTI,  "SLTI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("001011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTIU, "SLTIU R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000101011", InstInterp.SLTU,  "SLTU R[{2}], R[{0}], R[{1}]");
 
             // Branch / Jump Instructions
-            SetOpcode("000100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BEQ,   "BEQ R[{0}], R[{1}], 0x{4:x4}");
-            SetOpcode("010100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BEQL,  "BEQL R[{0}], R[{1}], 0x{4:x4}");
-            SetOpcode("010110XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLEZL, "BLEZL R[{0}], 0x{4:x4}");
-            SetOpcode("000101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNE,   "BNE R[{0}], R[{1}], 0x{4:x4}");
-            SetOpcode("010101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNEL,  "BNEL R[{0}], R[{1}], 0x{4:x4}");
-            SetOpcode("000011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.JAL,   "JAL 0x{5:x8}");
-            SetOpcode("000000XXXXX000000000000000001000", InstInterp.JR,    "JR R[{0}]");
+            SetOpcode("000100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BEQ,    "BEQ R[{0}], R[{1}], 0x{4:x4}");
+            SetOpcode("010100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BEQL,   "BEQL R[{0}], R[{1}], 0x{4:x4}");
+            SetOpcode("000001XXXXX10001XXXXXXXXXXXXXXXX", InstInterp.BGEZAL, "BGEZAL R[{0}], 0x{4:x4}");
+            SetOpcode("010110XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLEZL,  "BLEZL R[{0}], 0x{4:x4}");
+            SetOpcode("000101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNE,    "BNE R[{0}], R[{1}], 0x{4:x4}");
+            SetOpcode("010101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNEL,   "BNEL R[{0}], R[{1}], 0x{4:x4}");
+            SetOpcode("000011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.JAL,    "JAL 0x{5:x8}");
+            SetOpcode("000000XXXXX000000000000000001000", InstInterp.JR,     "JR R[{0}]");
 
             // COP0 Instructions
             SetOpcode("01000000000XXXXXXXXXXXXXXXXXXXXX", InstInterp.MFC0,  "MFC0 R[{1}], CP0R[{2}]");
