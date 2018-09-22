@@ -38,7 +38,7 @@ namespace Ryu64
             if (args.Length < (Common.Settings.LOAD_PIF ? 2 : 1))
             {
                 Common.Logger.PrintErrorLine(Common.Settings.LOAD_PIF ? 
-                    "Please specify a .z64 file and a PIF Rom to open." : "Please specify a .z64 file to open.");
+                    "Please specify a .z64 file, and a PIF Rom to open." : "Please specify a .z64 file to open.");
                 Environment.Exit(-1);
             }
 
@@ -51,7 +51,7 @@ namespace Ryu64
                 Environment.Exit(-1);
             }
 
-            Common.Settings.Parse();
+            Common.Settings.Parse("./Settings.ini");
 
             if (Common.Settings.MEASURE_SPEED)
             {
@@ -60,7 +60,7 @@ namespace Ryu64
                 Console.CancelKeyPress += delegate
                 {
                     Common.Measure.MeasureTime.Stop();
-                    Common.Logger.PrintSuccessLine($"Took {Common.Measure.MeasureTime.Elapsed:c}, Instructions Executed: {Common.Measure.InstructionCount}, stopped preemptively.");
+                    Common.Logger.PrintSuccessLine($"Took {Common.Measure.MeasureTime.Elapsed:c}, Instructions Executed: {Common.Measure.InstructionCount}, stopped at 0x{MIPS.Registers.R4300.PC:x8}.");
                 };
             }
 
@@ -74,7 +74,7 @@ namespace Ryu64
 
             Common.Settings.PIF_ROM = Common.Settings.LOAD_PIF ? args[1] : "";
 
-            MIPS.Memory.Init(Rom.AllData);
+            MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
             MIPS.R4300.PowerOnR4300(Rom.header.ProgramCounter);
         }

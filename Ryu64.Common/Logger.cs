@@ -7,12 +7,8 @@ namespace Ryu64.Common
 {
     public class Logger
     {
-        public static string Log = "";
-
         public static void PrintInfo(string Info)
         {
-            Log += Info;
-
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write(Info);
             Console.ResetColor();
@@ -25,8 +21,6 @@ namespace Ryu64.Common
 
         public static void PrintError(string Error)
         {
-            Log += Error;
-
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write(Error);
             Console.ResetColor();
@@ -39,8 +33,6 @@ namespace Ryu64.Common
 
         public static void PrintSuccess(string Success)
         {
-            Log += Success;
-
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(Success);
             Console.ResetColor();

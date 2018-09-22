@@ -9,4 +9,10 @@
     <ProjectReference Include="..\Ryu64.Formats\Ryu64.Formats.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Settings.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

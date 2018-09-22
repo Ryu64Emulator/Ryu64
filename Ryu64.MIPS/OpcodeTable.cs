@@ -33,29 +33,28 @@ namespace Ryu64.MIPS
             public byte   op4;
             public ushort Imm;
             public uint   Target;
-            public uint   ExceptionCode20bit;
-            public uint   ExceptionCode10bit;
 
             public OpcodeDesc(uint Opcode)
             {
                 this.Opcode = Opcode;
 
-                op1 = (byte)        ((Opcode & 0b00000011111000000000000000000000) >> 21);
-                op2 = (byte)        ((Opcode & 0b00000000000111110000000000000000) >> 16);
-                op3 = (byte)        ((Opcode & 0b00000000000000001111100000000000) >> 11);
-                op4 = (byte)        ((Opcode & 0b00000000000000000000011111000000) >> 6);
-                Imm = (ushort)      ((Opcode & 0b00000000000000001111111111111111));
-                Target             =((Opcode & 0b00000011111111111111111111111111) << 2);
-                ExceptionCode20bit = (Opcode & 0b00000011111111111111111111000000) >> 6;
-                ExceptionCode10bit = (Opcode & 0b00000000000000001111111111000000) >> 6;
+                op1                = (byte)  ((Opcode & 0b00000011111000000000000000000000) >> 21);
+                op2                = (byte)  ((Opcode & 0b00000000000111110000000000000000) >> 16);
+                op3                = (byte)  ((Opcode & 0b00000000000000001111100000000000) >> 11);
+                op4                = (byte)  ((Opcode & 0b00000000000000000000011111000000) >> 6);
+                Imm                = (ushort)((Opcode & 0b00000000000000001111111111111111));
+                Target             =         ((Opcode & 0b00000011111111111111111111111111) << 2);
             }
         }
 
         private static List<InstInfo> AllInsts;
+        private static int FastLookupSize = 0x1000;
+        private static InstInfo[][] FastLookup;
 
         public static void Init()
         {
-            AllInsts = new List<InstInfo>();
+            AllInsts   = new List<InstInfo>();
+            FastLookup = new InstInfo[FastLookupSize][];
 
             /*
             Note:
@@ -133,15 +132,45 @@ namespace Ryu64.MIPS
             SetOpcode("01000000000XXXXXXXXXXXXXXXXXXXXX", InstInterp.MFC0,  "MFC0 R[{1}], CP0R[{2}]");
             SetOpcode("01000000100XXXXXXXXXXXXXXXXXXXXX", InstInterp.MTC0,  "MTC0 R[{1}], CP0R[{2}]");
             SetOpcode("101111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.CACHE, "CACHE 0x{1:x2}, 0x{4:x4}(R[{0}])");
+
+            // Credit to Ryujinx for the FastLookup code!
+            // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/AOpCodeTable.cs
+
+            List<InstInfo>[] Tmp = new List<InstInfo>[FastLookupSize];
+
+            for (int i = 0; i < FastLookupSize; ++i)
+                Tmp[i] = new List<InstInfo>();
+
+            foreach (InstInfo Inst in AllInsts)
+            {
+                int Mask  = ToFastLookupIndex((int)Inst.Mask);
+                int Value = ToFastLookupIndex((int)Inst.Value);
+
+                for (int i = 0; i < FastLookupSize; ++i)
+                    if ((i & Mask) == Value) Tmp[i].Add(Inst);
+            }
+
+            for (int i = 0; i < FastLookupSize; ++i)
+                FastLookup[i] = Tmp[i].ToArray();
+        }
+
+        private static int ToFastLookupIndex(int Value)
+        {
+            return ((Value >> 10) & 0x00F) | ((Value >> 18) & 0xFF0);
         }
 
         public static InstInfo GetOpcodeInfo(uint Opcode)
         {
-            foreach (InstInfo info in AllInsts)
+            return GetOpcodeInfoFromList(FastLookup[ToFastLookupIndex((int)Opcode)], Opcode);
+        }
+
+        public static InstInfo GetOpcodeInfoFromList(IEnumerable<InstInfo> InstList, uint Opcode)
+        {
+            foreach (InstInfo info in InstList)
                 if ((Opcode & info.Mask) == info.Value)
                     return info;
 
-            throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction.");
+            throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction.  PC: 0x{Registers.R4300.PC:x8}");
         }
 
         private static void SetOpcode(string Encoding, InstInterp.InterpretOpcode Interpret, string FormattedASM = "")
