@@ -11,7 +11,7 @@ namespace Ryu64.MIPS
             Registers.R4300.PC += 4;
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             if (Registers.R4300.Reg[Desc.op1] == Registers.R4300.Reg[Desc.op2])
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) * 4);
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
         }
 
         public static void BEQL(OpcodeTable.OpcodeDesc Desc)
@@ -20,9 +20,17 @@ namespace Ryu64.MIPS
             if (Registers.R4300.Reg[Desc.op1] == Registers.R4300.Reg[Desc.op2])
             {
                 R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) * 4);
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
             }
             else Registers.R4300.PC += 4;
+        }
+
+        public static void BGEZ(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.PC += 4;
+            R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
+            if (Registers.R4300.Reg[Desc.op1] >= 0)
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
         }
 
         public static void BGEZAL(OpcodeTable.OpcodeDesc Desc)
@@ -31,7 +39,7 @@ namespace Ryu64.MIPS
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             Registers.R4300.Reg[31] = Registers.R4300.PC;
             if (Registers.R4300.Reg[Desc.op1] >= 0)
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) * 4);
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
         }
 
         public static void BLEZL(OpcodeTable.OpcodeDesc Desc)
@@ -40,9 +48,26 @@ namespace Ryu64.MIPS
             if (Registers.R4300.Reg[Desc.op1] <= 0)
             {
                 R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) * 4);
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
             }
             else Registers.R4300.PC += 4;
+        }
+
+        public static void BLTZ(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.PC += 4;
+            R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
+            if (Registers.R4300.Reg[Desc.op1] <= 0)
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+        }
+
+        public static void BLTZAL(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.PC += 4;
+            R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
+            Registers.R4300.Reg[31] = Registers.R4300.PC;
+            if (Registers.R4300.Reg[Desc.op1] <= 0)
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
         }
 
         public static void BNE(OpcodeTable.OpcodeDesc Desc)
@@ -50,7 +75,7 @@ namespace Ryu64.MIPS
             Registers.R4300.PC += 4;
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             if (Registers.R4300.Reg[Desc.op1] != Registers.R4300.Reg[Desc.op2])
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) * 4);
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
         }
 
         public static void BNEL(OpcodeTable.OpcodeDesc Desc)
@@ -59,7 +84,7 @@ namespace Ryu64.MIPS
             if (Registers.R4300.Reg[Desc.op1] != Registers.R4300.Reg[Desc.op2])
             {
                 R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) * 4);
+                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
             }
             else Registers.R4300.PC += 4;
         }

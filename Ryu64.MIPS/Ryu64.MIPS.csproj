@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Memory.cs~RF597af035.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Ryu64.Common\Ryu64.Common.csproj" />
   </ItemGroup>
 

@@ -7,15 +7,30 @@ namespace Ryu64.MIPS
 {
     public class Memory
     {
-        public readonly byte[] RI_SELECT_REG_RW  = new byte[4];
+        public readonly byte[] SP_DMEM_RW         = new byte[0x1000];
+        public readonly byte[] SP_IMEM_RW         = new byte[0x1000];
+        public readonly byte[] SP_STATUS_REG_R    = new byte[4];
+        public readonly byte[] SP_STATUS_REG_W    = new byte[4];
+        public readonly byte[] SP_DMA_BUSY_REG_R  = new byte[4];
+        public readonly byte[] SP_DMA_BUSY_REG_W  = new byte[4];
+        public readonly byte[] SP_SEMAPHORE_REG_R = new byte[4];
+        public readonly byte[] SP_SEMAPHORE_REG_W = new byte[4];
+        public readonly byte[] SP_PC_REG_RW       = new byte[4];
 
-        public readonly byte[] SP_DMEM_RW        = new byte[0x1000];
-        public readonly byte[] SP_IMEM_RW        = new byte[0x1000];
-        public readonly byte[] SP_STATUS_REG_R   = new byte[4];
-        public readonly byte[] SP_STATUS_REG_W   = new byte[4];
-        public readonly byte[] SP_DMA_BUSY_REG_R = new byte[4];
-        public readonly byte[] SP_DMA_BUSY_REG_W = new byte[4];
+        public readonly byte[] DPC_STATUS_REG_R = new byte[4];
+        public readonly byte[] DPC_STATUS_REG_W = new byte[4];
 
+        public readonly byte[] VI_INTR_REG_RW    = new byte[4];
+        public readonly byte[] VI_H_START_REG_RW = new byte[4];
+        public readonly byte[] VI_CURRENT_REG_R  = new byte[4];
+        public readonly byte[] VI_CURRENT_REG_W  = new byte[4];
+
+        public readonly byte[] AI_DRAM_ADDR_REG_W = new byte[4];
+        public readonly byte[] AI_LEN_REG_RW      = new byte[4];
+
+        public readonly byte[] PI_DRAM_ADDR_REG_RW    = new byte[4];
+        public readonly byte[] PI_CART_ADDR_REG_RW    = new byte[4];
+        public readonly byte[] PI_WR_LEN_REG_RW       = new byte[4];
         public readonly byte[] PI_STATUS_REG_R        = new byte[4];
         public readonly byte[] PI_STATUS_REG_W        = new byte[4];
         public readonly byte[] PI_BSD_DOM1_LAT_REG_RW = new byte[4];
@@ -25,6 +40,8 @@ namespace Ryu64.MIPS
 
         public readonly byte[] SI_STATUS_REG_R = new byte[4];
         public readonly byte[] SI_STATUS_REG_W = new byte[4];
+
+        public readonly byte[] RI_SELECT_REG_RW = new byte[4];
 
         public readonly byte[] RDRAM     = new byte[8388608];
         public readonly byte[] RDRAMReg  = new byte[1048575];
@@ -48,13 +65,30 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x03F00000, 0x03FFFFFF, RDRAMReg, RDRAMReg, "RDRAM Registers"));
 
             // SP Registers
-            MemoryMapList.Add(new MemEntry(0x04000000, 0x04000FFF, SP_DMEM_RW, SP_DMEM_RW,               "SP_DMEM"));
-            MemoryMapList.Add(new MemEntry(0x04001000, 0x04001FFF, SP_IMEM_RW, SP_IMEM_RW,               "SP_IMEM"));
-            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R, SP_STATUS_REG_W,     "SP_STATUS_REG"));
-            MemoryMapList.Add(new MemEntry(0x04040018, 0x0404001B, SP_DMA_BUSY_REG_R, SP_DMA_BUSY_REG_W, "SP_DMA_BUSY_REG"));
+            MemoryMapList.Add(new MemEntry(0x04000000, 0x04000FFF, SP_DMEM_RW, SP_DMEM_RW,                 "SP_DMEM"));
+            MemoryMapList.Add(new MemEntry(0x04001000, 0x04001FFF, SP_IMEM_RW, SP_IMEM_RW,                 "SP_IMEM"));
+            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R, SP_STATUS_REG_W,       "SP_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04040018, 0x0404001B, SP_DMA_BUSY_REG_R, SP_DMA_BUSY_REG_W,   "SP_DMA_BUSY_REG"));
+            MemoryMapList.Add(new MemEntry(0x0404001C, 0x0404001F, SP_SEMAPHORE_REG_R, SP_SEMAPHORE_REG_W, "SP_SEMAPHORE_REG"));
+            MemoryMapList.Add(new MemEntry(0x04080000, 0x04080003, SP_PC_REG_RW, SP_PC_REG_RW,             "SP_PC_REG"));
+
+            // DPC Registers
+            MemoryMapList.Add(new MemEntry(0x0410000C, 0x0410000F, DPC_STATUS_REG_R, DPC_STATUS_REG_W, "DPC_STATUS_REG"));
+
+            // VI Registers
+            MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW, VI_INTR_REG_RW,       "VI_INTR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400024, 0x04400027, VI_H_START_REG_RW, VI_H_START_REG_RW, "VI_H_START_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_R, VI_CURRENT_REG_W,   "VI_CURRENT_REG"));
+
+            // AI Registers
+            MemoryMapList.Add(new MemEntry(0x04500000, 0x04500003, null, AI_DRAM_ADDR_REG_W,     "AI_DRAM_ADDR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500004, 0x04500007, AI_LEN_REG_RW, AI_LEN_REG_RW, "AI_LEN_REG"));
 
             // PI Registers
-            MemoryMapList.Add(new MemEntry(0x04600010, 0x04600013, PI_STATUS_REG_R, PI_STATUS_REG_W, "PI_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04600000, 0x04600003, PI_DRAM_ADDR_REG_RW, PI_DRAM_ADDR_REG_RW, "PI_DRAM_ADDR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04600004, 0x04600007, PI_CART_ADDR_REG_RW, PI_CART_ADDR_REG_RW, "PI_CART_ADDR_REG"));
+            MemoryMapList.Add(new MemEntry(0x0460000C, 0x0460000F, PI_WR_LEN_REG_RW, PI_WR_LEN_REG_RW,       "PI_WR_LEN_REG"));
+            MemoryMapList.Add(new MemEntry(0x04600010, 0x04600013, PI_STATUS_REG_R, PI_STATUS_REG_W,         "PI_STATUS_REG"));
             MemoryMapList.Add(new MemEntry(0x04600014, 0x04600017, PI_BSD_DOM1_LAT_REG_RW, PI_BSD_DOM1_LAT_REG_RW, "PI_BSD_DOM1_LAT_REG"));
             MemoryMapList.Add(new MemEntry(0x04600018, 0x0460001B, PI_BSD_DOM1_PWD_REG_RW, PI_BSD_DOM1_PWD_REG_RW, "PI_BSD_DOM1_PWD_REG"));
             MemoryMapList.Add(new MemEntry(0x0460001C, 0x0460001F, PI_BSD_DOM1_PGS_REG_RW, PI_BSD_DOM1_PGS_REG_RW, "PI_BSD_DOM1_PGS_REG"));
@@ -63,13 +97,8 @@ namespace Ryu64.MIPS
             // SI Registers
             MemoryMapList.Add(new MemEntry(0x04800018, 0x0480001B, SI_STATUS_REG_R, SI_STATUS_REG_W, "SI_STATUS_REG"));
 
-            // TEMPORARY Mappings
-            MemoryMapList.Add(new MemEntry(0x04100000, 0x041FFFFF, DPCMDReg, DPCMDReg,   "DP Command Registers"));
-            MemoryMapList.Add(new MemEntry(0x04200000, 0x042FFFFF, DPSPANREG, DPSPANREG, "DP Span Registers"));
-            MemoryMapList.Add(new MemEntry(0x04300000, 0x043FFFFF, MIREG, MIREG,         "MI Registers"));
-            MemoryMapList.Add(new MemEntry(0x04400000, 0x044FFFFF, VIREG, VIREG,         "VI Registers"));
-            MemoryMapList.Add(new MemEntry(0x04500000, 0x045FFFFF, AIREG, AIREG,         "AI Registers"));
-            MemoryMapList.Add(new MemEntry(0x04700000, 0x047FFFFF, RIREG, RIREG,         "RI Registers"));
+            // RI Registers
+            MemoryMapList.Add(new MemEntry(0x0470000C, 0x0470000F, RI_SELECT_REG_RW, RI_SELECT_REG_RW, "RI_SELECT_REG"));
 
             // Rom
             MemoryMapList.Add(new MemEntry(0x10000000, 0x1F39FFFF, Rom, Rom, "Cartridge Domain 1 (Address 2)"));

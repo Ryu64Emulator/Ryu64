@@ -44,12 +44,10 @@ namespace Ryu64.MIPS
                 for (uint i = 0x0, j = 0x1FC00000; j < 0x1FC007BF; ++i, ++j)
                     memory.WriteUInt8(j, PIF[i]); // Load the PIF rom into memory
 
-                /*
                 memory.WriteUInt32(0x1FC001EC,      0x3c0ba400);
                 memory.WriteUInt32(0x1FC001EC + 4,  0x256b1630);
                 memory.WriteUInt32(0x1FC001EC + 8,  0x01600008);
                 memory.WriteUInt32(0x1FC001EC + 12, 0x00000000);
-                */
 
                 Registers.R4300.PC = 0x1FC00000;
             }
