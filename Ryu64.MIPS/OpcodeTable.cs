@@ -109,6 +109,7 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXXXXXXX00000100101", InstInterp.OR,    "OR R[{2}], R[{0}], R[{1}]");
             SetOpcode("001101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ORI,   "ORI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXX000000000000000010011", InstInterp.MTLO,  "MTLO R[{0}]");
+            SetOpcode("000000XXXXX000000000000000010001", InstInterp.MTHI,  "MTHI R[{0}]");
             SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU, "MULTU R[{0}], R[{1}]");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,   "SLL R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,  "SLLV R[{2}], R[{1}], R[{0}]");
@@ -135,6 +136,10 @@ namespace Ryu64.MIPS
             SetOpcode("01000000000XXXXXXXXXXXXXXXXXXXXX", InstInterp.MFC0,  "MFC0 R[{1}], CP0R[{2}]");
             SetOpcode("01000000100XXXXXXXXXXXXXXXXXXXXX", InstInterp.MTC0,  "MTC0 R[{1}], CP0R[{2}]");
             SetOpcode("101111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.CACHE, "CACHE 0x{1:x2}, 0x{4:x4}(R[{0}])");
+
+            // SPECIAL Instructions
+            SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001100", InstInterp.SYSCALL, "SYSCALL");
+            SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001101", InstInterp.BREAK,   "BREAK");
 
             // Credit to Ryujinx for the FastLookup code!
             // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/AOpCodeTable.cs

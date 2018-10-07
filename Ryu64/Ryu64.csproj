@@ -6,7 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTK" Version="3.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Ryu64.Formats\Ryu64.Formats.csproj" />
+    <ProjectReference Include="..\Ryu64.Graphics\Ryu64.Graphics.csproj" />
   </ItemGroup>
 
   <ItemGroup>

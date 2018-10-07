@@ -41,5 +41,23 @@ namespace Ryu64.Common
             public MemoryProtectionViolation(string format, Exception innerException, params object[] args)
                 : base(string.Format(format, args), innerException) { }
         }
+
+        public class ProgramBreakPointException : Exception
+        {
+            public ProgramBreakPointException()
+                : base() { }
+
+            public ProgramBreakPointException(string message)
+                : base(message) { }
+
+            public ProgramBreakPointException(string format, params object[] args)
+                : base(string.Format(format, args)) { }
+
+            public ProgramBreakPointException(string message, Exception innerException)
+                : base(message, innerException) { }
+
+            public ProgramBreakPointException(string format, Exception innerException, params object[] args)
+                : base(string.Format(format, args), innerException) { }
+        }
     }
 }

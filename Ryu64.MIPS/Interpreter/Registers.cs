@@ -8,10 +8,16 @@ namespace Ryu64.MIPS
     {
         public class R4300
         {
-            public static long[] Reg = new long[32];
-            public static long  HI;
-            public static long  LO;
-            public static uint  PC;
+            public static ulong[] Reg = new ulong[32];
+            public static ulong  HI;
+            public static ulong  LO;
+            public static uint   PC;
+
+            public static void PrintRegisterInfo()
+            {
+                for (int i = 0; i < Reg.Length; ++i)
+                    Common.Logger.PrintInfoLine($"R[{i}]: 0x{Reg[i]:x16}");
+            }
         }
 
         public class COP0
@@ -49,12 +55,24 @@ namespace Ryu64.MIPS
             public const int ERROREPC_REG  = 0x1E;
             public const int RESERVED6_REG = 0x1F;
 
-            public static long[] Reg = new long[32];
+            public static ulong[] Reg = new ulong[32];
+
+            public static void PrintRegisterInfo()
+            {
+                for (int i = 0; i < Reg.Length; ++i)
+                    Common.Logger.PrintInfoLine($"CP0R[{i}]: 0x{Reg[i]:x16}");
+            }
         }
 
         public class COP1
         {
             public static double[] Reg = new double[32];
+
+            public static void PrintRegisterInfo()
+            {
+                for (int i = 0; i < Reg.Length; ++i)
+                    Common.Logger.PrintInfoLine($"CP1R[{i}]: {Reg[i]}");
+            }
         }
     }
 }

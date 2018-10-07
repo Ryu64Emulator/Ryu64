@@ -33,6 +33,7 @@ namespace Ryu64
 {
     public class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             if (args.Length < (Common.Settings.LOAD_PIF ? 2 : 1))
@@ -53,30 +54,13 @@ namespace Ryu64
 
             Common.Settings.Parse("./Settings.ini");
 
-            if (Common.Settings.MEASURE_SPEED)
-            {
-                Common.Measure.InstructionCount = 0;
-
-                Console.CancelKeyPress += delegate
-                {
-                    Common.Measure.MeasureTime.Stop();
-                    Common.Logger.PrintSuccessLine($"Took {Common.Measure.MeasureTime.Elapsed:c}, Instructions Executed: {Common.Measure.InstructionCount}, stopped at 0x{MIPS.Registers.R4300.PC:x8}.");
-                };
-            }
-
-            if (Common.Settings.LOG_MEM_USAGE)
-            {
-                Console.CancelKeyPress += delegate
-                {
-                    Common.Logger.PrintSuccessLine($"Allocated: {GC.GetTotalMemory(false) / 1024:#,#} kb");
-                };
-            }
-
             Common.Settings.PIF_ROM = Common.Settings.LOAD_PIF ? args[1] : "";
 
             MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
             MIPS.R4300.PowerOnR4300(Rom.header.ProgramCounter);
+
+            using (Graphics.MainWindow Window = new Graphics.MainWindow()) Window.Run(60.0);
         }
     }
 }

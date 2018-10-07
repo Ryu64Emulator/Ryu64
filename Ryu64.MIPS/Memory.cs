@@ -20,6 +20,8 @@ namespace Ryu64.MIPS
         public readonly byte[] DPC_STATUS_REG_R = new byte[4];
         public readonly byte[] DPC_STATUS_REG_W = new byte[4];
 
+        public readonly byte[] MI_VERSION_REG_RW = new byte[4];
+
         public readonly byte[] VI_INTR_REG_RW    = new byte[4];
         public readonly byte[] VI_H_START_REG_RW = new byte[4];
         public readonly byte[] VI_CURRENT_REG_R  = new byte[4];
@@ -75,6 +77,9 @@ namespace Ryu64.MIPS
             // DPC Registers
             MemoryMapList.Add(new MemEntry(0x0410000C, 0x0410000F, DPC_STATUS_REG_R, DPC_STATUS_REG_W, "DPC_STATUS_REG"));
 
+            // MI Registers
+            MemoryMapList.Add(new MemEntry(0x04300004, 0x04300007, MI_VERSION_REG_RW, MI_VERSION_REG_RW, "MI_VERSION_REG"));
+
             // VI Registers
             MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW, VI_INTR_REG_RW,       "VI_INTR_REG"));
             MemoryMapList.Add(new MemEntry(0x04400024, 0x04400027, VI_H_START_REG_RW, VI_H_START_REG_RW, "VI_H_START_REG"));
@@ -111,12 +116,10 @@ namespace Ryu64.MIPS
 
             // Set up Memory
             WriteUInt32(0x0470000C, 14); // RI_SELECT_REG
+            WriteUInt32(0x04300004, 0x02020102); // MI_VERSION_REG (Same value as Pj64 1.4)
 
-            if (Common.Settings.LOAD_PIF)
-            {
-                SP_STATUS_REG_R[3] = 0x1;
-                SI_STATUS_REG_R[3] = 0x1;
-            }
+            SP_STATUS_REG_R[3] = 0x1;
+            SI_STATUS_REG_R[3] = 0x1;
         }
 
         struct MemEntry
@@ -152,7 +155,8 @@ namespace Ryu64.MIPS
                 break;
             }
 
-            if (!FoundEntry) throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory.");
+            if (!FoundEntry)
+                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory.");
 
             return Result;
         }
