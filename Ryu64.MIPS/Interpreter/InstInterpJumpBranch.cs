@@ -94,7 +94,7 @@ namespace Ryu64.MIPS
             Registers.R4300.PC += 4;
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             Registers.R4300.Reg[31] = Registers.R4300.PC;
-            Registers.R4300.PC = Desc.Target;
+            Registers.R4300.PC = (Desc.Target << 2) | ((Registers.R4300.PC - 4) & 0xF0000000);
         }
 
         public static void JR(OpcodeTable.OpcodeDesc Desc)
