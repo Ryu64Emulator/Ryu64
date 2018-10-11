@@ -24,6 +24,7 @@ namespace Ryu64.MIPS
             else
             {
                 // Regular SYSCALL behavior
+                throw new NotImplementedException("Regular SYSCALL behavior is not implemented.");
             }
 
             Registers.R4300.PC += 4;

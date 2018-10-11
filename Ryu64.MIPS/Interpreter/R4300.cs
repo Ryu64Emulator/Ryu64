@@ -12,6 +12,35 @@ namespace Ryu64.MIPS
 
         public static Memory memory;
 
+        private static uint GetCICSeed()
+        {
+            ulong CRC = 0;
+
+            for (uint i = 0; i < 0xFC0; i += 4)
+                CRC += memory.ReadUInt32(i + 0x10000040);
+
+            switch (CRC)
+            {
+                default:
+                case 0x000000D057C85244: // CIC_X102
+                case 0x000000D0027FDF31: // CIC_X101
+                case 0x000000CFFB631223: // CIC_X101
+                    return 0x3F;
+                case 0x000000D6497E414B: // CIC_X103
+                    return 0x78;
+                case 0x0000011A49F60E96: // CIC_X105
+                    return 0x91;
+                case 0x000000D6D5BE5580: // CIC_X106
+                    return 0x85;
+                case 0x000001053BC19870: // CIC_5167
+                case 0x000000D2E53EF008: // CIC_8303
+                case 0x000000D2E53EF39F: // CIC_DVDD
+                    return 0xDD;
+                case 0x000000D2E53E5DDA: // CIC_USDD
+                    return 0xDE;
+            }
+        }
+
         public static void InterpretOpcode(uint Opcode)
         {
             if (Registers.R4300.Reg[0] != 0) Registers.R4300.Reg[0] = 0;
@@ -44,17 +73,15 @@ namespace Ryu64.MIPS
                 for (uint i = 0x0, j = 0x1FC00000; j < 0x1FC007BF; ++i, ++j)
                     memory.WriteUInt8(j, PIF[i]); // Load the PIF rom into memory
 
-                /*
-                memory.WriteUInt32(0x1FC001EC,      0x3c0ba400);
-                memory.WriteUInt32(0x1FC001EC + 4,  0x256b1630);
-                memory.WriteUInt32(0x1FC001EC + 8,  0x01600008);
-                memory.WriteUInt32(0x1FC001EC + 12, 0x00000000);
-                */
-
                 Registers.R4300.PC = 0xBFC00000;
             }
             else
             {
+                uint RomType   = 0; // 0 = Cart, 1 = DD
+                uint ResetType = 0; // 0 = Cold Reset, 1 = NMI
+                uint S7        = 0; // Unknown
+                uint TVType    = 1; // 0 = PAL, 1 = NTSC, 2 = MPAL
+
                 Registers.R4300.Reg[1]  = 0x0000000000000001;
                 Registers.R4300.Reg[2]  = 0x000000000EBDA536;
                 Registers.R4300.Reg[3]  = 0x000000000EBDA536;
@@ -69,8 +96,11 @@ namespace Ryu64.MIPS
                 Registers.R4300.Reg[13] = 0x000000001402A4CC;
                 Registers.R4300.Reg[14] = 0x000000002DE108EA;
                 Registers.R4300.Reg[15] = 0x000000003103E121;
-                Registers.R4300.Reg[20] = 0x0000000000000001;
-                Registers.R4300.Reg[22] = 0x000000000000003F;
+                Registers.R4300.Reg[19] = RomType;
+                Registers.R4300.Reg[20] = TVType;
+                Registers.R4300.Reg[21] = ResetType;
+                Registers.R4300.Reg[22] = GetCICSeed();
+                Registers.R4300.Reg[23] = S7;
                 Registers.R4300.Reg[25] = 0xFFFFFFFF9DEBB54F;
                 Registers.R4300.Reg[29] = 0xFFFFFFFFA4001FF0;
                 Registers.R4300.Reg[31] = 0xFFFFFFFFA4001550;
@@ -78,10 +108,8 @@ namespace Ryu64.MIPS
                 Registers.R4300.LO      = 0x000000003103E121;
                 Registers.R4300.PC      = 0xA4000040;
 
-                memory.WriteUInt32(0x04300004, 0x01010101);
-
                 for (uint i = 0xB0000000, j = 0xA4000000; j < 0xA4000000 + 0x1000; ++i, ++j)
-                    memory.WriteUInt8(j, memory.ReadUInt8(i)); // Load the rom into the correct memory address
+                    memory.WriteUInt8(j, memory.ReadUInt8(i)); // Load the Boot Code into the correct memory address
             }
 
             COP0.PowerOnCOP0();

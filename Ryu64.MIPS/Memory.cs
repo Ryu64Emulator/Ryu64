@@ -21,6 +21,7 @@ namespace Ryu64.MIPS
         public readonly byte[] DPC_STATUS_REG_W = new byte[4];
 
         public readonly byte[] MI_VERSION_REG_RW = new byte[4];
+        public readonly byte[] MI_INTR_REG_R     = new byte[4];
 
         public readonly byte[] VI_INTR_REG_RW    = new byte[4];
         public readonly byte[] VI_H_START_REG_RW = new byte[4];
@@ -40,8 +41,8 @@ namespace Ryu64.MIPS
         public readonly byte[] PI_BSD_DOM1_PGS_REG_RW = new byte[4];
         public readonly byte[] PI_BSD_DOM1_RLS_REG_RW = new byte[4];
 
-        public readonly byte[] SI_STATUS_REG_R = new byte[4];
-        public readonly byte[] SI_STATUS_REG_W = new byte[4];
+        public readonly byte[] SI_STATUS_REG_R  = new byte[4];
+        public readonly byte[] SI_STATUS_REG_W  = new byte[4];
 
         public readonly byte[] RI_SELECT_REG_RW = new byte[4];
 
@@ -79,6 +80,7 @@ namespace Ryu64.MIPS
 
             // MI Registers
             MemoryMapList.Add(new MemEntry(0x04300004, 0x04300007, MI_VERSION_REG_RW, MI_VERSION_REG_RW, "MI_VERSION_REG"));
+            MemoryMapList.Add(new MemEntry(0x04300008, 0x0430000B, MI_INTR_REG_R,     null,              "MI_INTR_REG"));
 
             // VI Registers
             MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW, VI_INTR_REG_RW,       "VI_INTR_REG"));
@@ -114,12 +116,38 @@ namespace Ryu64.MIPS
 
             MemoryMap = MemoryMapList.ToArray();
 
-            // Set up Memory
-            WriteUInt32(0x0470000C, 14); // RI_SELECT_REG
+            // Setup Environment
+
+            // MI Registers
             WriteUInt32(0x04300004, 0x02020102); // MI_VERSION_REG (Same value as Pj64 1.4)
 
+            // VI Registers
+            WriteUInt32(0x0440000C, 1023); // VI_INTR_REG
+
+            // PI Registers
+            uint BSD_DOM1_CONFIG = ReadUInt32(0x10000000);
+
+            WriteUInt32(0x04600014, (BSD_DOM1_CONFIG      ) & 0xFF); // PI_BSD_DOM1_LAT_REG
+            WriteUInt32(0x04600018, (BSD_DOM1_CONFIG >> 8 ) & 0xFF); // PI_BSD_DOM1_PWD_REG
+            WriteUInt32(0x0460001C, (BSD_DOM1_CONFIG >> 16) & 0x0F); // PI_BSD_DOM1_PGS_REG
+            WriteUInt32(0x04600020, (BSD_DOM1_CONFIG >> 20) & 0x03); // PI_BSD_DOM1_RLS_REG
+
             SP_STATUS_REG_R[3] = 0x1;
-            SI_STATUS_REG_R[3] = 0x1;
+
+            // RI Registers
+            WriteUInt32(0x0470000C, 0b1110); // RI_SELECT_REG
+
+            // Copy the Boot Code to SP_DMEM
+            if (!Common.Settings.LOAD_PIF)
+                FastMemoryCopy(0x04000040, 0x10000040, 0xFC0);
+
+            // Required by CIC x105
+            WriteUInt32(0x40001000, 0x3C0DBFC0);
+            WriteUInt32(0x40001004, 0x8DA807FC);
+            WriteUInt32(0x40001008, 0x25AD07C0);
+            WriteUInt32(0x40001010, 0x5500FFFC);
+            WriteUInt32(0x40001018, 0x8DA80024);
+            WriteUInt32(0x4000101C, 0x3C0BB000);
         }
 
         struct MemEntry
@@ -156,7 +184,8 @@ namespace Ryu64.MIPS
             }
 
             if (!FoundEntry)
-                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory.");
+                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory." +
+                    $"  PC: 0x{Registers.R4300.PC:x8}");
 
             return Result;
         }
@@ -198,8 +227,6 @@ namespace Ryu64.MIPS
 
                 Buffer.BlockCopy(Entry.ReadArray, (int)(nonCachedIndex - Entry.StartAddress), result, 0, size);
 
-                Array.Reverse(result);
-
                 return result;
             }
             set
@@ -210,10 +237,20 @@ namespace Ryu64.MIPS
                 if (Entry.WriteArray == null)
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not writable.");
 
-                Array.Reverse(value);
-
                 Buffer.BlockCopy(value, 0, Entry.WriteArray, (int)(nonCachedIndex - Entry.StartAddress), size);
             }
+        }
+
+        public void FastMemoryCopy(uint Dest, uint Source, int Size)
+        {
+            this[Dest, Size] = this[Source, Size];
+        }
+
+        public void SafeMemoryCopy(uint Dest, uint Source, int Size)
+        {
+            if (GetEntry(Source & 0x1FFFFFFF).StartAddress != GetEntry(Dest & 0x1FFFFFFF).StartAddress)
+                throw new NotImplementedException("Copying over multiple Memory Regions isn't implemented.");
+            FastMemoryCopy(Source, Dest, Size);
         }
 
         public byte ReadUInt8(uint index)
@@ -239,6 +276,7 @@ namespace Ryu64.MIPS
         public ushort ReadUInt16(uint index)
         {
             byte[] Res = this[index, 2];
+            Array.Reverse(Res);
             unsafe
             {
                 fixed (byte* point = &Res[0])
@@ -257,6 +295,8 @@ namespace Ryu64.MIPS
                 byte[] PointArray = new byte[2];
                 Marshal.Copy(new IntPtr(point), PointArray, 0, 2);
 
+                Array.Reverse(PointArray);
+
                 this[index, 2] = PointArray;
             }
         }
@@ -274,6 +314,7 @@ namespace Ryu64.MIPS
         public uint ReadUInt32(uint index)
         {
             byte[] Res = this[index, 4];
+            Array.Reverse(Res);
             unsafe
             {
                 fixed (byte* point = &Res[0])
@@ -292,6 +333,8 @@ namespace Ryu64.MIPS
                 byte[] PointArray = new byte[4];
                 Marshal.Copy(new IntPtr(point), PointArray, 0, 4);
 
+                Array.Reverse(PointArray);
+
                 this[index, 4] = PointArray;
             }
         }
@@ -309,6 +352,7 @@ namespace Ryu64.MIPS
         public ulong ReadUInt64(uint index)
         {
             byte[] Res = this[index, 8];
+            Array.Reverse(Res);
             unsafe
             {
                 fixed (byte* point = &Res[0])
@@ -326,6 +370,8 @@ namespace Ryu64.MIPS
                 ulong* point = &value;
                 byte[] PointArray = new byte[8];
                 Marshal.Copy(new IntPtr(point), PointArray, 0, 8);
+
+                Array.Reverse(PointArray);
 
                 this[index, 8] = PointArray;
             }

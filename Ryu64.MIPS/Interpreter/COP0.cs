@@ -18,7 +18,7 @@ namespace Ryu64.MIPS
             if (!Common.Settings.LOAD_PIF)
             {
                 Registers.COP0.Reg[Registers.COP0.STATUS_REG] = 0x34000000;
-                Registers.COP0.Reg[Registers.COP0.COUNT_REG]  = 0x00036464;
+                Registers.COP0.Reg[Registers.COP0.CONFIG_REG] = 0x0006E463;
             }
             else
             {
