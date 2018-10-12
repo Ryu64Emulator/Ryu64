@@ -31,6 +31,18 @@ namespace Ryu64.Common
             PrintError(Error + '\n');
         }
 
+        public static void PrintWarning(string Warning)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.Write(Warning);
+            Console.ResetColor();
+        }
+
+        public static void PrintWarningLine(string Warning)
+        {
+            PrintWarning(Warning + '\n');
+        }
+
         public static void PrintSuccess(string Success)
         {
             Console.ForegroundColor = ConsoleColor.Green;

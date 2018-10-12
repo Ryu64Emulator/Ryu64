@@ -184,8 +184,20 @@ namespace Ryu64.MIPS
             }
 
             if (!FoundEntry)
-                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory." +
-                    $"  PC: 0x{Registers.R4300.PC:x8}");
+            {
+                uint Opcode = ReadUInt32(Registers.R4300.PC);
+
+                OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode);
+                OpcodeTable.InstInfo Info = OpcodeTable.GetOpcodeInfo(Opcode);
+
+                string ASM = string.Format(
+                    Info.FormattedASM,
+                    Desc.op1, Desc.op2, Desc.op3, Desc.op4,
+                    Desc.Imm, Desc.Target);
+
+                    throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory." +
+                    $"  PC: 0x{Registers.R4300.PC:x8} ASM: {ASM}");
+            }
 
             return Result;
         }

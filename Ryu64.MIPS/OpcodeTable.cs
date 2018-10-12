@@ -10,16 +10,18 @@ namespace Ryu64.MIPS
         {
             public uint Mask;
             public uint Value;
+            public uint Cycles;
             public string FormattedASM;
 
             public InstInterp.InterpretOpcode Interpret;
 
-            public InstInfo(uint Mask, uint Value, InstInterp.InterpretOpcode Interpret, string FormattedASM)
+            public InstInfo(uint Mask, uint Value, InstInterp.InterpretOpcode Interpret, string FormattedASM, uint Cycles)
             {
                 this.Mask         = Mask;
                 this.Value        = Value;
                 this.Interpret    = Interpret;
                 this.FormattedASM = FormattedASM;
+                this.Cycles = Cycles;
             }
         }
 
@@ -110,7 +112,7 @@ namespace Ryu64.MIPS
             SetOpcode("001101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ORI,   "ORI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXX000000000000000010011", InstInterp.MTLO,  "MTLO R[{0}]");
             SetOpcode("000000XXXXX000000000000000010001", InstInterp.MTHI,  "MTHI R[{0}]");
-            SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU, "MULTU R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU, "MULTU R[{0}], R[{1}]", 5);
             SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,   "SLL R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,  "SLLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000010", InstInterp.SRL,   "SRL R[{2}], R[{1}], 0x{3:x2}");
@@ -181,7 +183,7 @@ namespace Ryu64.MIPS
             throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction.  PC: 0x{Registers.R4300.PC:x8}");
         }
 
-        private static void SetOpcode(string Encoding, InstInterp.InterpretOpcode Interpret, string FormattedASM = "")
+        private static void SetOpcode(string Encoding, InstInterp.InterpretOpcode Interpret, string FormattedASM = "", uint Cycles = 1)
         {
             uint Bit   = (uint)Encoding.Length - 1;
             uint Value = 0;
@@ -201,7 +203,7 @@ namespace Ryu64.MIPS
 
             XMask = ~XMask;
 
-            AllInsts.Add(new InstInfo(XMask, Value, Interpret, FormattedASM));
+            AllInsts.Add(new InstInfo(XMask, Value, Interpret, FormattedASM, Cycles));
         }
     }
 }

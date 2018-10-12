@@ -11,39 +11,107 @@ namespace Ryu64.MIPS
         public static bool R4300_ON = false;
 
         public static Memory memory;
+        public static ulong CycleCounter = 0;
+        private static ulong Count = 0;
+
+        private static uint CRC32(uint StartAddress, uint Length)
+        {
+            uint[] Table = new uint[256];
+            ulong n, k;
+            uint c;
+
+            for (n = 0; n < 256; ++n)
+            {
+                c = (uint)n;
+
+                for (k = 0; k < 8; ++k)
+                {
+                    if ((c & 1) == 1)
+                        c = 0xEDB88320 ^ (c >> 1);
+                    else
+                        c >>= 1;
+                }
+
+                Table[n] = c;
+            }
+
+            c = 0 ^ 0xFFFFFFFF;
+
+            for (n = 0; n < Length; ++n)
+            {
+                c = Table[(c ^ memory.ReadUInt8(StartAddress + (uint)n)) & 0xFF] ^ (c >> 8);
+            }
+
+            return c ^ 0xFFFFFFFF;
+        }
+
+        // All values from Cen64: https://github.com/tj90241/cen64/blob/master/si/cic.c
+        private const uint CIC_SEED_NUS_5101 = 0x0000AC00;
+        private const uint CIC_SEED_NUS_6101 = 0x00043F3F;
+        private const uint CIC_SEED_NUS_6102 = 0x00003F3F;
+        private const uint CIC_SEED_NUS_6103 = 0x0000783F;
+        private const uint CIC_SEED_NUS_6105 = 0x0000913F;
+        private const uint CIC_SEED_NUS_6106 = 0x0000853F;
+        private const uint CIC_SEED_NUS_8303 = 0x0000DD00;
+
+        private const uint CRC_NUS_5101 = 0x587BD543;
+        private const uint CRC_NUS_6101 = 0x6170A4A1;
+        private const uint CRC_NUS_7102 = 0x009E9EA3;
+        private const uint CRC_NUS_6102 = 0x90BB6CB5;
+        private const uint CRC_NUS_6103 = 0x0B050EE0;
+        private const uint CRC_NUS_6105 = 0x98BC2C86;
+        private const uint CRC_NUS_6106 = 0xACC8580A;
+        private const uint CRC_NUS_8303 = 0x0E018159;
+        private const uint CRC_iQue_1   = 0xCD19FEF1;
+        private const uint CRC_iQue_2   = 0xB98CED9A;
+        private const uint CRC_iQue_3   = 0xE71C2766;
+
 
         private static uint GetCICSeed()
         {
-            ulong CRC = 0;
+            uint CRC        = CRC32(0x10000040, 0xFC0);
+            uint Aleck64CRC = CRC32(0x10000040, 0xBC0);
 
-            for (uint i = 0; i < 0xFC0; i += 4)
-                CRC += memory.ReadUInt32(i + 0x10000040);
-
+            if (Aleck64CRC == CRC_NUS_5101) return CIC_SEED_NUS_5101;
             switch (CRC)
             {
                 default:
-                case 0x000000D057C85244: // CIC_X102
-                case 0x000000D0027FDF31: // CIC_X101
-                case 0x000000CFFB631223: // CIC_X101
-                    return 0x3F;
-                case 0x000000D6497E414B: // CIC_X103
-                    return 0x78;
-                case 0x0000011A49F60E96: // CIC_X105
-                    return 0x91;
-                case 0x000000D6D5BE5580: // CIC_X106
-                    return 0x85;
-                case 0x000001053BC19870: // CIC_5167
-                case 0x000000D2E53EF008: // CIC_8303
-                case 0x000000D2E53EF39F: // CIC_DVDD
-                    return 0xDD;
-                case 0x000000D2E53E5DDA: // CIC_USDD
-                    return 0xDE;
+                    Common.Logger.PrintWarningLine("Unknown CIC, defaulting to seed CIC-6101.");
+                    return CIC_SEED_NUS_6101;
+
+                case CRC_NUS_6101:
+                case CRC_NUS_7102:
+                case CRC_iQue_1:
+                case CRC_iQue_2:
+                case CRC_iQue_3:
+                    return CIC_SEED_NUS_6101;
+
+                case CRC_NUS_6102:
+                    return CIC_SEED_NUS_6102;
+
+                case CRC_NUS_6103:
+                    return CIC_SEED_NUS_6103;
+
+                case CRC_NUS_6105:
+                    return CIC_SEED_NUS_6105;
+
+                case CRC_NUS_6106:
+                    return CIC_SEED_NUS_6106;
+
+                case CRC_NUS_8303:
+                    return CIC_SEED_NUS_8303;
             }
         }
 
         public static void InterpretOpcode(uint Opcode)
         {
             if (Registers.R4300.Reg[0] != 0) Registers.R4300.Reg[0] = 0;
+
+            if (Registers.COP0.Reg[Registers.COP0.COUNT_REG] >= 0xFFFFFFFF)
+            {
+                Registers.COP0.Reg[Registers.COP0.COUNT_REG] = 0x0;
+                Count = 0x0;
+            }
 
             OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode);
             OpcodeTable.InstInfo   Info = OpcodeTable.GetOpcodeInfo(Opcode);
@@ -58,7 +126,15 @@ namespace Ryu64.MIPS
             }
 
             Info.Interpret(Desc);
-            if (Common.Settings.MEASURE_SPEED) Common.Measure.InstructionCount += 1;
+            CycleCounter += Info.Cycles;
+            Count        += Info.Cycles;
+            Registers.COP0.Reg[Registers.COP0.COUNT_REG] = Count >> 1;
+
+            if (Common.Settings.MEASURE_SPEED)
+            {
+                Common.Measure.InstructionCount += 1;
+                Common.Measure.CycleCounter = CycleCounter;
+            }
         }
 
         public static void PowerOnR4300(ulong PC)
@@ -78,8 +154,8 @@ namespace Ryu64.MIPS
             else
             {
                 uint RomType   = 0; // 0 = Cart, 1 = DD
-                uint ResetType = 0; // 0 = Cold Reset, 1 = NMI
-                uint S7        = 0; // Unknown
+                uint ResetType = 0; // 0 = Cold Reset, 1 = NMI, 2 = Reset to boot disk
+                uint osVersion = 0; // 00 = 1.0, 15 = 2.5, etc.
                 uint TVType    = 1; // 0 = PAL, 1 = NTSC, 2 = MPAL
 
                 Registers.R4300.Reg[1]  = 0x0000000000000001;
@@ -100,13 +176,15 @@ namespace Ryu64.MIPS
                 Registers.R4300.Reg[20] = TVType;
                 Registers.R4300.Reg[21] = ResetType;
                 Registers.R4300.Reg[22] = GetCICSeed();
-                Registers.R4300.Reg[23] = S7;
+                Registers.R4300.Reg[23] = osVersion;
                 Registers.R4300.Reg[25] = 0xFFFFFFFF9DEBB54F;
                 Registers.R4300.Reg[29] = 0xFFFFFFFFA4001FF0;
                 Registers.R4300.Reg[31] = 0xFFFFFFFFA4001550;
                 Registers.R4300.HI      = 0x000000003FC18657;
                 Registers.R4300.LO      = 0x000000003103E121;
                 Registers.R4300.PC      = 0xA4000040;
+
+                Common.Logger.PrintInfoLine($"CIC Seed: 0x{Registers.R4300.Reg[22]:x16}");
 
                 for (uint i = 0xB0000000, j = 0xA4000000; j < 0xA4000000 + 0x1000; ++i, ++j)
                     memory.WriteUInt8(j, memory.ReadUInt8(i)); // Load the Boot Code into the correct memory address

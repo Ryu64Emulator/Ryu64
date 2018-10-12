@@ -12,11 +12,11 @@ namespace Ryu64.MIPS
             {
                 // Special type of SYSCALL used for the Fraser CPU Tests
                 char TestChar = (char)(Desc.op2 + 64);
-                string TestResult = $"Test Result - Set:{Desc.op3} Test:{Desc.op4} Result:{(char)(Desc.op2 + 64)}";
+                string TestResult = $"Test Result - Set:{Desc.op3} Test:{Desc.op4} Result:{TestChar}";
 
-                if ((char)(Desc.op2 + 64) == 'F')
+                if (TestChar == 'F')
                     Common.Logger.PrintErrorLine(TestResult);
-                else if ((char)(Desc.op2 + 64) == 'P')
+                else if (TestChar == 'P')
                     Common.Logger.PrintSuccessLine(TestResult);
                 else
                     Common.Logger.PrintInfoLine(TestResult);
