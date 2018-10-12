@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Ryu64.Formats
+﻿namespace Ryu64.Formats
 {
     public class CartFormat
     {
