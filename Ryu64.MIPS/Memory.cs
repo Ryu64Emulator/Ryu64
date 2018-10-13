@@ -21,8 +21,12 @@ namespace Ryu64.MIPS
         public readonly byte[] DPC_STATUS_REG_R = new byte[4];
         public readonly byte[] DPC_STATUS_REG_W = new byte[4];
 
-        public readonly byte[] MI_VERSION_REG_RW = new byte[4];
-        public readonly byte[] MI_INTR_REG_R     = new byte[4];
+        public readonly byte[] MI_INIT_MODE_REG_R = new byte[4];
+        public readonly byte[] MI_INIT_MODE_REG_W = new byte[4];
+        public readonly byte[] MI_VERSION_REG_RW  = new byte[4];
+        public readonly byte[] MI_INTR_REG_R      = new byte[4];
+        public readonly byte[] MI_INTR_MASK_REG_R = new byte[4];
+        public readonly byte[] MI_INTR_MASK_REG_W = new byte[4];
 
         public readonly byte[] VI_INTR_REG_RW    = new byte[4];
         public readonly byte[] VI_H_START_REG_RW = new byte[4];
@@ -31,6 +35,8 @@ namespace Ryu64.MIPS
 
         public readonly byte[] AI_DRAM_ADDR_REG_W = new byte[4];
         public readonly byte[] AI_LEN_REG_RW      = new byte[4];
+        public readonly byte[] AI_STATUS_REG_R    = new byte[4];
+        public readonly byte[] AI_STATUS_REG_W    = new byte[4];
 
         public readonly byte[] PI_DRAM_ADDR_REG_RW    = new byte[4];
         public readonly byte[] PI_CART_ADDR_REG_RW    = new byte[4];
@@ -49,13 +55,6 @@ namespace Ryu64.MIPS
 
         public readonly byte[] RDRAM     = new byte[8388608];
         public readonly byte[] RDRAMReg  = new byte[1048575];
-        public readonly byte[] DPCMDReg  = new byte[1048575];
-        public readonly byte[] DPSPANREG = new byte[1048575];
-        public readonly byte[] MIREG     = new byte[1048575];
-        public readonly byte[] VIREG     = new byte[1048575];
-        public readonly byte[] AIREG     = new byte[1048575];
-        public readonly byte[] RIREG     = new byte[1048575];
-        public readonly byte[] SIREG     = new byte[1048575];
         public readonly byte[] PIFROM    = new byte[1984];
         public readonly byte[] PIFRAM    = new byte[64];
 
@@ -80,8 +79,10 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x0410000C, 0x0410000F, DPC_STATUS_REG_R, DPC_STATUS_REG_W, "DPC_STATUS_REG"));
 
             // MI Registers
-            MemoryMapList.Add(new MemEntry(0x04300004, 0x04300007, MI_VERSION_REG_RW, MI_VERSION_REG_RW, "MI_VERSION_REG"));
-            MemoryMapList.Add(new MemEntry(0x04300008, 0x0430000B, MI_INTR_REG_R,     null,              "MI_INTR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04300000, 0x04300003, MI_INIT_MODE_REG_R, MI_INIT_MODE_REG_W, "MI_INIT_MODE_REG"));
+            MemoryMapList.Add(new MemEntry(0x04300004, 0x04300007, MI_VERSION_REG_RW,  MI_VERSION_REG_RW,  "MI_VERSION_REG"));
+            MemoryMapList.Add(new MemEntry(0x04300008, 0x0430000B, MI_INTR_REG_R,      null,               "MI_INTR_REG"));
+            MemoryMapList.Add(new MemEntry(0x0430000C, 0x0430000F, MI_INTR_MASK_REG_R, MI_INTR_MASK_REG_W, "MI_INTR_MASK_REG"));
 
             // VI Registers
             MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW, VI_INTR_REG_RW,       "VI_INTR_REG"));
@@ -89,15 +90,16 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_R, VI_CURRENT_REG_W,   "VI_CURRENT_REG"));
 
             // AI Registers
-            MemoryMapList.Add(new MemEntry(0x04500000, 0x04500003, null, AI_DRAM_ADDR_REG_W,     "AI_DRAM_ADDR_REG"));
-            MemoryMapList.Add(new MemEntry(0x04500004, 0x04500007, AI_LEN_REG_RW, AI_LEN_REG_RW, "AI_LEN_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500000, 0x04500003, null, AI_DRAM_ADDR_REG_W,         "AI_DRAM_ADDR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500004, 0x04500007, AI_LEN_REG_RW, AI_LEN_REG_RW,     "AI_LEN_REG"));
+            MemoryMapList.Add(new MemEntry(0x0450000C, 0x0450000F, AI_STATUS_REG_R, AI_STATUS_REG_W, "AI_STATUS_REG"));
 
             // PI Registers
             MemoryMapList.Add(new MemEntry(0x04600000, 0x04600003, PI_DRAM_ADDR_REG_RW, PI_DRAM_ADDR_REG_RW, "PI_DRAM_ADDR_REG"));
             MemoryMapList.Add(new MemEntry(0x04600004, 0x04600007, PI_CART_ADDR_REG_RW, PI_CART_ADDR_REG_RW, "PI_CART_ADDR_REG"));
             MemoryMapList.Add(new MemEntry(0x0460000C, 0x0460000F, PI_WR_LEN_REG_RW, PI_WR_LEN_REG_RW,       "PI_WR_LEN_REG", 
                 null, PI_WR_LEN_WRITE_EVENT));
-            MemoryMapList.Add(new MemEntry(0x04600010, 0x04600013, PI_STATUS_REG_R, PI_STATUS_REG_W,         "PI_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04600010, 0x04600013, PI_STATUS_REG_R, PI_STATUS_REG_W,               "PI_STATUS_REG"));
             MemoryMapList.Add(new MemEntry(0x04600014, 0x04600017, PI_BSD_DOM1_LAT_REG_RW, PI_BSD_DOM1_LAT_REG_RW, "PI_BSD_DOM1_LAT_REG"));
             MemoryMapList.Add(new MemEntry(0x04600018, 0x0460001B, PI_BSD_DOM1_PWD_REG_RW, PI_BSD_DOM1_PWD_REG_RW, "PI_BSD_DOM1_PWD_REG"));
             MemoryMapList.Add(new MemEntry(0x0460001C, 0x0460001F, PI_BSD_DOM1_PGS_REG_RW, PI_BSD_DOM1_PGS_REG_RW, "PI_BSD_DOM1_PGS_REG"));
@@ -117,6 +119,7 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x1FC007C0, 0x1FC007FF, PIFRAM, PIFRAM, "PIF Ram"));
 
             MemoryMap = MemoryMapList.ToArray();
+            MemoryMapList.Clear();
 
             // Setup Environment
 
@@ -205,18 +208,8 @@ namespace Ryu64.MIPS
 
             if (!FoundEntry)
             {
-                uint Opcode = ReadUInt32(Registers.R4300.PC);
-
-                OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode);
-                OpcodeTable.InstInfo Info = OpcodeTable.GetOpcodeInfo(Opcode);
-
-                string ASM = string.Format(
-                    Info.FormattedASM,
-                    Desc.op1, Desc.op2, Desc.op3, Desc.op4,
-                    Desc.Imm, Desc.Target);
-
                 throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory." +
-                    $"  PC: 0x{Registers.R4300.PC:x8} ASM: {ASM}");
+                    $"  PC: 0x{Registers.R4300.PC:x8}");
             }
 
             return Result;

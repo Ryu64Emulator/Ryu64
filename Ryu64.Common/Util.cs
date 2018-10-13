@@ -14,5 +14,15 @@ namespace Ryu64.Common
 
             if (Settings.LOG_MEM_USAGE) Logger.PrintSuccessLine($"Allocated: {GC.GetTotalMemory(false) / 1024:#,#} kb");
         }
+
+        public static unsafe ulong DoubleToUInt64(double value)
+        {
+            return *(ulong*)&value;
+        }
+
+        public static unsafe double UInt64ToDouble(ulong value)
+        {
+            return *(double*)&value;
+        }
     }
 }

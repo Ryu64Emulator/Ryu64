@@ -57,5 +57,23 @@ namespace Ryu64.Common
             public ProgramBreakPointException(string format, Exception innerException, params object[] args)
                 : base(string.Format(format, args), innerException) { }
         }
+
+        public class InvalidOperationException : Exception
+        {
+            public InvalidOperationException()
+                : base() { }
+
+            public InvalidOperationException(string message)
+                : base(message) { }
+
+            public InvalidOperationException(string format, params object[] args)
+                : base(string.Format(format, args)) { }
+
+            public InvalidOperationException(string message, Exception innerException)
+                : base(message, innerException) { }
+
+            public InvalidOperationException(string format, Exception innerException, params object[] args)
+                : base(string.Format(format, args), innerException) { }
+        }
     }
 }
