@@ -173,7 +173,7 @@ namespace Ryu64.MIPS
                 Registers.R4300.Reg[19] = RomType;
                 Registers.R4300.Reg[20] = TVType;
                 Registers.R4300.Reg[21] = ResetType;
-                Registers.R4300.Reg[22] = GetCICSeed();
+                Registers.R4300.Reg[22] = GetCICSeed() & 0xFF;
                 Registers.R4300.Reg[23] = osVersion;
                 Registers.R4300.Reg[25] = 0xFFFFFFFF9DEBB54F;
                 Registers.R4300.Reg[29] = 0xFFFFFFFFA4001FF0;

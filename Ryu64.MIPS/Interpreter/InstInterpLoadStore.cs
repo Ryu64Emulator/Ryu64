@@ -4,7 +4,7 @@
     {
         public static void LB(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (ulong)R4300.memory.ReadInt8((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
+            Registers.R4300.Reg[Desc.op2] = (byte)R4300.memory.ReadInt8((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
             Registers.R4300.PC += 4;
         }
 
@@ -36,7 +36,7 @@
 
         public static void LH(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (ulong)R4300.memory.ReadInt16((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
+            Registers.R4300.Reg[Desc.op2] = (ushort)R4300.memory.ReadInt16((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
             Registers.R4300.PC += 4;
         }
 
@@ -48,21 +48,21 @@
 
         public static void LW(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (ulong)R4300.memory.ReadInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
+            Registers.R4300.Reg[Desc.op2] = (uint)R4300.memory.ReadInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
             Registers.R4300.PC += 4;
         }
 
         public static void LWL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op2] &= 0xFFFFFFFF0000FFFF;
-            Registers.R4300.Reg[Desc.op2] |= (ulong)R4300.memory.ReadInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm)) << 16;
+            Registers.R4300.Reg[Desc.op2] |= (uint)R4300.memory.ReadInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm)) << 16;
             Registers.R4300.PC += 4;
         }
 
         public static void LWR(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op2] &= 0xFFFFFFFFFFFF0000;
-            Registers.R4300.Reg[Desc.op2] |= (ulong)R4300.memory.ReadInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm)) >> 16;
+            Registers.R4300.Reg[Desc.op2] |= (uint)R4300.memory.ReadInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm)) >> 16;
             Registers.R4300.PC += 4;
         }
 

@@ -7,7 +7,7 @@
             Registers.R4300.PC += 4;
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             if ((long)Registers.R4300.Reg[Desc.op1] == (long)Registers.R4300.Reg[Desc.op2])
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
         }
 
         public static void BEQL(OpcodeTable.OpcodeDesc Desc)
@@ -16,7 +16,7 @@
             if ((long)Registers.R4300.Reg[Desc.op1] == (long)Registers.R4300.Reg[Desc.op2])
             {
                 R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
             }
             else Registers.R4300.PC += 4;
         }
@@ -26,7 +26,7 @@
             Registers.R4300.PC += 4;
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             if ((long)Registers.R4300.Reg[Desc.op1] >= 0)
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
         }
 
         public static void BGEZAL(OpcodeTable.OpcodeDesc Desc)
@@ -35,7 +35,7 @@
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             Registers.R4300.Reg[31] = Registers.R4300.PC;
             if ((long)Registers.R4300.Reg[Desc.op1] >= 0)
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
         }
 
         public static void BLEZL(OpcodeTable.OpcodeDesc Desc)
@@ -44,7 +44,7 @@
             if ((long)Registers.R4300.Reg[Desc.op1] <= 0)
             {
                 R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
             }
             else Registers.R4300.PC += 4;
         }
@@ -54,7 +54,7 @@
             Registers.R4300.PC += 4;
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             if ((long)Registers.R4300.Reg[Desc.op1] <= 0)
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
         }
 
         public static void BLTZAL(OpcodeTable.OpcodeDesc Desc)
@@ -63,7 +63,7 @@
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             Registers.R4300.Reg[31] = Registers.R4300.PC;
             if ((long)Registers.R4300.Reg[Desc.op1] <= 0)
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
         }
 
         public static void BNE(OpcodeTable.OpcodeDesc Desc)
@@ -71,7 +71,7 @@
             Registers.R4300.PC += 4;
             R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
             if ((long)Registers.R4300.Reg[Desc.op1] != (long)Registers.R4300.Reg[Desc.op2])
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
         }
 
         public static void BNEL(OpcodeTable.OpcodeDesc Desc)
@@ -80,7 +80,7 @@
             if ((long)Registers.R4300.Reg[Desc.op1] != (long)Registers.R4300.Reg[Desc.op2])
             {
                 R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
-                Registers.R4300.PC += (uint)((short)(Desc.Imm - 1) << 2);
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
             }
             else Registers.R4300.PC += 4;
         }
