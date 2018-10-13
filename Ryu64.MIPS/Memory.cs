@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Ryu64.MIPS
 {
     public class Memory
     {
+        private delegate void MemoryEvent();
+
         public readonly byte[] SP_DMEM_RW         = new byte[0x1000];
         public readonly byte[] SP_IMEM_RW         = new byte[0x1000];
         public readonly byte[] SP_STATUS_REG_R    = new byte[4];
@@ -93,7 +96,8 @@ namespace Ryu64.MIPS
             // PI Registers
             MemoryMapList.Add(new MemEntry(0x04600000, 0x04600003, PI_DRAM_ADDR_REG_RW, PI_DRAM_ADDR_REG_RW, "PI_DRAM_ADDR_REG"));
             MemoryMapList.Add(new MemEntry(0x04600004, 0x04600007, PI_CART_ADDR_REG_RW, PI_CART_ADDR_REG_RW, "PI_CART_ADDR_REG"));
-            MemoryMapList.Add(new MemEntry(0x0460000C, 0x0460000F, PI_WR_LEN_REG_RW, PI_WR_LEN_REG_RW,       "PI_WR_LEN_REG"));
+            MemoryMapList.Add(new MemEntry(0x0460000C, 0x0460000F, PI_WR_LEN_REG_RW, PI_WR_LEN_REG_RW,       "PI_WR_LEN_REG", 
+                null, PI_WR_LEN_WRITE_EVENT));
             MemoryMapList.Add(new MemEntry(0x04600010, 0x04600013, PI_STATUS_REG_R, PI_STATUS_REG_W,         "PI_STATUS_REG"));
             MemoryMapList.Add(new MemEntry(0x04600014, 0x04600017, PI_BSD_DOM1_LAT_REG_RW, PI_BSD_DOM1_LAT_REG_RW, "PI_BSD_DOM1_LAT_REG"));
             MemoryMapList.Add(new MemEntry(0x04600018, 0x0460001B, PI_BSD_DOM1_PWD_REG_RW, PI_BSD_DOM1_PWD_REG_RW, "PI_BSD_DOM1_PWD_REG"));
@@ -149,6 +153,19 @@ namespace Ryu64.MIPS
             WriteUInt32(0x4000101C, 0x3C0BB000);
         }
 
+        public void PI_WR_LEN_WRITE_EVENT()
+        {
+            uint WriteLength = ReadUInt32(0x0460000C); // PI_WR_LEN_REG
+            uint CartAddr    = ReadUInt32(0x04600004); // PI_CART_ADDR_REG
+            uint DramAddr    = ReadUInt32(0x04600000); // PI_DRAM_ADDR_REG
+
+            PI_STATUS_REG_R[3] = 0b0001; // Set to DMA Busy, clear IO Busy and Error if it was set before
+
+            SafeMemoryCopy(DramAddr, CartAddr, (int)WriteLength + 1);
+
+            PI_STATUS_REG_R[3] = 0b0000; // Clear all flags
+        }
+
         struct MemEntry
         {
             public uint StartAddress;
@@ -157,13 +174,18 @@ namespace Ryu64.MIPS
             public byte[] WriteArray;
             public string Name;
 
-            public MemEntry(uint StartAddress, uint EndAddress, byte[] ReadArray, byte[] WriteArray, string Name)
+            public MemoryEvent ReadEvent;
+            public MemoryEvent WriteEvent;
+
+            public MemEntry(uint StartAddress, uint EndAddress, byte[] ReadArray, byte[] WriteArray, string Name, MemoryEvent ReadEvent = null, MemoryEvent WriteEvent = null)
             {
                 this.StartAddress = StartAddress;
                 this.EndAddress   = EndAddress;
                 this.ReadArray    = ReadArray;
                 this.WriteArray   = WriteArray;
                 this.Name         = Name;
+                this.ReadEvent    = ReadEvent;
+                this.WriteEvent   = WriteEvent;
             }
         }
 
@@ -194,7 +216,7 @@ namespace Ryu64.MIPS
                     Desc.op1, Desc.op2, Desc.op3, Desc.op4,
                     Desc.Imm, Desc.Target);
 
-                    throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory." +
+                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory." +
                     $"  PC: 0x{Registers.R4300.PC:x8} ASM: {ASM}");
             }
 
@@ -238,6 +260,8 @@ namespace Ryu64.MIPS
 
                 Buffer.BlockCopy(Entry.ReadArray, (int)(nonCachedIndex - Entry.StartAddress), result, 0, size);
 
+                Entry.ReadEvent?.Invoke();
+
                 return result;
             }
             set
@@ -249,6 +273,8 @@ namespace Ryu64.MIPS
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not writable.");
 
                 Buffer.BlockCopy(value, 0, Entry.WriteArray, (int)(nonCachedIndex - Entry.StartAddress), size);
+
+                Entry.WriteEvent?.Invoke();
             }
         }
 
@@ -259,9 +285,10 @@ namespace Ryu64.MIPS
 
         public void SafeMemoryCopy(uint Dest, uint Source, int Size)
         {
-            if (GetEntry(Source & 0x1FFFFFFF).StartAddress != GetEntry(Dest & 0x1FFFFFFF).StartAddress)
+            if (GetEntry(Source & 0x1FFFFFFF).StartAddress != GetEntry((Source + (uint)Size) & 0x1FFFFFFF).StartAddress 
+                || GetEntry(Dest & 0x1FFFFFFF).StartAddress != GetEntry((Dest + (uint)Size) & 0x1FFFFFFF).StartAddress)
                 throw new NotImplementedException("Copying over multiple Memory Regions isn't implemented.");
-            FastMemoryCopy(Source, Dest, Size);
+            FastMemoryCopy(Dest, Source, Size);
         }
 
         public byte ReadUInt8(uint index)

@@ -12,37 +12,14 @@ namespace Ryu64.Formats
 
         public override void Parse()
         {
-            FileStream Stream = File.OpenRead(Path);
-            header = new Header();
+            AllData = File.ReadAllBytes(Path);
 
-            using (BinaryReaderBE Reader = new BinaryReaderBE(Stream))
-            {
-                bool IsCorrectEndian = Reader.ReadUInt32() == 0x80371240;
-                
-                if (!IsCorrectEndian)
-                {
-                    Reader.Dispose();
-                    Stream.Dispose();
-                    return;
-                }
+            bool IsCorrectEndian = BitConverter.ToUInt32(AllData, 0) == 0x40123780;
 
-                Stream.Position = 0x08;
-                header.ProgramCounter = BitConverter.ToUInt32(Reader.ReadBytes(8), 0);
+            if (!IsCorrectEndian)
+                return;
 
-                Stream.Position = 0x20;
-                header.Name = System.Text.Encoding.Default.GetString(Reader.ReadBytes(20));
-
-                Stream.Position = 0x0;
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    Stream.CopyTo(ms);
-                    AllData = ms.ToArray();
-                }
-
-                HasBeenParsed = true;
-            }
-
-            Stream.Dispose();
+            HasBeenParsed = true;
         }
     }
 }

@@ -135,7 +135,7 @@ namespace Ryu64.MIPS
             }
         }
 
-        public static void PowerOnR4300(ulong PC)
+        public static void PowerOnR4300()
         {
             for (int i = 0; i < Registers.R4300.Reg.Length; ++i)
                 Registers.R4300.Reg[i] = 0; // Clear Registers
@@ -181,8 +181,6 @@ namespace Ryu64.MIPS
                 Registers.R4300.HI      = 0x000000003FC18657;
                 Registers.R4300.LO      = 0x000000003103E121;
                 Registers.R4300.PC      = 0xA4000040;
-
-                Common.Logger.PrintInfoLine($"CIC Seed: 0x{Registers.R4300.Reg[22]:x16}");
 
                 for (uint i = 0xB0000000, j = 0xA4000000; j < 0xA4000000 + 0x1000; ++i, ++j)
                     memory.WriteUInt8(j, memory.ReadUInt8(i)); // Load the Boot Code into the correct memory address
