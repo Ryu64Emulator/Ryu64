@@ -24,5 +24,15 @@ namespace Ryu64.Common
         {
             return *(double*)&value;
         }
+
+        public static unsafe uint FloatToUInt32(float value)
+        {
+            return *(uint*)&value;
+        }
+
+        public static unsafe float UInt32ToFloat(uint value)
+        {
+            return *(float*)&value;
+        }
     }
 }

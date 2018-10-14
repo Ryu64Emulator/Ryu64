@@ -38,6 +38,14 @@
                 Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
         }
 
+        public static void BLEZ(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.PC += 4;
+            R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
+            if ((long)Registers.R4300.Reg[Desc.op1] <= 0)
+                Registers.R4300.PC += (uint)((short)((Desc.Imm - 1) << 2));
+        }
+
         public static void BLEZL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.PC += 4;

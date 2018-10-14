@@ -125,6 +125,7 @@ namespace Ryu64.MIPS
             SetOpcode("010100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BEQL,   "BEQL R[{0}], R[{1}], 0x{4:x4}");
             SetOpcode("000001XXXXX00001XXXXXXXXXXXXXXXX", InstInterp.BGEZ,   "BGEZ R[{0}], 0x{4:x4}");
             SetOpcode("000001XXXXX10001XXXXXXXXXXXXXXXX", InstInterp.BGEZAL, "BGEZAL R[{0}], 0x{4:x4}");
+            SetOpcode("000110XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLEZ,   "BLEZ R[{0}], 0x{4:x4}");
             SetOpcode("010110XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLEZL,  "BLEZL R[{0}], 0x{4:x4}");
             SetOpcode("000001XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLTZ,   "BLTZ R[{0}], 0x{4:x4}");
             SetOpcode("000001XXXXX10000XXXXXXXXXXXXXXXX", InstInterp.BLTZAL, "BLTZAL R[{0}], 0x{4:x4}");
@@ -137,6 +138,10 @@ namespace Ryu64.MIPS
             SetOpcode("01000000000XXXXXXXXXXXXXXXXXXXXX", InstInterp.MFC0,  "MFC0 R[{1}], CP0R[{2}]");
             SetOpcode("01000000100XXXXXXXXXXXXXXXXXXXXX", InstInterp.MTC0,  "MTC0 R[{1}], CP0R[{2}]");
             SetOpcode("101111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.CACHE, "CACHE 0x{1:x2}, 0x{4:x4}(R[{0}])");
+
+            // COP1 Instructions
+            SetOpcode("01000100010XXXXXXXXXX00000000000", InstInterp.CFC1, "CFC1 R[{1}], CP1R[{2}]");
+            SetOpcode("01000100110XXXXXXXXXX00000000000", InstInterp.CTC1, "CTC1 R[{1}], CP1R[{2}]");
 
             // SPECIAL Instructions
             SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001100", InstInterp.SYSCALL, "SYSCALL");
