@@ -144,8 +144,7 @@ namespace Ryu64.MIPS
             {
                 byte[] PIF = File.ReadAllBytes(Common.Settings.PIF_ROM);
 
-                for (uint i = 0x0, j = 0x1FC00000; j < 0x1FC007BF; ++i, ++j)
-                    memory.WriteUInt8(j, PIF[i]); // Load the PIF rom into memory
+                memory.FastMemoryWrite(0x1FC00000, PIF); // Load the PIF rom into memory
 
                 Registers.R4300.PC = 0xBFC00000;
             }
@@ -182,8 +181,7 @@ namespace Ryu64.MIPS
                 Registers.R4300.LO      = 0x000000003103E121;
                 Registers.R4300.PC      = 0xA4000040;
 
-                for (uint i = 0xB0000000, j = 0xA4000000; j < 0xA4000000 + 0x1000; ++i, ++j)
-                    memory.WriteUInt8(j, memory.ReadUInt8(i)); // Load the Boot Code into the correct memory address
+                memory.FastMemoryCopy(0xA4000000, 0xB0000000, 0xFFF); // Load the Boot Code into the correct memory address
             }
 
             COP0.PowerOnCOP0();

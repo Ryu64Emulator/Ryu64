@@ -28,10 +28,20 @@ namespace Ryu64.MIPS
         public readonly byte[] MI_INTR_MASK_REG_R = new byte[4];
         public readonly byte[] MI_INTR_MASK_REG_W = new byte[4];
 
+        public readonly byte[] VI_STATUS_REG_RW  = new byte[4];
+        public readonly byte[] VI_ORIGIN_REG_RW  = new byte[4];
+        public readonly byte[] VI_WIDTH_REG_RW   = new byte[4];
         public readonly byte[] VI_INTR_REG_RW    = new byte[4];
+        public readonly byte[] VI_CURRENT_REG_RW = new byte[4];
+        public readonly byte[] VI_BURST_REG_RW   = new byte[4];
+        public readonly byte[] VI_V_SYNC_REG_RW  = new byte[4];
+        public readonly byte[] VI_H_SYNC_REG_RW  = new byte[4];
+        public readonly byte[] VI_LEAP_REG_RW    = new byte[4];
         public readonly byte[] VI_H_START_REG_RW = new byte[4];
-        public readonly byte[] VI_CURRENT_REG_R  = new byte[4];
-        public readonly byte[] VI_CURRENT_REG_W  = new byte[4];
+        public readonly byte[] VI_V_START_REG_RW = new byte[4];
+        public readonly byte[] VI_V_BURST_REG_RW = new byte[4];
+        public readonly byte[] VI_X_SCALE_REG_RW = new byte[4];
+        public readonly byte[] VI_Y_SCALE_REG_RW = new byte[4];
 
         public readonly byte[] AI_DRAM_ADDR_REG_W = new byte[4];
         public readonly byte[] AI_LEN_REG_RW      = new byte[4];
@@ -68,12 +78,12 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x03F00000, 0x03FFFFFF, RDRAMReg, RDRAMReg, "RDRAM Registers"));
 
             // SP Registers
-            MemoryMapList.Add(new MemEntry(0x04000000, 0x04000FFF, SP_DMEM_RW, SP_DMEM_RW,                 "SP_DMEM"));
-            MemoryMapList.Add(new MemEntry(0x04001000, 0x04001FFF, SP_IMEM_RW, SP_IMEM_RW,                 "SP_IMEM"));
-            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R, SP_STATUS_REG_W,       "SP_STATUS_REG"));
-            MemoryMapList.Add(new MemEntry(0x04040018, 0x0404001B, SP_DMA_BUSY_REG_R, SP_DMA_BUSY_REG_W,   "SP_DMA_BUSY_REG"));
-            MemoryMapList.Add(new MemEntry(0x0404001C, 0x0404001F, SP_SEMAPHORE_REG_R, SP_SEMAPHORE_REG_W, "SP_SEMAPHORE_REG"));
-            MemoryMapList.Add(new MemEntry(0x04080000, 0x04080003, SP_PC_REG_RW, SP_PC_REG_RW,             "SP_PC_REG"));
+            MemoryMapList.Add(new MemEntry(0x04000000, 0x04000FFF, SP_DMEM_RW,         SP_DMEM_RW,          "SP_DMEM"));
+            MemoryMapList.Add(new MemEntry(0x04001000, 0x04001FFF, SP_IMEM_RW,         SP_IMEM_RW,          "SP_IMEM"));
+            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R,    SP_STATUS_REG_W,     "SP_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04040018, 0x0404001B, SP_DMA_BUSY_REG_R,  SP_DMA_BUSY_REG_W,   "SP_DMA_BUSY_REG"));
+            MemoryMapList.Add(new MemEntry(0x0404001C, 0x0404001F, SP_SEMAPHORE_REG_R, SP_SEMAPHORE_REG_W,  "SP_SEMAPHORE_REG"));
+            MemoryMapList.Add(new MemEntry(0x04080000, 0x04080003, SP_PC_REG_RW,       SP_PC_REG_RW,        "SP_PC_REG"));
 
             // DPC Registers
             MemoryMapList.Add(new MemEntry(0x0410000C, 0x0410000F, DPC_STATUS_REG_R, DPC_STATUS_REG_W, "DPC_STATUS_REG"));
@@ -85,9 +95,20 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x0430000C, 0x0430000F, MI_INTR_MASK_REG_R, MI_INTR_MASK_REG_W, "MI_INTR_MASK_REG"));
 
             // VI Registers
-            MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW, VI_INTR_REG_RW,       "VI_INTR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400000, 0x04400003, VI_STATUS_REG_RW,  VI_STATUS_REG_RW,  "VI_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400004, 0x04400007, VI_ORIGIN_REG_RW,  VI_ORIGIN_REG_RW,  "VI_ORIGIN_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400008, 0x0440000B, VI_WIDTH_REG_RW,   VI_WIDTH_REG_RW,   "VI_WIDTH_REG"));
+            MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW,    VI_INTR_REG_RW,    "VI_INTR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_RW, VI_CURRENT_REG_RW, "VI_CURRENT_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400014, 0x04400017, VI_BURST_REG_RW,   VI_BURST_REG_RW,   "VI_BURST_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400018, 0x0440001B, VI_V_SYNC_REG_RW,  VI_V_SYNC_REG_RW,  "VI_V_SYNC_REG"));
+            MemoryMapList.Add(new MemEntry(0x0440001C, 0x0440001F, VI_H_SYNC_REG_RW,  VI_H_SYNC_REG_RW,  "VI_H_SYNC_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400020, 0x04400023, VI_LEAP_REG_RW,    VI_LEAP_REG_RW,    "VI_LEAP_REG"));
             MemoryMapList.Add(new MemEntry(0x04400024, 0x04400027, VI_H_START_REG_RW, VI_H_START_REG_RW, "VI_H_START_REG"));
-            MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_R, VI_CURRENT_REG_W,   "VI_CURRENT_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400028, 0x0440002B, VI_V_START_REG_RW, VI_V_START_REG_RW, "VI_V_START_REG"));
+            MemoryMapList.Add(new MemEntry(0x0440002C, 0x0440002F, VI_V_BURST_REG_RW, VI_V_BURST_REG_RW, "VI_V_BURST_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400030, 0x04400033, VI_X_SCALE_REG_RW, VI_X_SCALE_REG_RW, "VI_X_SCALE_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400034, 0x04400037, VI_Y_SCALE_REG_RW, VI_Y_SCALE_REG_RW, "VI_Y_SCALE_REG"));
 
             // AI Registers
             MemoryMapList.Add(new MemEntry(0x04500000, 0x04500003, null, AI_DRAM_ADDR_REG_W,         "AI_DRAM_ADDR_REG"));
@@ -270,9 +291,26 @@ namespace Ryu64.MIPS
             }
         }
 
+        public void FastMemoryWrite(uint Dest, byte[] ToWrite)
+        {
+            this[Dest, ToWrite.Length] = ToWrite;
+        }
+
+        public byte[] FastMemoryRead(uint Source, int Length)
+        {
+            return this[Source, Length];
+        }
+
+        public void FastMemoryWrite(uint Dest, byte[] ToWrite, int Length)
+        {
+            if (ToWrite.Length < Length)
+                throw new InvalidOperationException("Cannot write to memory an Array that is less than the input size.");
+            this[Dest, Length] = ToWrite;
+        }
+
         public void FastMemoryCopy(uint Dest, uint Source, int Size)
         {
-            this[Dest, Size] = this[Source, Size];
+            FastMemoryWrite(Dest, FastMemoryRead(Source, Size));
         }
 
         public void SafeMemoryCopy(uint Dest, uint Source, int Size)

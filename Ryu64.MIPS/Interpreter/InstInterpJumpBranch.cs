@@ -93,6 +93,13 @@
             else Registers.R4300.PC += 4;
         }
 
+        public static void J(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.PC += 4;
+            R4300.InterpretOpcode(R4300.memory.ReadUInt32(Registers.R4300.PC));
+            Registers.R4300.PC = ((Registers.R4300.PC - 4) & 0xF0000000) | (Desc.Target << 2);
+        }
+
         public static void JAL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.PC += 4;

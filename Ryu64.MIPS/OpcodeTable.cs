@@ -131,6 +131,7 @@ namespace Ryu64.MIPS
             SetOpcode("000001XXXXX10000XXXXXXXXXXXXXXXX", InstInterp.BLTZAL, "BLTZAL R[{0}], 0x{4:x4}");
             SetOpcode("000101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNE,    "BNE R[{0}], R[{1}], 0x{4:x4}");
             SetOpcode("010101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNEL,   "BNEL R[{0}], R[{1}], 0x{4:x4}");
+            SetOpcode("000010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.J,      "J 0x{5:x8}");
             SetOpcode("000011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.JAL,    "JAL 0x{5:x8}");
             SetOpcode("000000XXXXX000000000000000001000", InstInterp.JR,     "JR R[{0}]");
 
@@ -146,6 +147,8 @@ namespace Ryu64.MIPS
             // SPECIAL Instructions
             SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001100", InstInterp.SYSCALL, "SYSCALL");
             SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001101", InstInterp.BREAK,   "BREAK");
+            // According to the manual, the SYNC instruction is executed as a NOP on the VR4300.
+            SetOpcode("00000000000000000000000000001111", InstInterp.NOP,     "SYNC");
 
             // Credit to Ryujinx for the FastLookup code!
             // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/AOpCodeTable.cs
