@@ -133,7 +133,7 @@ namespace Ryu64.Graphics
             uint FramebufferOrigin = MIPS.R4300.memory.ReadUInt32(0x04400004);
 
             byte[] Framebuffer = MIPS.R4300.memory.FastMemoryRead(FramebufferOrigin, (int)(FramebufferWidth * FramebufferHeight) * 
-                ((FramebufferBPP == BPPFormat.RGBA8888 ? 32 : 16) / 8));
+                (FramebufferBPP == BPPFormat.RGBA8888 ? 4 : 2));
 
             IntPtr pFramebuffer;
             unsafe
