@@ -45,8 +45,11 @@ namespace Ryu64.MIPS
 
         public readonly byte[] AI_DRAM_ADDR_REG_W = new byte[4];
         public readonly byte[] AI_LEN_REG_RW      = new byte[4];
+        public readonly byte[] AI_CONTROL_REG_W   = new byte[4];
         public readonly byte[] AI_STATUS_REG_R    = new byte[4];
         public readonly byte[] AI_STATUS_REG_W    = new byte[4];
+        public readonly byte[] AI_DACRATE_REG_W   = new byte[4];
+        public readonly byte[] AI_BITRATE_REG_W   = new byte[4];
 
         public readonly byte[] PI_DRAM_ADDR_REG_RW    = new byte[4];
         public readonly byte[] PI_CART_ADDR_REG_RW    = new byte[4];
@@ -111,9 +114,12 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x04400034, 0x04400037, VI_Y_SCALE_REG_RW, VI_Y_SCALE_REG_RW, "VI_Y_SCALE_REG"));
 
             // AI Registers
-            MemoryMapList.Add(new MemEntry(0x04500000, 0x04500003, null, AI_DRAM_ADDR_REG_W,         "AI_DRAM_ADDR_REG"));
-            MemoryMapList.Add(new MemEntry(0x04500004, 0x04500007, AI_LEN_REG_RW, AI_LEN_REG_RW,     "AI_LEN_REG"));
-            MemoryMapList.Add(new MemEntry(0x0450000C, 0x0450000F, AI_STATUS_REG_R, AI_STATUS_REG_W, "AI_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500000, 0x04500003, null, AI_DRAM_ADDR_REG_W,          "AI_DRAM_ADDR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500004, 0x04500007, AI_LEN_REG_RW,   AI_LEN_REG_RW,    "AI_LEN_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500008, 0x0450000B, null,            AI_CONTROL_REG_W, "AI_CONTROL_REG"));
+            MemoryMapList.Add(new MemEntry(0x0450000C, 0x0450000F, AI_STATUS_REG_R, AI_STATUS_REG_W,  "AI_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500010, 0x04500013, null,            AI_DACRATE_REG_W, "AI_DACRATE_REG"));
+            MemoryMapList.Add(new MemEntry(0x04500014, 0x04500017, null,            AI_BITRATE_REG_W, "AI_BITRATE_REG"));
 
             // PI Registers
             MemoryMapList.Add(new MemEntry(0x04600000, 0x04600003, PI_DRAM_ADDR_REG_RW, PI_DRAM_ADDR_REG_RW, "PI_DRAM_ADDR_REG"));
@@ -182,11 +188,11 @@ namespace Ryu64.MIPS
             uint CartAddr    = ReadUInt32(0x04600004); // PI_CART_ADDR_REG
             uint DramAddr    = ReadUInt32(0x04600000); // PI_DRAM_ADDR_REG
 
-            PI_STATUS_REG_R[3] = 0b0001; // Set to DMA Busy, clear IO Busy and Error if it was set before
+            PI_STATUS_REG_R[3] |= 0b0001; // Set DMA Busy
 
             SafeMemoryCopy(DramAddr, CartAddr, (int)WriteLength + 1);
 
-            PI_STATUS_REG_R[3] = 0b0000; // Clear all flags
+            PI_STATUS_REG_R[3] &= 0b1110; // Clear DMA Busy
         }
 
         struct MemEntry

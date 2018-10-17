@@ -14,7 +14,7 @@ namespace Ryu64.Graphics
         private static uint  CurrentScanline = 0;
         private static int   FramebufferTexture;
 
-        public MainWindow() : base(640, 480, GraphicsMode.Default, BaseTitle, 
+        public MainWindow() : base(960, 720, GraphicsMode.Default, BaseTitle, 
             GameWindowFlags.FixedWindow, 
             DisplayDevice.Default, 
             3, 1,
@@ -56,8 +56,8 @@ namespace Ryu64.Graphics
 
                 FramebufferTexture = GL.GenTexture();
                 GL.BindTexture(TextureTarget.Texture2D, FramebufferTexture);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
@@ -114,7 +114,7 @@ namespace Ryu64.Graphics
 
         private enum BPPFormat
         {
-            RGBA5553,
+            RGBA5551,
             RGBA8888,
             None
         }
@@ -123,7 +123,7 @@ namespace Ryu64.Graphics
         {
             uint VIStatus = MIPS.R4300.memory.ReadUInt32(0x04400000); // VI_STATUS_REG
             uint PixelSize = VIStatus & 0b000000000000000000000011;
-            BPPFormat FramebufferBPP = PixelSize == 2U ? BPPFormat.RGBA5553 : (PixelSize == 3U ? BPPFormat.RGBA8888 : BPPFormat.None);
+            BPPFormat FramebufferBPP = PixelSize == 2U ? BPPFormat.RGBA5551 : (PixelSize == 3U ? BPPFormat.RGBA8888 : BPPFormat.None);
             if (FramebufferBPP == BPPFormat.None) return;
 
             uint FramebufferWidth = MIPS.R4300.memory.ReadUInt32(0x04400008); // VI_H_WIDTH_REG
@@ -133,7 +133,7 @@ namespace Ryu64.Graphics
             uint FramebufferOrigin = MIPS.R4300.memory.ReadUInt32(0x04400004);
 
             byte[] Framebuffer = MIPS.R4300.memory.FastMemoryRead(FramebufferOrigin, (int)(FramebufferWidth * FramebufferHeight) * 
-                ((FramebufferBPP == BPPFormat.RGBA8888 ? 32 : 18) / 8));
+                ((FramebufferBPP == BPPFormat.RGBA8888 ? 32 : 16) / 8));
 
             IntPtr pFramebuffer;
             unsafe
@@ -142,10 +142,19 @@ namespace Ryu64.Graphics
                     pFramebuffer = (IntPtr)p;
             }
 
-            if (FramebufferBPP == BPPFormat.RGBA5553)
+            if (FramebufferBPP == BPPFormat.RGBA5551)
             {
-                // Partially Supported, not really though, it tries to render RGBA5553 as RGBA5551.
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16,
+                int limit = Framebuffer.Length - (Framebuffer.Length % 2);
+                if (limit < 1) throw new Exception("Framebuffer too small to be swapped to Little Endian.");
+
+                for (int i = 0; i < limit - 1; i += 2)
+                {
+                    byte temp = Framebuffer[i];
+                    Framebuffer[i] = Framebuffer[i + 1];
+                    Framebuffer[i + 1] = temp;
+                }
+
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
                     (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedShort5551, pFramebuffer);
             }
             else

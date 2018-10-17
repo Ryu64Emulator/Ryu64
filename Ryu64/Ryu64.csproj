@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ryu64.Audio\Ryu64.Audio.csproj" />
     <ProjectReference Include="..\Ryu64.Formats\Ryu64.Formats.csproj" />
     <ProjectReference Include="..\Ryu64.Graphics\Ryu64.Graphics.csproj" />
   </ItemGroup>

@@ -118,6 +118,7 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXXXXXXX00000000110", InstInterp.SRLV,  "SRLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("001010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTI,  "SLTI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("001011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTIU, "SLTIU R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000101010", InstInterp.SLT,   "SLT R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000101011", InstInterp.SLTU,  "SLTU R[{2}], R[{0}], R[{1}]");
 
             // Branch / Jump Instructions

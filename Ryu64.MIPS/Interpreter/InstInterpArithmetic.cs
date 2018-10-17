@@ -158,6 +158,20 @@
             Registers.R4300.PC += 4;
         }
 
+        public static void SLT(OpcodeTable.OpcodeDesc Desc)
+        {
+            if ((long)Registers.R4300.Reg[Desc.op1] < (long)Registers.R4300.Reg[Desc.op2])
+            {
+                Registers.R4300.Reg[Desc.op3] = 1;
+            }
+            else
+            {
+                Registers.R4300.Reg[Desc.op3] = 0;
+            }
+
+            Registers.R4300.PC += 4;
+        }
+
         public static void SLTU(OpcodeTable.OpcodeDesc Desc)
         {
             if (Registers.R4300.Reg[Desc.op1] < Registers.R4300.Reg[Desc.op2])
