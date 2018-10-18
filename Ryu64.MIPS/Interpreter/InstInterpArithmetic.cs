@@ -38,6 +38,12 @@
             Registers.R4300.PC += 4;
         }
 
+        public static void SUB(OpcodeTable.OpcodeDesc Desc)
+        {
+            // TODO: Correctly check for underflow
+            SUBU(Desc);
+        }
+
         public static void SUBU(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = (uint)((int)Registers.R4300.Reg[Desc.op1] - (int)Registers.R4300.Reg[Desc.op2]);
@@ -58,19 +64,19 @@
 
         public static void LUI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)(Desc.Imm << 16);
+            Registers.R4300.Reg[Desc.op2] = (uint)Desc.Imm << 16;
             Registers.R4300.PC += 4;
         }
 
         public static void MFHI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = Registers.R4300.HI;
+            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.HI;
             Registers.R4300.PC += 4;
         }
 
         public static void MFLO(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = Registers.R4300.LO;
+            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.LO;
             Registers.R4300.PC += 4;
         }
 
@@ -82,19 +88,27 @@
 
         public static void ORI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] | Desc.Imm;
+            Registers.R4300.Reg[Desc.op2] = (uint)(Registers.R4300.Reg[Desc.op1] | Desc.Imm);
             Registers.R4300.PC += 4;
         }
 
         public static void MTLO(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.LO = Registers.R4300.Reg[Desc.op1];
+            Registers.R4300.LO = (uint)Registers.R4300.Reg[Desc.op1];
             Registers.R4300.PC += 4;
         }
 
         public static void MTHI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.HI = Registers.R4300.Reg[Desc.op1];
+            Registers.R4300.HI = (uint)Registers.R4300.Reg[Desc.op1];
+            Registers.R4300.PC += 4;
+        }
+
+        public static void MULT(OpcodeTable.OpcodeDesc Desc)
+        {
+            ulong Res = (ulong)((int)(Registers.R4300.Reg[Desc.op1] & 0xFFFFFFFF) * (int)(Registers.R4300.Reg[Desc.op2] & 0xFFFFFFFF));
+            Registers.R4300.LO = (uint)(Res & 0x00000000FFFFFFFF);
+            Registers.R4300.HI = (uint)(Res >> 32);
             Registers.R4300.PC += 4;
         }
 
@@ -108,13 +122,19 @@
 
         public static void SLL(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (ulong)((uint)Registers.R4300.Reg[Desc.op2] << Desc.op4);
+            Registers.R4300.Reg[Desc.op3] = ((uint)Registers.R4300.Reg[Desc.op2] << Desc.op4);
             Registers.R4300.PC += 4;
         }
 
         public static void SLLV(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = ((uint)Registers.R4300.Reg[Desc.op2] << (byte)(Registers.R4300.Reg[Desc.op1] & 0x0000001F));
+            Registers.R4300.PC += 4;
+        }
+
+        public static void SRA(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = (ulong)((int)Registers.R4300.Reg[Desc.op2] >> Desc.op4);
             Registers.R4300.PC += 4;
         }
 

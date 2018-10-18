@@ -101,6 +101,7 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXXXXXXX00000100001", InstInterp.ADDU,  "ADDU R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100100", InstInterp.AND,   "AND R[{2}], R[{0}], R[{1}]");
             SetOpcode("001100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ANDI,  "ANDI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100010", InstInterp.SUB,   "SUB R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100011", InstInterp.SUBU,  "SUBU R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100110", InstInterp.XOR,   "XOR R[{2}], R[{0}], R[{1}]");
             SetOpcode("001110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.XORI,  "XORI R[{1}], R[{0}], 0x{4:x4}");
@@ -111,9 +112,11 @@ namespace Ryu64.MIPS
             SetOpcode("001101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ORI,   "ORI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXX000000000000000010011", InstInterp.MTLO,  "MTLO R[{0}]");
             SetOpcode("000000XXXXX000000000000000010001", InstInterp.MTHI,  "MTHI R[{0}]");
+            SetOpcode("000000XXXXXXXXXX0000000000011000", InstInterp.MULT,  "MULT R[{0}], R[{1}]", 5);
             SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU, "MULTU R[{0}], R[{1}]", 5);
             SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,   "SLL R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,  "SLLV R[{2}], R[{1}], R[{0}]");
+            SetOpcode("00000000000XXXXXXXXXXXXXXX000011", InstInterp.SRA,   "SRA R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000010", InstInterp.SRL,   "SRL R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000000110", InstInterp.SRLV,  "SRLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("001010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTI,  "SLTI R[{1}], R[{0}], 0x{4:x4}");
@@ -126,6 +129,7 @@ namespace Ryu64.MIPS
             SetOpcode("010100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BEQL,   "BEQL R[{0}], R[{1}], 0x{4:x4}");
             SetOpcode("000001XXXXX00001XXXXXXXXXXXXXXXX", InstInterp.BGEZ,   "BGEZ R[{0}], 0x{4:x4}");
             SetOpcode("000001XXXXX10001XXXXXXXXXXXXXXXX", InstInterp.BGEZAL, "BGEZAL R[{0}], 0x{4:x4}");
+            SetOpcode("000111XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BGTZ,   "BGTZ R[{0}], 0x{4:x4}");
             SetOpcode("000110XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLEZ,   "BLEZ R[{0}], 0x{4:x4}");
             SetOpcode("010110XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLEZL,  "BLEZL R[{0}], 0x{4:x4}");
             SetOpcode("000001XXXXX00000XXXXXXXXXXXXXXXX", InstInterp.BLTZ,   "BLTZ R[{0}], 0x{4:x4}");
