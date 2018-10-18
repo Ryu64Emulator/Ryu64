@@ -50,7 +50,7 @@ namespace Ryu64.Graphics
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            if (Common.Settings.RENDER_DIRECT_FRAMEBUFFER)
+            if (Common.Settings.LLE)
             {
                 GL.Disable(EnableCap.DepthTest);
 
@@ -81,7 +81,7 @@ namespace Ryu64.Graphics
             base.OnRenderFrame(e);
 
             GL.ClearColor(0, 0, 0, 1);
-            if (Common.Settings.RENDER_DIRECT_FRAMEBUFFER)
+            if (Common.Settings.LLE)
             {
                 GL.Clear(ClearBufferMask.ColorBufferBit);
                 RenderFramebufferDirect();
@@ -98,7 +98,7 @@ namespace Ryu64.Graphics
         {
             base.OnClosing(e);
 
-            if (Common.Settings.RENDER_DIRECT_FRAMEBUFFER)
+            if (Common.Settings.LLE)
                 GL.DeleteTexture(FramebufferTexture);
 
             Common.Util.Cleanup(MIPS.Registers.R4300.PC);
@@ -112,37 +112,32 @@ namespace Ryu64.Graphics
             Environment.Exit(0);
         }
 
-        private enum BPPFormat
-        {
-            RGBA5551,
-            RGBA8888,
-            None
-        }
-
-        private void RenderFramebufferDirect()
+        private unsafe void RenderFramebufferDirect()
         {
             uint VIStatus = MIPS.R4300.memory.ReadUInt32(0x04400000); // VI_STATUS_REG
             uint PixelSize = VIStatus & 0b000000000000000000000011;
-            BPPFormat FramebufferBPP = PixelSize == 2U ? BPPFormat.RGBA5551 : (PixelSize == 3U ? BPPFormat.RGBA8888 : BPPFormat.None);
-            if (FramebufferBPP == BPPFormat.None) return;
+            if (PixelSize == 0U) return;
 
             uint FramebufferWidth = MIPS.R4300.memory.ReadUInt32(0x04400008); // VI_H_WIDTH_REG
-            uint FramebufferHeight = FramebufferWidth == 640U ? 480U : (FramebufferWidth == 320U ? 240U : 0U);
-            if (FramebufferHeight == 0) return;
+
+            byte Interlace = (byte)((VIStatus & 0b000000000000000001000000) >> 6);
+            uint VIvStart = MIPS.R4300.memory.ReadUInt32(0x04400028);
+            uint VerticalEndofVideo   =  VIvStart        & 0x000003FF;
+            uint VerticalStartOfVideo = (VIvStart >> 16) & 0x000003FF;
+
+            uint FramebufferHeight = ((VerticalEndofVideo - VerticalStartOfVideo) + 6) >> (~Interlace & 0x01);
 
             uint FramebufferOrigin = MIPS.R4300.memory.ReadUInt32(0x04400004);
 
             byte[] Framebuffer = MIPS.R4300.memory.FastMemoryRead(FramebufferOrigin, (int)(FramebufferWidth * FramebufferHeight) * 
-                (FramebufferBPP == BPPFormat.RGBA8888 ? 4 : 2));
+                (PixelSize == 3U ? 4 : 2));
 
             IntPtr pFramebuffer;
-            unsafe
-            {
-                fixed (byte* p = Framebuffer)
-                    pFramebuffer = (IntPtr)p;
-            }
 
-            if (FramebufferBPP == BPPFormat.RGBA5551)
+            fixed (byte* p = Framebuffer)
+                pFramebuffer = (IntPtr)p;
+
+            if (PixelSize == 2U)
             {
                 int limit = Framebuffer.Length - (Framebuffer.Length % 2);
                 if (limit < 1) throw new Exception("Framebuffer too small to be swapped to Little Endian.");
@@ -157,7 +152,7 @@ namespace Ryu64.Graphics
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
                     (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedShort5551, pFramebuffer);
             }
-            else
+            else if (PixelSize == 3U)
             {
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
                     (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pFramebuffer);

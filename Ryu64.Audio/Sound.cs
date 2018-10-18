@@ -7,6 +7,13 @@ namespace Ryu64.Audio
 {
     public class Sound
     {
+        public struct PCMSample
+        {
+            public int          Source;
+            public int          Buffer;
+            public AudioContext Context;
+        }
+
         private static ALFormat GetSoundFormat(int bitrate, int channels)
         {
             switch (channels)
@@ -17,7 +24,7 @@ namespace Ryu64.Audio
             }
         }
 
-        public static unsafe void PlayPCM(byte[] Data, int bitrate, int channels, int freq, bool LE = true)
+        public static unsafe PCMSample PlayPCM(byte[] Data, int bitrate, int channels, int freq, bool LE = true)
         {
             byte[] BufferData = Data;
             if (!LE)
@@ -33,31 +40,39 @@ namespace Ryu64.Audio
                 }
             }
 
-            using (AudioContext Context = new AudioContext())
+            AudioContext Context = new AudioContext();
+
+            IntPtr pBuffer;
+            fixed (byte* p = BufferData)
+                pBuffer = (IntPtr)p;
+
+            int Buffer = AL.GenBuffer();
+            AL.BufferData(Buffer, GetSoundFormat(bitrate, channels), pBuffer, BufferData.Length, freq);
+
+            int Source = AL.GenSource();
+            AL.Source(Source, ALSourcei.Buffer, Buffer);
+            AL.SourcePlay(Source);
+
+            return new PCMSample
             {
-                IntPtr pBuffer;
-                fixed (byte* p = BufferData)
-                    pBuffer = (IntPtr)p;
+                Source  = Source,
+                Buffer  = Buffer,
+                Context = Context
+            };
+        }
 
-                int Buffer = AL.GenBuffer();
-                AL.BufferData(Buffer, GetSoundFormat(bitrate, channels), pBuffer, BufferData.Length, freq);
+        public static bool IsSoundPlaying(PCMSample Sample)
+        {
+            AL.GetSource(Sample.Source, ALGetSourcei.SourceState, out int State);
+            return (ALSourceState)State == ALSourceState.Playing;
+        }
 
-                int Source = AL.GenSource();
-                AL.Source(Source, ALSourcei.Buffer, Buffer);
-                AL.SourcePlay(Source);
-
-                int SState;
-
-                do
-                {
-                    Thread.Sleep(250);
-                    AL.GetSource(Source, ALGetSourcei.SourceState, out SState);
-                } while ((ALSourceState)SState == ALSourceState.Playing);
-
-                AL.SourceStop(Source);
-                AL.DeleteSource(Source);
-                AL.DeleteBuffer(Buffer);
-            }
+        public static void DisposePCM(PCMSample Sample)
+        {
+            Sample.Context.Dispose();
+            AL.SourceStop  (Sample.Source);
+            AL.DeleteSource(Sample.Source);
+            AL.DeleteBuffer(Sample.Buffer);
         }
     }
 }

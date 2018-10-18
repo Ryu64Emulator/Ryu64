@@ -16,7 +16,7 @@ namespace Ryu64.Common
         public static uint   DUMP_MEMORY_START;
         public static uint   DUMP_MEMORY_END;
         public static bool   STEP_MODE;
-        public static bool   RENDER_DIRECT_FRAMEBUFFER;
+        public static bool   LLE;
         public static string PIF_ROM  = "";
 
         public static void Parse(string SettingsFile)
@@ -32,7 +32,7 @@ namespace Ryu64.Common
                 DUMP_MEMORY               = bool.Parse(Parse.Value("DUMP_MEMORY", "false"));
                 DUMP_MEMORY_START         = Convert.ToUInt32(Parse.Value("DUMP_MEMORY_START", "0x0"), 16);
                 DUMP_MEMORY_END           = Convert.ToUInt32(Parse.Value("DUMP_MEMORY_END", "0x0"), 16);
-                RENDER_DIRECT_FRAMEBUFFER = bool.Parse(Parse.Value("RENDER_DIRECT_FRAMEBUFFER", "false"));
+                LLE                       = bool.Parse(Parse.Value("LLE", "false"));
                 STEP_MODE                 = bool.Parse(Parse.Value("STEP_MODE", "false"));
             }
             catch
@@ -43,7 +43,7 @@ namespace Ryu64.Common
                 MEASURE_SPEED             = false;
                 LOG_MEM_USAGE             = false;
                 DUMP_MEMORY               = false;
-                RENDER_DIRECT_FRAMEBUFFER = false;
+                LLE = false;
                 STEP_MODE                 = false;
                 DUMP_MEMORY_START = 0x0;
                 DUMP_MEMORY_END   = 0x0;
