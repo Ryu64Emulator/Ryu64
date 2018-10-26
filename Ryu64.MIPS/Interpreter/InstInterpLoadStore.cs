@@ -29,7 +29,7 @@
 
         public static void LDR(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] &= 0xFFFFFFFF00000000;
+            Registers.R4300.Reg[Desc.op2] >>= 32;
             Registers.R4300.Reg[Desc.op2] |= (ulong)R4300.memory.ReadInt64((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm)) >> 32;
             Registers.R4300.PC += 4;
         }
@@ -74,37 +74,37 @@
 
         public static void SB(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteInt8((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (sbyte)(Registers.R4300.Reg[Desc.op2] & 0xFF));
+            R4300.memory.WriteUInt8((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (byte)Registers.R4300.Reg[Desc.op2]);
             Registers.R4300.PC += 4;
         }
 
         public static void SD(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteInt64((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (long)Registers.R4300.Reg[Desc.op2]);
+            R4300.memory.WriteUInt64((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), Registers.R4300.Reg[Desc.op2]);
             Registers.R4300.PC += 4;
         }
 
         public static void SDL(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (int)((Registers.R4300.Reg[Desc.op2]) >> 32));
+            R4300.memory.WriteUInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (uint)((Registers.R4300.Reg[Desc.op2]) >> 32));
             Registers.R4300.PC += 4;
         }
 
         public static void SDR(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm) + 4, (int)(Registers.R4300.Reg[Desc.op2] & 0xFFFFFFFF));
+            R4300.memory.WriteUInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm) + 4, (uint)Registers.R4300.Reg[Desc.op2]);
             Registers.R4300.PC += 4;
         }
 
         public static void SH(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteInt16((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (short)(Registers.R4300.Reg[Desc.op2] & 0xFFFF));
+            R4300.memory.WriteUInt16((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (ushort)Registers.R4300.Reg[Desc.op2]);
             Registers.R4300.PC += 4;
         }
 
         public static void SW(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (int)(Registers.R4300.Reg[Desc.op2] & 0xFFFFFFFF));
+            R4300.memory.WriteUInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (uint)Registers.R4300.Reg[Desc.op2]);
             Registers.R4300.PC += 4;
         }
 
@@ -116,7 +116,7 @@
 
         public static void SWR(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteInt16((uint)(((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm) + 2), (short)(Registers.R4300.Reg[Desc.op2] & 0xFFFF));
+            R4300.memory.WriteUInt16((uint)(((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm) + 2), (ushort)Registers.R4300.Reg[Desc.op2]);
             Registers.R4300.PC += 4;
         }
     }
