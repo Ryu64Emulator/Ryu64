@@ -1,6 +1,5 @@
 ﻿using Ryu64.Formats;
 using System;
-using System.IO;
 
 /*
 This is free and unencumbered software released into the public domain.
@@ -28,35 +27,39 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <http://unlicense.org/>
 */
+
 namespace Ryu64
 {
     public class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
-            if (args.Length < 1)
+            if (args.Length < (Common.Settings.LOAD_PIF ? 2 : 1))
             {
-                Console.WriteLine("Please specify a .z64 file to open.");
+                Common.Logger.PrintErrorLine(Common.Settings.LOAD_PIF ? 
+                    "Please specify a .z64 file, and a PIF Rom to open." : "Please specify a .z64 file to open.");
                 Environment.Exit(-1);
             }
 
-            Z64 Test = new Z64(args[0]);
-            Test.Parse();
+            Z64 Rom = new Z64(args[0]);
+            Rom.Parse();
 
-            if (!Test.HasBeenParsed)
+            if (!Rom.HasBeenParsed)
             {
-                Console.WriteLine("Can't open .z64, it's either, a bad .z64 or it is in Little Endian.");
+                Common.Logger.PrintErrorLine("Can't open .z64, it's either, a bad .z64 or it is in Little Endian.");
                 Environment.Exit(-1);
             }
 
-            foreach (byte b in Test.AllData)
-            {
-                Console.WriteLine($"0x{b:x2}");
-            }
+            Common.Settings.Parse("./Settings.ini");
+
+            Common.Settings.PIF_ROM = Common.Settings.LOAD_PIF ? args[1] : "";
+
+            MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
             MIPS.R4300.PowerOnR4300();
 
-            while (true);
+            using (Graphics.MainWindow Window = new Graphics.MainWindow()) Window.Run(60.0);
         }
     }
 }

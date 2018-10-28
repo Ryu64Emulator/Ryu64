@@ -6,18 +6,20 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Memory.cs~RF597af035.TMP" />
+    <PackageReference Include="OpenTK.NetStandard" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ryu64.Common\Ryu64.Common.csproj" />
+    <ProjectReference Include="..\Ryu64.MIPS\Ryu64.MIPS.csproj" />
   </ItemGroup>
 
 </Project>
