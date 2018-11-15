@@ -246,7 +246,8 @@ namespace Ryu64.MIPS
         {
             get
             {
-                uint nonCachedIndex = index & 0x1FFFFFFF;
+                uint TLBTranslated  = TLB.TranslateAddress(index);
+                uint nonCachedIndex = TLBTranslated & 0x1FFFFFFF;
                 MemEntry Entry = GetEntry(nonCachedIndex);
 
                 if (Entry.ReadArray == null)
@@ -256,7 +257,8 @@ namespace Ryu64.MIPS
             }
             set
             {
-                uint nonCachedIndex = index & 0x1FFFFFFF;
+                uint TLBTranslated  = TLB.TranslateAddress(index);
+                uint nonCachedIndex = TLBTranslated & 0x1FFFFFFF;
                 MemEntry Entry = GetEntry(nonCachedIndex);
 
                 if (Entry.WriteArray == null)
@@ -270,7 +272,8 @@ namespace Ryu64.MIPS
         {
             get
             {
-                uint nonCachedIndex = index & 0x1FFFFFFF;
+                uint TLBTranslated  = TLB.TranslateAddress(index);
+                uint nonCachedIndex = TLBTranslated & 0x1FFFFFFF;
                 byte[] result = new byte[size];
                 MemEntry Entry = GetEntry(nonCachedIndex);
 
@@ -285,7 +288,8 @@ namespace Ryu64.MIPS
             }
             set
             {
-                uint nonCachedIndex = index & 0x1FFFFFFF;
+                uint TLBTranslated  = TLB.TranslateAddress(index);
+                uint nonCachedIndex = TLBTranslated & 0x1FFFFFFF;
                 MemEntry Entry = GetEntry(nonCachedIndex);
 
                 if (Entry.WriteArray == null)

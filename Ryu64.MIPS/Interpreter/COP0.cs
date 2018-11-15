@@ -7,7 +7,7 @@
         public static void PowerOnCOP0()
         {
             for (int i = 0; i < Registers.COP0.Reg.Length; ++i)
-                Registers.COP0.Reg[i] = 0; // Clear Registers
+                Registers.COP0.Reg[i] = 0; // Clear Registers.
 
             Registers.COP0.Reg[Registers.COP0.COMPARE_REG] = 0xFFFFFFFF;
 
