@@ -158,6 +158,7 @@ namespace Ryu64.MIPS
 
             // TLB Instructions
             SetOpcode("01000010000000000000000000000010", InstInterp.TLBWI, "TLBWI");
+            SetOpcode("01000010000000000000000000000001", InstInterp.TLBR,  "TLBR");
 
             // Credit to Ryujinx for the FastLookup code!
             // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/AOpCodeTable.cs

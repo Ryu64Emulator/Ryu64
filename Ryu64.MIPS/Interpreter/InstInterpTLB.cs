@@ -7,5 +7,11 @@
             TLB.WriteTLBEntryIndexed();
             Registers.R4300.PC += 4;
         }
+
+        public static void TLBR(OpcodeTable.OpcodeDesc Desc)
+        {
+            TLB.ReadTLBEntry();
+            Registers.R4300.PC += 4;
+        }
     }
 }
