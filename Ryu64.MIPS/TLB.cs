@@ -25,7 +25,7 @@ namespace Ryu64.MIPS
         {
             foreach (TLBEntry Entry in TLBEntries)
             {
-                if (Entry.HasBeenSet) continue;
+                if (!Entry.HasBeenSet) continue;
 
                 uint VPN      = (uint)(((Entry.VPN2 << 13) | Entry.ASID) & ~((Entry.PageMask << 13) | 0x1FFF));
                 uint Mask     = (uint)((Entry.PageMask << 12) | 0x0FFF);
