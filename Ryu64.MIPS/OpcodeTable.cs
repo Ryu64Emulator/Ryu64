@@ -60,14 +60,12 @@ namespace Ryu64.MIPS
             /*
             Note:
             The Formatting for the Assembly string goes as follows:
-            {0} is the op1 part of a OpcodeDesc
-            {1} is the op2 part of a OpcodeDesc
-            {2} is the op3 part of a OpcodeDesc
-            {3} is the op4 part of a OpcodeDesc
-            {4} is the Imm part of a OpcodeDesc
-            {5} is the Target part of a OpcodeDesc
-            {6} is the Exception Code (20-bit) part of a OpcodeDesc
-            {7} is the Exception Code (10-bit) part of a OpcodeDesc
+                {0} is the op1 part of a OpcodeDesc
+                {1} is the op2 part of a OpcodeDesc
+                {2} is the op3 part of a OpcodeDesc
+                {3} is the op4 part of a OpcodeDesc
+                {4} is the Imm part of a OpcodeDesc
+                {5} is the Target part of a OpcodeDesc
             */
 
             // Other Instructions
@@ -157,8 +155,10 @@ namespace Ryu64.MIPS
             SetOpcode("00000000000000000000000000001111", InstInterp.NOP,     "SYNC");
 
             // TLB Instructions
-            SetOpcode("01000010000000000000000000000010", InstInterp.TLBWI, "TLBWI");
             SetOpcode("01000010000000000000000000000001", InstInterp.TLBR,  "TLBR");
+            SetOpcode("01000010000000000000000000000010", InstInterp.TLBWI, "TLBWI");
+            SetOpcode("01000010000000000000000000000110", InstInterp.TLBWR, "TLBWR");
+            SetOpcode("01000010000000000000000000001000", InstInterp.TLBP,  "TLBP");
 
             // Credit to Ryujinx for the FastLookup code!
             // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/AOpCodeTable.cs

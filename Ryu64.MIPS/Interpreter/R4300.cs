@@ -127,6 +127,9 @@ namespace Ryu64.MIPS
             CycleCounter += Info.Cycles;
             Count        += Info.Cycles;
             Registers.COP0.Reg[Registers.COP0.COUNT_REG] = Count >> 1;
+            Registers.COP0.Reg[Registers.COP0.RANDOM_REG] -= 1;
+            if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG])
+                Registers.COP0.Reg[Registers.COP0.RANDOM_REG] = 0x1F; // TODO: Reset the Random Register to 0x1F after writing to the Wired Register.
 
             if (Common.Settings.MEASURE_SPEED)
             {
