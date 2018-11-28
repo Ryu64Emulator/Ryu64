@@ -60,14 +60,12 @@ namespace Ryu64.MIPS
             /*
             Note:
             The Formatting for the Assembly string goes as follows:
-            {0} is the op1 part of a OpcodeDesc
-            {1} is the op2 part of a OpcodeDesc
-            {2} is the op3 part of a OpcodeDesc
-            {3} is the op4 part of a OpcodeDesc
-            {4} is the Imm part of a OpcodeDesc
-            {5} is the Target part of a OpcodeDesc
-            {6} is the Exception Code (20-bit) part of a OpcodeDesc
-            {7} is the Exception Code (10-bit) part of a OpcodeDesc
+                {0} is the op1 part of a OpcodeDesc
+                {1} is the op2 part of a OpcodeDesc
+                {2} is the op3 part of a OpcodeDesc
+                {3} is the op4 part of a OpcodeDesc
+                {4} is the Imm part of a OpcodeDesc
+                {5} is the Target part of a OpcodeDesc
             */
 
             // Other Instructions
@@ -95,34 +93,35 @@ namespace Ryu64.MIPS
             SetOpcode("101110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SWR, "SWR R[{1}], 0x{4:x4}(R[{0}])");
 
             // Arithmetic Instructions
-            SetOpcode("000000XXXXXXXXXXXXXXX00000100000", InstInterp.ADD,   "ADD R[{2}], R[{0}], R[{1}]");
-            SetOpcode("001000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDI,  "ADDI R[{1}], R[{0}], 0x{4:x4}");
-            SetOpcode("001001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDIU, "ADDIU R[{1}], R[{0}], 0x{4:x4}");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000100001", InstInterp.ADDU,  "ADDU R[{2}], R[{0}], R[{1}]");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000100100", InstInterp.AND,   "AND R[{2}], R[{0}], R[{1}]");
-            SetOpcode("001100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ANDI,  "ANDI R[{1}], R[{0}], 0x{4:x4}");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000100010", InstInterp.SUB,   "SUB R[{2}], R[{0}], R[{1}]");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000100011", InstInterp.SUBU,  "SUBU R[{2}], R[{0}], R[{1}]");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000100110", InstInterp.XOR,   "XOR R[{2}], R[{0}], R[{1}]");
-            SetOpcode("001110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.XORI,  "XORI R[{1}], R[{0}], 0x{4:x4}");
-            SetOpcode("00111100000XXXXXXXXXXXXXXXXXXXXX", InstInterp.LUI,   "LUI R[{1}], 0x{4:x4}");
-            SetOpcode("0000000000000000XXXXX00000010000", InstInterp.MFHI,  "MFHI R[{2}]");
-            SetOpcode("0000000000000000XXXXX00000010010", InstInterp.MFLO,  "MFLO R[{2}]");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000100101", InstInterp.OR,    "OR R[{2}], R[{0}], R[{1}]");
-            SetOpcode("001101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ORI,   "ORI R[{1}], R[{0}], 0x{4:x4}");
-            SetOpcode("000000XXXXX000000000000000010011", InstInterp.MTLO,  "MTLO R[{0}]");
-            SetOpcode("000000XXXXX000000000000000010001", InstInterp.MTHI,  "MTHI R[{0}]");
-            SetOpcode("000000XXXXXXXXXX0000000000011000", InstInterp.MULT,  "MULT R[{0}], R[{1}]", 5);
-            SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU, "MULTU R[{0}], R[{1}]", 5);
-            SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,   "SLL R[{2}], R[{1}], 0x{3:x2}");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,  "SLLV R[{2}], R[{1}], R[{0}]");
-            SetOpcode("00000000000XXXXXXXXXXXXXXX000011", InstInterp.SRA,   "SRA R[{2}], R[{1}], 0x{3:x2}");
-            SetOpcode("00000000000XXXXXXXXXXXXXXX000010", InstInterp.SRL,   "SRL R[{2}], R[{1}], 0x{3:x2}");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000000110", InstInterp.SRLV,  "SRLV R[{2}], R[{1}], R[{0}]");
-            SetOpcode("001010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTI,  "SLTI R[{1}], R[{0}], 0x{4:x4}");
-            SetOpcode("001011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTIU, "SLTIU R[{1}], R[{0}], 0x{4:x4}");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000101010", InstInterp.SLT,   "SLT R[{2}], R[{0}], R[{1}]");
-            SetOpcode("000000XXXXXXXXXXXXXXX00000101011", InstInterp.SLTU,  "SLTU R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100000", InstInterp.ADD,    "ADD R[{2}], R[{0}], R[{1}]");
+            SetOpcode("001000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDI,   "ADDI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("001001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDIU,  "ADDIU R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100001", InstInterp.ADDU,   "ADDU R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100100", InstInterp.AND,    "AND R[{2}], R[{0}], R[{1}]");
+            SetOpcode("001100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ANDI,   "ANDI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100010", InstInterp.SUB,    "SUB R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100011", InstInterp.SUBU,   "SUBU R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100110", InstInterp.XOR,    "XOR R[{2}], R[{0}], R[{1}]");
+            SetOpcode("001110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.XORI,   "XORI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("00111100000XXXXXXXXXXXXXXXXXXXXX", InstInterp.LUI,    "LUI R[{1}], 0x{4:x4}");
+            SetOpcode("0000000000000000XXXXX00000010000", InstInterp.MFHI,   "MFHI R[{2}]");
+            SetOpcode("0000000000000000XXXXX00000010010", InstInterp.MFLO,   "MFLO R[{2}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000100101", InstInterp.OR,     "OR R[{2}], R[{0}], R[{1}]");
+            SetOpcode("001101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ORI,    "ORI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXX000000000000000010011", InstInterp.MTLO,   "MTLO R[{0}]");
+            SetOpcode("000000XXXXX000000000000000010001", InstInterp.MTHI,   "MTHI R[{0}]");
+            SetOpcode("000000XXXXXXXXXX0000000000011000", InstInterp.MULT,   "MULT R[{0}], R[{1}]",   5);
+            SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU,  "MULTU R[{0}], R[{1}]",  5);
+            SetOpcode("000000XXXXXXXXXX0000000000011101", InstInterp.DMULTU, "DMULTU R[{0}], R[{1}]", 8);
+            SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,    "SLL R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,   "SLLV R[{2}], R[{1}], R[{0}]");
+            SetOpcode("00000000000XXXXXXXXXXXXXXX000011", InstInterp.SRA,    "SRA R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("00000000000XXXXXXXXXXXXXXX000010", InstInterp.SRL,    "SRL R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000000110", InstInterp.SRLV,   "SRLV R[{2}], R[{1}], R[{0}]");
+            SetOpcode("001010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTI,   "SLTI R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("001011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTIU,  "SLTIU R[{1}], R[{0}], 0x{4:x4}");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000101010", InstInterp.SLT,    "SLT R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000101011", InstInterp.SLTU,   "SLTU R[{2}], R[{0}], R[{1}]");
 
             // Branch / Jump Instructions
             SetOpcode("000100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BEQ,    "BEQ R[{0}], R[{1}], 0x{4:x4}");
@@ -154,6 +153,12 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001101", InstInterp.BREAK,   "BREAK");
             // According to the manual, the SYNC instruction is executed as a NOP on the VR4300.
             SetOpcode("00000000000000000000000000001111", InstInterp.NOP,     "SYNC");
+
+            // TLB Instructions
+            SetOpcode("01000010000000000000000000000001", InstInterp.TLBR,  "TLBR");
+            SetOpcode("01000010000000000000000000000010", InstInterp.TLBWI, "TLBWI");
+            SetOpcode("01000010000000000000000000000110", InstInterp.TLBWR, "TLBWR");
+            SetOpcode("01000010000000000000000000001000", InstInterp.TLBP,  "TLBP");
 
             // Credit to Ryujinx for the FastLookup code!
             // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/AOpCodeTable.cs

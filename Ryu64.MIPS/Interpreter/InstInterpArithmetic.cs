@@ -120,6 +120,14 @@
             Registers.R4300.PC += 4;
         }
 
+        public static void DMULTU(OpcodeTable.OpcodeDesc Desc)
+        {
+            ulong Res = Registers.R4300.Reg[Desc.op1] * Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.LO = (uint)(Res & 0x00000000FFFFFFFF);
+            Registers.R4300.HI = (uint)(Res >> 32);
+            Registers.R4300.PC += 4;
+        }
+
         public static void SLL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] << Desc.op4;
