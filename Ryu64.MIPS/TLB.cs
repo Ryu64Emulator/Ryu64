@@ -16,6 +16,7 @@ namespace Ryu64.MIPS
             public uint VPN2;
             public byte ASID;
             public ushort PageMask;
+            public bool hasBeenWrittenTo;
         }
 
         private readonly static TLBEntry[] TLBEntries = new TLBEntry[32];
@@ -24,13 +25,15 @@ namespace Ryu64.MIPS
         {
             foreach (TLBEntry Entry in TLBEntries)
             {
-                if (Entry.Valid == 0) continue;
+                if (!Entry.hasBeenWrittenTo) continue;
 
                 uint VPN      = (uint)(((Entry.VPN2 << 13) | Entry.ASID) & ~((Entry.PageMask << 13) | 0x1FFF));
                 uint Mask     = (uint)((Entry.PageMask << 12) | 0x0FFF);
                 uint PageSize = Mask + 1;
 
                 if ((Address & (VPN | 0xE0000000)) != VPN) continue;
+
+                if (Entry.Valid == 0) throw new Common.Exceptions.TLBMissException("TLB Miss while translating address.");
 
                 return (Entry.PFN * PageSize) | (Address & Mask);
             }
@@ -75,12 +78,14 @@ namespace Ryu64.MIPS
                 PageMask      = (ushort)((Registers.COP0.Reg[Registers.COP0.PAGEMASK_REG] & 0x1FFF)   >> 13),
                 Global        = (byte)(((byte)Registers.COP0.Reg[Registers.COP0.ENTRYLO0_REG] & 0x1)
                                      & ((byte)Registers.COP0.Reg[Registers.COP0.ENTRYLO1_REG] & 0x1)),
-                ASID = (byte)(Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG] & 0xFF)
+                ASID = (byte)(Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG] & 0xFF),
+                hasBeenWrittenTo = true
             };
         }
 
         public static void ProbeTLB()
         {
+            bool hasFoundEntry = false;
             for (uint i = 0; i < TLBEntries.Length; ++i)
             {
                 TLBEntry Entry = TLBEntries[i];
@@ -93,10 +98,13 @@ namespace Ryu64.MIPS
 
                 if (Entry.VPN2 == VPN2 && Entry.ASID == ASID)
                 {
+                    hasFoundEntry = true;
                     Registers.COP0.Reg[Registers.COP0.INDEX_REG] = i & 0x3F;
                     break;
                 }
             }
+
+            if (!hasFoundEntry) throw new Common.Exceptions.TLBMissException("Couldn't find TLB Entry while probing.");
         }
     }
 }

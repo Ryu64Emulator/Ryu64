@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Ryu64.Common
 {
@@ -73,6 +74,24 @@ namespace Ryu64.Common
                 : base(message, innerException) { }
 
             public InvalidOperationException(string format, Exception innerException, params object[] args)
+                : base(string.Format(format, args), innerException) { }
+        }
+
+        public class TLBMissException : Exception
+        {
+            public TLBMissException()
+                : base() { }
+
+            public TLBMissException(string message)
+                : base(message) { }
+
+            public TLBMissException(string format, params object[] args)
+                : base(string.Format(format, args)) { }
+
+            public TLBMissException(string message, Exception innerException)
+                : base(message, innerException) { }
+
+            public TLBMissException(string format, Exception innerException, params object[] args)
                 : base(string.Format(format, args), innerException) { }
         }
     }
