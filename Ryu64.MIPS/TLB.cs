@@ -31,11 +31,11 @@ namespace Ryu64.MIPS
                 uint Mask     = (uint)((Entry.PageMask << 12) | 0x0FFF);
                 uint PageSize = Mask + 1;
 
-                if ((Address & VPN) != VPN) continue;
+                if ((Address & (VPN | 0xE0000000)) != VPN) continue;
 
                 if (Entry.Valid == 0) continue;
 
-                return 0x80000000 | (Entry.PFN * PageSize) | (Address & Mask);
+                return (Entry.PFN * PageSize) | (Address & Mask);
             }
 
             return Address;
