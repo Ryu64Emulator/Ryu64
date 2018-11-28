@@ -24,13 +24,13 @@ namespace Ryu64.MIPS
         {
             foreach (TLBEntry Entry in TLBEntries)
             {
+                if (Entry.Valid == 0) continue;
+
                 uint VPN      = (uint)(((Entry.VPN2 << 13) | Entry.ASID) & ~((Entry.PageMask << 13) | 0x1FFF));
                 uint Mask     = (uint)((Entry.PageMask << 12) | 0x0FFF);
                 uint PageSize = Mask + 1;
 
                 if ((Address & (VPN | 0xE0000000)) != VPN) continue;
-
-                if (Entry.Valid == 0) continue;
 
                 return (Entry.PFN * PageSize) | (Address & Mask);
             }
