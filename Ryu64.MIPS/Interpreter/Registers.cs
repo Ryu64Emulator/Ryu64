@@ -8,6 +8,7 @@
             public static ulong  HI;
             public static ulong  LO;
             public static uint   PC;
+            public static byte   LLbit;
 
             public static void PrintRegisterInfo()
             {

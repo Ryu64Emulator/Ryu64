@@ -128,9 +128,22 @@
             Registers.R4300.PC += 4;
         }
 
+        public static void DDIVU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.LO = Registers.R4300.Reg[Desc.op1] / Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.HI = Registers.R4300.Reg[Desc.op1] % Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.PC += 4;
+        }
+
         public static void SLL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] << Desc.op4;
+            Registers.R4300.PC += 4;
+        }
+
+        public static void DSLL32(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = (ulong)((long)Registers.R4300.Reg[Desc.op2] << (Desc.op4 + 32));
             Registers.R4300.PC += 4;
         }
 
@@ -142,7 +155,13 @@
 
         public static void SRA(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (ulong)((int)Registers.R4300.Reg[Desc.op2] >> Desc.op4);
+            Registers.R4300.Reg[Desc.op3] = (uint)((int)Registers.R4300.Reg[Desc.op2] >> Desc.op4);
+            Registers.R4300.PC += 4;
+        }
+
+        public static void DSRA32(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = (ulong)((long)Registers.R4300.Reg[Desc.op2] >> (Desc.op4 + 32));
             Registers.R4300.PC += 4;
         }
 

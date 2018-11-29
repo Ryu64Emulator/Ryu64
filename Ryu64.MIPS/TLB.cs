@@ -59,7 +59,7 @@ namespace Ryu64.MIPS
 
         public static void ReadTLBEntry()
         {
-            TLBEntry Entry = TLBEntries[(uint)Registers.COP0.Reg[Registers.COP0.INDEX_REG] & 0x3F];
+            TLBEntry Entry = TLBEntries[(uint)Registers.COP0.Reg[Registers.COP0.INDEX_REG] & 0x1F];
             Registers.COP0.Reg[Registers.COP0.ENTRYLO0_REG] = (Entry.PFN0 << 6)
                                                                | (byte)(Entry.Global0 & 0x1)
                                                                | (byte)((Entry.Valid0 & 0x1) << 1)
@@ -77,7 +77,7 @@ namespace Ryu64.MIPS
 
         private static void WriteTLBEntry(uint Index)
         {
-            TLBEntries[Index & 0x3F] = new TLBEntry()
+            TLBEntries[Index & 0x1F] = new TLBEntry()
             {
                 PFN0           = (uint)((Registers.COP0.Reg[Registers.COP0.ENTRYLO0_REG] & 0x3FFFFFC0) >> 6),
                 Valid0         = (byte)((Registers.COP0.Reg[Registers.COP0.ENTRYLO0_REG] & 0b000010)   >> 1),

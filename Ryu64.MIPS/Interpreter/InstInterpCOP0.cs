@@ -18,5 +18,20 @@
         {
             Registers.R4300.PC += 4; // Stubbed.
         }
+
+        public static void ERET(OpcodeTable.OpcodeDesc Desc)
+        {
+            if ((Registers.COP0.Reg[Registers.COP0.STATUS_REG] & 0b100) == 0b100)
+            {
+                Registers.R4300.PC = (uint)Registers.COP0.Reg[Registers.COP0.ERROREPC_REG];
+                unchecked { Registers.COP0.Reg[Registers.COP0.STATUS_REG] &= (uint)~0b100; }
+            }
+            else
+            {
+                Registers.R4300.PC = (uint)Registers.COP0.Reg[Registers.COP0.EPC_REG];
+                unchecked { Registers.COP0.Reg[Registers.COP0.STATUS_REG] &= (uint)~0b010; }
+            }
+            Registers.R4300.LLbit = 0;
+        }
     }
 }

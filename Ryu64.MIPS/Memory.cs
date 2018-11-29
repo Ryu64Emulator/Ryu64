@@ -60,6 +60,10 @@ namespace Ryu64.MIPS
         public readonly byte[] PI_BSD_DOM1_PWD_REG_RW = new byte[4];
         public readonly byte[] PI_BSD_DOM1_PGS_REG_RW = new byte[4];
         public readonly byte[] PI_BSD_DOM1_RLS_REG_RW = new byte[4];
+        public readonly byte[] PI_BSD_DOM2_LAT_REG_RW = new byte[4];
+        public readonly byte[] PI_BSD_DOM2_PWD_REG_RW = new byte[4];
+        public readonly byte[] PI_BSD_DOM2_PGS_REG_RW = new byte[4];
+        public readonly byte[] PI_BSD_DOM2_RLS_REG_RW = new byte[4];
 
         public readonly byte[] SI_STATUS_REG_R  = new byte[4];
         public readonly byte[] SI_STATUS_REG_W  = new byte[4];
@@ -67,7 +71,7 @@ namespace Ryu64.MIPS
         public readonly byte[] RI_SELECT_REG_RW = new byte[4];
 
         public readonly byte[] RDRAM     = new byte[8388608];
-        public readonly byte[] RDRAMReg  = new byte[1048575];
+        public readonly byte[] RDRAMReg  = new byte[1048576];
         public readonly byte[] PIFROM    = new byte[1984];
         public readonly byte[] PIFRAM    = new byte[64];
 
@@ -131,6 +135,10 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x04600018, 0x0460001B, PI_BSD_DOM1_PWD_REG_RW, PI_BSD_DOM1_PWD_REG_RW, "PI_BSD_DOM1_PWD_REG"));
             MemoryMapList.Add(new MemEntry(0x0460001C, 0x0460001F, PI_BSD_DOM1_PGS_REG_RW, PI_BSD_DOM1_PGS_REG_RW, "PI_BSD_DOM1_PGS_REG"));
             MemoryMapList.Add(new MemEntry(0x04600020, 0x04600023, PI_BSD_DOM1_RLS_REG_RW, PI_BSD_DOM1_RLS_REG_RW, "PI_BSD_DOM1_RLS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04600024, 0x04600027, PI_BSD_DOM2_LAT_REG_RW, PI_BSD_DOM2_LAT_REG_RW, "PI_BSD_DOM2_LAT_REG"));
+            MemoryMapList.Add(new MemEntry(0x04600028, 0x0460002B, PI_BSD_DOM2_PWD_REG_RW, PI_BSD_DOM2_PWD_REG_RW, "PI_BSD_DOM2_PWD_REG"));
+            MemoryMapList.Add(new MemEntry(0x0460002C, 0x0460002F, PI_BSD_DOM2_PGS_REG_RW, PI_BSD_DOM2_PGS_REG_RW, "PI_BSD_DOM2_PGS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04600030, 0x04600033, PI_BSD_DOM2_RLS_REG_RW, PI_BSD_DOM2_RLS_REG_RW, "PI_BSD_DOM2_RLS_REG"));
 
             // SI Registers
             MemoryMapList.Add(new MemEntry(0x04800018, 0x0480001B, SI_STATUS_REG_R, SI_STATUS_REG_W, "SI_STATUS_REG"));
@@ -139,7 +147,11 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x0470000C, 0x0470000F, RI_SELECT_REG_RW, RI_SELECT_REG_RW, "RI_SELECT_REG"));
 
             // Rom
-            MemoryMapList.Add(new MemEntry(0x10000000, 0x1F39FFFF, Rom, Rom, "Cartridge Domain 1 (Address 2)"));
+            byte[] RealRom = new byte[0x1F39FFFF - 0x10000000]; // Pretty much to pad the rest with zeros.
+            for (uint i = 0; i < Rom.Length; ++i)
+                RealRom[i] = Rom[i];
+
+            MemoryMapList.Add(new MemEntry(0x10000000, 0x1F39FFFF, RealRom, RealRom, "Cartridge Domain 1 (Address 2)"));
 
             // PIF
             MemoryMapList.Add(new MemEntry(0x1FC00000, 0x1FC007BF, PIFROM, PIFROM, "PIF Rom"));

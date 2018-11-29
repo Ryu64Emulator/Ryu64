@@ -113,9 +113,12 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXX0000000000011000", InstInterp.MULT,   "MULT R[{0}], R[{1}]",   5);
             SetOpcode("000000XXXXXXXXXX0000000000011001", InstInterp.MULTU,  "MULTU R[{0}], R[{1}]",  5);
             SetOpcode("000000XXXXXXXXXX0000000000011101", InstInterp.DMULTU, "DMULTU R[{0}], R[{1}]", 8);
+            SetOpcode("000000XXXXXXXXXX0000000000011111", InstInterp.DDIVU,  "DDIVU R[{0}], R[{1}]",  69);
             SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,    "SLL R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("00000000000XXXXXXXXXXXXXXX111100", InstInterp.DSLL32, "DSLL32 R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,   "SLLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000011", InstInterp.SRA,    "SRA R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("00000000000XXXXXXXXXXXXXXX111111", InstInterp.DSRA32, "DSRA32 R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000010", InstInterp.SRL,    "SRL R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000000110", InstInterp.SRLV,   "SRLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("001010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTI,   "SLTI R[{1}], R[{0}], 0x{4:x4}");
@@ -143,6 +146,7 @@ namespace Ryu64.MIPS
             SetOpcode("01000000000XXXXXXXXXXXXXXXXXXXXX", InstInterp.MFC0,  "MFC0 R[{1}], CP0R[{2}]");
             SetOpcode("01000000100XXXXXXXXXXXXXXXXXXXXX", InstInterp.MTC0,  "MTC0 R[{1}], CP0R[{2}]");
             SetOpcode("101111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.CACHE, "CACHE 0x{1:x2}, 0x{4:x4}(R[{0}])");
+            SetOpcode("01000010000000000000000000011000", InstInterp.ERET,  "ERET");
 
             // COP1 Instructions
             SetOpcode("01000100010XXXXXXXXXX00000000000", InstInterp.CFC1, "CFC1 R[{1}], CP1R[{2}]");
