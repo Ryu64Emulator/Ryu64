@@ -11,7 +11,7 @@
 
             Registers.COP0.Reg[Registers.COP0.COMPARE_REG] = 0xFFFFFFFF;
 
-            if (!Common.Settings.LOAD_PIF)
+            if (!Common.Variables.PIFEnabled)
             {
                 Registers.COP0.Reg[Registers.COP0.STATUS_REG] = 0x34000000;
                 Registers.COP0.Reg[Registers.COP0.CONFIG_REG] = 0x0006E463;

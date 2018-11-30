@@ -114,7 +114,7 @@ namespace Ryu64.MIPS
             OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode);
             OpcodeTable.InstInfo   Info = OpcodeTable.GetOpcodeInfo(Opcode);
 
-            if (Common.Settings.DEBUG)
+            if (Common.Variables.Debug)
             {
                 string ASM = string.Format(
                     Info.FormattedASM,
@@ -131,11 +131,8 @@ namespace Ryu64.MIPS
             if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG])
                 Registers.COP0.Reg[Registers.COP0.RANDOM_REG] = 0x1F; // TODO: Reset the Random Register to 0x1F after writing to the Wired Register.
 
-            if (Common.Settings.MEASURE_SPEED)
-            {
-                Common.Measure.InstructionCount += 1;
-                Common.Measure.CycleCounter = CycleCounter;
-            }
+            Common.Measure.InstructionCount += 1;
+            Common.Measure.CycleCounter = CycleCounter;
         }
 
         public static void PowerOnR4300()
@@ -143,9 +140,9 @@ namespace Ryu64.MIPS
             for (int i = 0; i < Registers.R4300.Reg.Length; ++i)
                 Registers.R4300.Reg[i] = 0; // Clear Registers.
 
-            if (Common.Settings.LOAD_PIF)
+            if (Common.Variables.PIFEnabled)
             {
-                byte[] PIF = File.ReadAllBytes(Common.Settings.PIF_ROM);
+                byte[] PIF = File.ReadAllBytes(Common.Variables.PIF);
 
                 memory.FastMemoryWrite(0x1FC00000, PIF); // Load the PIF rom into memory.
 
@@ -194,58 +191,10 @@ namespace Ryu64.MIPS
 
             OpcodeTable.Init();
 
-            if (Common.Settings.DUMP_MEMORY)
-            {
-                string Output = "";
-                for (uint i = Common.Settings.DUMP_MEMORY_START; i <= Common.Settings.DUMP_MEMORY_END; i += 4)
-                {
-                    uint Current = 0;
-
-                    string Line;
-
-                    try
-                    {
-                        Current = memory.ReadUInt32(i);
-                    }
-                    catch
-                    {
-                        Line = "NONE\n";
-                        Output += Line;
-                        Common.Logger.PrintInfo(Line);
-                        continue;
-                    }
-
-                    OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Current);
-                    OpcodeTable.InstInfo   Info = new OpcodeTable.InstInfo();
-
-                    try
-                    {
-                        Info = OpcodeTable.GetOpcodeInfo(Current);
-                    }
-                    catch
-                    {
-                        Line = $"0x{i:x8}: 0x{Current:x8}: UNK\n";
-                        Output += Line;
-                        Common.Logger.PrintInfo(Line);
-                        continue;
-                    }
-
-                    string ASM = string.Format(
-                        Info.FormattedASM,
-                        Desc.op1, Desc.op2, Desc.op3, Desc.op4,
-                        Desc.Imm, Desc.Target);
-                    Line = $"0x{i:x8}: 0x{Current:x8}: {ASM}\n";
-                    Output += Line;
-                    Common.Logger.PrintInfo(Line);
-                }
-
-                File.WriteAllText("./DMP_MEM", Output);
-            }
-
             Thread CPUThread = 
             new Thread(() => 
             {
-                if (Common.Settings.MEASURE_SPEED) Common.Measure.MeasureTime.Start();
+                Common.Measure.MeasureTime.Start();
                 while (R4300_ON)
                 {
                     uint Opcode = memory.ReadUInt32(Registers.R4300.PC);
@@ -261,9 +210,9 @@ namespace Ryu64.MIPS
                         Common.Variables.Step = false;
                     }
                 }
-                if (Common.Settings.MEASURE_SPEED) Common.Measure.MeasureTime.Stop();
+                Common.Measure.MeasureTime.Stop();
             });
-
+            CPUThread.Name = "R4300";
             CPUThread.Start();
         }
     }

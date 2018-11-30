@@ -170,7 +170,7 @@ namespace Ryu64.MIPS
             WriteUInt32(0x0470000C, 0b1110); // RI_SELECT_REG
 
             // Copy the Boot Code to SP_DMEM
-            if (!Common.Settings.LOAD_PIF)
+            if (!Common.Variables.PIFEnabled)
                 FastMemoryCopy(0x04000040, 0x10000040, 0xFC0);
 
             // Required by CIC x105
