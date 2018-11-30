@@ -10,8 +10,6 @@ namespace Ryu64
         public struct CLIFlags
         {
             public string InputRom;
-            public string PIF;
-            public bool PIFEnabled;
             public bool UTEsyscall;
             public bool Debug;
             public bool NoWindow;
@@ -26,21 +24,6 @@ namespace Ryu64
 
         public static CLIFlag[] FlagList =
         {
-            new CLIFlag
-            {
-                FlagName = "pif",
-                Arguments = 1,
-                Method = (a, i) =>
-                {
-                    if (!File.Exists(a[i + 1]))
-                    {
-                        Common.Logger.PrintErrorLine($"The file \"{a[i + 1]}\" doesn't exist.");
-                        Environment.Exit(1);
-                    }
-                    Flags.PIF = a[i + 1];
-                    Flags.PIFEnabled = true;
-                }
-            },
             new CLIFlag
             {
                 FlagName = "debug",
@@ -107,8 +90,6 @@ namespace Ryu64
             }
 
             Common.Variables.Debug      = Flags.Debug;
-            Common.Variables.PIFEnabled = Flags.PIFEnabled;
-            Common.Variables.PIF        = Flags.PIF;
             Common.Variables.UTEsyscall = Flags.UTEsyscall;
         }
     }

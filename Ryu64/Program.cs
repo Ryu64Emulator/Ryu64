@@ -48,8 +48,6 @@ namespace Ryu64
 
             Common.Settings.Parse("./Settings.ini");
 
-            if (CLI.Flags.PIFEnabled) Common.Variables.PIF = CLI.Flags.PIF;
-
             MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
             MIPS.R4300.PowerOnR4300();
