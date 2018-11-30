@@ -106,9 +106,9 @@ namespace Ryu64
                 Environment.Exit(1);
             }
 
-            Common.Variables.Debug = Flags.Debug;
+            Common.Variables.Debug      = Flags.Debug;
             Common.Variables.PIFEnabled = Flags.PIFEnabled;
-            Common.Variables.Debug = Flags.Debug;
+            Common.Variables.PIF        = Flags.PIF;
             Common.Variables.UTEsyscall = Flags.UTEsyscall;
         }
     }
