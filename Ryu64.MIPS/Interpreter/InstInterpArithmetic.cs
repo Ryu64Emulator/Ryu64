@@ -149,7 +149,7 @@
 
         public static void SLLV(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] << (byte)(Registers.R4300.Reg[Desc.op1] & 0x0000001F);
+            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] << (byte)(Registers.R4300.Reg[Desc.op1] & 0x1F);
             Registers.R4300.PC += 4;
         }
 
@@ -173,7 +173,7 @@
 
         public static void SRLV(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] >> (byte)(Registers.R4300.Reg[Desc.op1] & 0x0000001F);
+            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] >> (byte)(Registers.R4300.Reg[Desc.op1] & 0x1F);
             Registers.R4300.PC += 4;
         }
 
