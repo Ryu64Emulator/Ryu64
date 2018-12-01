@@ -1,5 +1,6 @@
 ﻿using Ryu64.Formats;
 using System;
+using System.IO;
 
 /*
 This is free and unencumbered software released into the public domain.
@@ -46,7 +47,13 @@ namespace Ryu64
                 Environment.Exit(1);
             }
 
-            Common.Settings.Parse("./Settings.ini");
+            if (!Directory.Exists(Common.Variables.AppdataFolder))
+            {
+                Directory.CreateDirectory(Common.Variables.AppdataFolder);
+                Directory.CreateDirectory($"{Common.Variables.AppdataFolder}/saves");
+            }
+
+            Common.Settings.Parse($"{AppDomain.CurrentDomain.BaseDirectory}/Settings.ini");
 
             MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
