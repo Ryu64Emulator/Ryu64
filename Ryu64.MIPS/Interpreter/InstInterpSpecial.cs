@@ -6,7 +6,7 @@ namespace Ryu64.MIPS
     {
         public static void SYSCALL(OpcodeTable.OpcodeDesc Desc)
         {
-            if (Desc.op4 > 0 && Common.Settings.SUPPORT_CPUTEST_SYSCALL)
+            if (Desc.op4 > 0 && Common.Variables.UTEsyscall)
             {
                 // Special type of SYSCALL used for the Fraser CPU Tests
                 char TestChar = (char)(Desc.op2 + 64);

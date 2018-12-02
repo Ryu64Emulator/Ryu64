@@ -19,6 +19,11 @@ namespace Ryu64.Formats
             if (!IsCorrectEndian)
                 return;
 
+            Name = "";
+
+            for (int i = 0; i < 27; ++i)
+                Name += (char)AllData[i + 0x20];
+
             HasBeenParsed = true;
         }
     }
