@@ -10,6 +10,7 @@
         }
 
         public byte[] AllData;
+        public string Name;
 
         public bool HasBeenParsed = false;
 

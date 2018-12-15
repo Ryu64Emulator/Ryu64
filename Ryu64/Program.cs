@@ -1,5 +1,6 @@
 ﻿using Ryu64.Formats;
 using System;
+using System.IO;
 
 /*
 This is free and unencumbered software released into the public domain.
@@ -35,31 +36,30 @@ namespace Ryu64
         [STAThread]
         static void Main(string[] args)
         {
-            if (args.Length < (Common.Settings.LOAD_PIF ? 2 : 1))
-            {
-                Common.Logger.PrintErrorLine(Common.Settings.LOAD_PIF ? 
-                    "Please specify a .z64 file, and a PIF Rom to open." : "Please specify a .z64 file to open.");
-                Environment.Exit(-1);
-            }
+            CLI.ParseArguments(args);
 
-            Z64 Rom = new Z64(args[0]);
+            Z64 Rom = new Z64(CLI.Flags.InputRom);
             Rom.Parse();
 
             if (!Rom.HasBeenParsed)
             {
-                Common.Logger.PrintErrorLine("Can't open .z64, it's either, a bad .z64 or it is in Little Endian.");
-                Environment.Exit(-1);
+                Common.Logger.PrintErrorLine("Can't open ROM, it's either, a bad ROM or it is in Little Endian (Byte swapping not implemented yet).");
+                Environment.Exit(1);
             }
 
-            Common.Settings.Parse("./Settings.ini");
+            if (!Directory.Exists(Common.Variables.AppdataFolder))
+            {
+                Directory.CreateDirectory(Common.Variables.AppdataFolder);
+                Directory.CreateDirectory($"{Common.Variables.AppdataFolder}/saves");
+            }
 
-            Common.Settings.PIF_ROM = Common.Settings.LOAD_PIF ? args[1] : "";
+            Common.Settings.Parse($"{AppDomain.CurrentDomain.BaseDirectory}/Settings.ini");
 
             MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
             MIPS.R4300.PowerOnR4300();
 
-            using (Graphics.MainWindow Window = new Graphics.MainWindow()) Window.Run(60.0);
+            if (!CLI.Flags.NoWindow) using (Graphics.MainWindow Window = new Graphics.MainWindow(Rom.Name.Trim())) Window.Run(60.0);
         }
     }
 }

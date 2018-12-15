@@ -10,16 +10,18 @@ namespace Ryu64.Graphics
 {
     public class MainWindow : GameWindow
     {
-        private const string BaseTitle = "Ryu64";
+        private static string BaseTitle = "Ryu64";
         private static uint  CurrentScanline = 0;
         private static int   FramebufferTexture;
 
-        public MainWindow() : base(960, 720, GraphicsMode.Default, BaseTitle, 
+        public MainWindow(string GameName) : base(960, 720, GraphicsMode.Default, BaseTitle, 
             GameWindowFlags.FixedWindow, 
             DisplayDevice.Default, 
             3, 1,
             GraphicsContextFlags.ForwardCompatible)
         {
+            BaseTitle += $" | {GameName}";
+
             Thread ScanlineThread = new Thread(() =>
             {
                 while (MIPS.R4300.R4300_ON)
@@ -30,6 +32,7 @@ namespace Ryu64.Graphics
                         CurrentScanline = 0;
                 }
             });
+            ScanlineThread.Name = "VIScanlineThread";
             ScanlineThread.Start();
         }
 
@@ -50,7 +53,7 @@ namespace Ryu64.Graphics
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            if (Common.Settings.LLE)
+            if (Common.Settings.GRAPHICS_LLE)
             {
                 GL.Disable(EnableCap.DepthTest);
 
@@ -81,7 +84,7 @@ namespace Ryu64.Graphics
             base.OnRenderFrame(e);
 
             GL.ClearColor(0, 0, 0, 1);
-            if (Common.Settings.LLE)
+            if (Common.Settings.GRAPHICS_LLE)
             {
                 GL.Clear(ClearBufferMask.ColorBufferBit);
                 RenderFramebufferDirect();
@@ -98,7 +101,7 @@ namespace Ryu64.Graphics
         {
             base.OnClosing(e);
 
-            if (Common.Settings.LLE)
+            if (Common.Settings.GRAPHICS_LLE)
                 GL.DeleteTexture(FramebufferTexture);
 
             Common.Util.Cleanup(MIPS.Registers.R4300.PC);
