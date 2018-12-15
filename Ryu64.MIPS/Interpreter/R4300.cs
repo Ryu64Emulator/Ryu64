@@ -126,7 +126,6 @@ namespace Ryu64.MIPS
             if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG])
                 Registers.COP0.Reg[Registers.COP0.RANDOM_REG] = 0x1F; // TODO: Reset the Random Register to 0x1F after writing to the Wired Register.
 
-
             Common.Measure.InstructionCount += 1;
             Common.Measure.CycleCounter = CycleCounter;
         }

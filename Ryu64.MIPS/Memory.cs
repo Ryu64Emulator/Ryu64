@@ -248,13 +248,7 @@ namespace Ryu64.MIPS
             }
 
             if (!FoundEntry)
-            {
-                if (!Common.Settings.DEBUG)
-                    ExceptionHandler.InvokeTLBMiss(index, Store);
-                else
-                    throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"Unmapped memory at 0x{index:X8}, " +
-                        $"PC: 0x{Registers.R4300.PC:X8}");
-            }
+                ExceptionHandler.InvokeTLBMiss(index, Store);
 
             return Result;
         }
