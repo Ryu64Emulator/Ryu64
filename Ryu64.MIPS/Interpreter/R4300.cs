@@ -101,8 +101,12 @@ namespace Ryu64.MIPS
             }
         }
 
-        public static void InterpretOpcode(uint Opcode)
+        public static bool isDelaySlot = false;
+
+        public static void InterpretOpcode(uint Opcode, bool DelaySlot = false)
         {
+            isDelaySlot = DelaySlot;
+
             if (Registers.R4300.Reg[0] != 0) Registers.R4300.Reg[0] = 0;
 
             if (Registers.COP0.Reg[Registers.COP0.COUNT_REG] >= 0xFFFFFFFF)
@@ -113,15 +117,6 @@ namespace Ryu64.MIPS
 
             OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode);
             OpcodeTable.InstInfo   Info = OpcodeTable.GetOpcodeInfo(Opcode);
-
-            if (Common.Settings.DEBUG)
-            {
-                string ASM = string.Format(
-                    Info.FormattedASM,
-                    Desc.op1, Desc.op2, Desc.op3, Desc.op4,
-                    Desc.Imm, Desc.Target);
-                Common.Logger.PrintInfoLine($"0x{Registers.R4300.PC:x}: {Convert.ToString(Opcode, 2).PadLeft(32, '0')}: {ASM}");
-            }
 
             Info.Interpret(Desc);
             CycleCounter += Info.Cycles;
@@ -136,6 +131,8 @@ namespace Ryu64.MIPS
                 Common.Measure.InstructionCount += 1;
                 Common.Measure.CycleCounter = CycleCounter;
             }
+
+            isDelaySlot = false;
         }
 
         public static void PowerOnR4300()

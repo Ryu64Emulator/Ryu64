@@ -118,7 +118,7 @@ namespace Ryu64.MIPS
                 }
             }
 
-            if (!FoundEntry) throw new Common.Exceptions.TLBMissException("TLB Miss happened while probing the TLB.");
+            if (!FoundEntry) Registers.COP0.Reg[Registers.COP0.INDEX_REG] |= 0x80000000;
         }
     }
 }

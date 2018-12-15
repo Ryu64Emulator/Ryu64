@@ -16,13 +16,13 @@
 
         public static void ADDIU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm);
+            Registers.R4300.Reg[Desc.op2] = (uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm);
             Registers.R4300.PC += 4;
         }
 
         public static void ADDU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)((int)Registers.R4300.Reg[Desc.op1] + (int)Registers.R4300.Reg[Desc.op2]);
+            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op1] + (uint)Registers.R4300.Reg[Desc.op2];
             Registers.R4300.PC += 4;
         }
 
@@ -88,7 +88,7 @@
 
         public static void ORI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] | Desc.Imm;
+            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] | (uint)(Desc.Imm & 0xFFFF);
             Registers.R4300.PC += 4;
         }
 

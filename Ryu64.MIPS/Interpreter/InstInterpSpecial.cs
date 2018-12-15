@@ -30,8 +30,7 @@ namespace Ryu64.MIPS
 
         public static void BREAK(OpcodeTable.OpcodeDesc Desc)
         {
-            Common.Util.Cleanup(Registers.R4300.PC);
-            throw new Common.Exceptions.ProgramBreakPointException("Guest broke execution.");
+            ExceptionHandler.InvokeBreak();
         }
     }
 }

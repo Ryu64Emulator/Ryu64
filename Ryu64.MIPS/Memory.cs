@@ -230,10 +230,13 @@ namespace Ryu64.MIPS
             }
         }
 
-        private MemEntry GetEntry(uint index)
+        private MemEntry GetEntry(uint index, bool Store = false)
         {
             bool FoundEntry = false;
-            MemEntry Result = new MemEntry();
+            MemEntry Result = new MemEntry()
+            {
+                StartAddress = uint.MaxValue
+            };
 
             for (int i = 0; i < MemoryMap.Length; ++i)
             {
@@ -247,8 +250,11 @@ namespace Ryu64.MIPS
 
             if (!FoundEntry)
             {
-                throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"\"0x{index:x8}\" does not pertain to any mapped memory." +
-                    $"  PC: 0x{Registers.R4300.PC:x8}");
+                if (!Common.Settings.DEBUG)
+                    ExceptionHandler.InvokeTLBMiss(index, Store);
+                else
+                    throw new Common.Exceptions.InvalidOrUnimplementedMemoryMapException($"Unmapped memory at 0x{index:X8}, " +
+                        $"PC: 0x{Registers.R4300.PC:X8}");
             }
 
             return Result;
@@ -259,7 +265,9 @@ namespace Ryu64.MIPS
             get
             {
                 uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
-                MemEntry Entry = GetEntry(nonCachedIndex);
+                MemEntry Entry = GetEntry(nonCachedIndex, false);
+
+                if (Entry.StartAddress == uint.MaxValue) return 0;
 
                 if (Entry.ReadArray == null)
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not readable.");
@@ -269,7 +277,9 @@ namespace Ryu64.MIPS
             set
             {
                 uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
-                MemEntry Entry = GetEntry(nonCachedIndex);
+                MemEntry Entry = GetEntry(nonCachedIndex, true);
+
+                if (Entry.StartAddress == uint.MaxValue) return;
 
                 if (Entry.WriteArray == null)
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not writable.");
@@ -284,7 +294,9 @@ namespace Ryu64.MIPS
             {
                 uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
                 byte[] result = new byte[size];
-                MemEntry Entry = GetEntry(nonCachedIndex);
+                MemEntry Entry = GetEntry(nonCachedIndex, false);
+
+                if (Entry.StartAddress == uint.MaxValue) return result;
 
                 if (Entry.ReadArray == null)
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not readable.");
@@ -298,7 +310,9 @@ namespace Ryu64.MIPS
             set
             {
                 uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
-                MemEntry Entry = GetEntry(nonCachedIndex);
+                MemEntry Entry = GetEntry(nonCachedIndex, true);
+
+                if (Entry.StartAddress == uint.MaxValue) return;
 
                 if (Entry.WriteArray == null)
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not writable.");
