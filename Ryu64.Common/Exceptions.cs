@@ -41,24 +41,6 @@ namespace Ryu64.Common
                 : base(string.Format(format, args), innerException) { }
         }
 
-        public class ProgramBreakPointException : Exception
-        {
-            public ProgramBreakPointException()
-                : base() { }
-
-            public ProgramBreakPointException(string message)
-                : base(message) { }
-
-            public ProgramBreakPointException(string format, params object[] args)
-                : base(string.Format(format, args)) { }
-
-            public ProgramBreakPointException(string message, Exception innerException)
-                : base(message, innerException) { }
-
-            public ProgramBreakPointException(string format, Exception innerException, params object[] args)
-                : base(string.Format(format, args), innerException) { }
-        }
-
         public class InvalidOperationException : Exception
         {
             public InvalidOperationException()
@@ -74,24 +56,6 @@ namespace Ryu64.Common
                 : base(message, innerException) { }
 
             public InvalidOperationException(string format, Exception innerException, params object[] args)
-                : base(string.Format(format, args), innerException) { }
-        }
-
-        public class TLBMissException : Exception
-        {
-            public TLBMissException()
-                : base() { }
-
-            public TLBMissException(string message)
-                : base(message) { }
-
-            public TLBMissException(string format, params object[] args)
-                : base(string.Format(format, args)) { }
-
-            public TLBMissException(string message, Exception innerException)
-                : base(message, innerException) { }
-
-            public TLBMissException(string format, Exception innerException, params object[] args)
                 : base(string.Format(format, args), innerException) { }
         }
     }

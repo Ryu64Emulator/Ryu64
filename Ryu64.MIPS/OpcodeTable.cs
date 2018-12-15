@@ -165,7 +165,7 @@ namespace Ryu64.MIPS
             SetOpcode("01000010000000000000000000001000", InstInterp.TLBP,  "TLBP");
 
             // Credit to Ryujinx for the FastLookup code!
-            // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/AOpCodeTable.cs
+            // https://github.com/Ryujinx/Ryujinx/blob/master/ChocolArm64/OpCodeTable.cs
 
             List<InstInfo>[] Tmp = new List<InstInfo>[FastLookupSize];
 
