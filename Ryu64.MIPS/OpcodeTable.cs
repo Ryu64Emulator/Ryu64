@@ -169,39 +169,42 @@ namespace Ryu64.MIPS
 
             List<InstInfo>[] Tmp = new List<InstInfo>[FastLookupSize];
 
-            for (int i = 0; i < FastLookupSize; ++i)
+            for (uint i = 0; i < FastLookupSize; ++i)
                 Tmp[i] = new List<InstInfo>();
 
             foreach (InstInfo Inst in AllInsts)
             {
-                int Mask  = ToFastLookupIndex((int)Inst.Mask);
-                int Value = ToFastLookupIndex((int)Inst.Value);
+                uint Mask  = ToFastLookupIndex(Inst.Mask);
+                uint Value = ToFastLookupIndex(Inst.Value);
 
-                for (int i = 0; i < FastLookupSize; ++i)
+                for (uint i = 0; i < FastLookupSize; ++i)
                     if ((i & Mask) == Value) Tmp[i].Add(Inst);
             }
 
-            for (int i = 0; i < FastLookupSize; ++i)
+            for (uint i = 0; i < FastLookupSize; ++i)
                 FastLookup[i] = Tmp[i].ToArray();
 
             AllInsts.Clear();
         }
 
-        private static int ToFastLookupIndex(int Value)
+        private static uint ToFastLookupIndex(uint Value)
         {
             return ((Value >> 10) & 0x00F) | ((Value >> 18) & 0xFF0);
         }
 
         public static InstInfo GetOpcodeInfo(uint Opcode)
         {
-            return GetOpcodeInfoFromList(FastLookup[ToFastLookupIndex((int)Opcode)], Opcode);
+            return GetOpcodeInfoFromList(FastLookup[ToFastLookupIndex(Opcode)], Opcode);
         }
 
-        public static InstInfo GetOpcodeInfoFromList(IEnumerable<InstInfo> InstList, uint Opcode)
+        public static InstInfo GetOpcodeInfoFromList(InstInfo[] InstList, uint Opcode)
         {
-            foreach (InstInfo info in InstList)
-                if ((Opcode & info.Mask) == info.Value)
-                    return info;
+            for (uint i = 0; i < InstList.Length; ++i)
+            {
+                InstInfo Info = InstList[i];
+                if ((Opcode & Info.Mask) == Info.Value)
+                    return Info;
+            }
 
             throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction.  PC: 0x{Registers.R4300.PC:x8}");
         }

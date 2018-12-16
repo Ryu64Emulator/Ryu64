@@ -36,9 +36,9 @@ namespace Ryu64.MIPS
             if (AddressTranslationCache.TryGetValue(Address, out uint TranslatedAddress))
                 return TranslatedAddress;
 
-            foreach (uint index in EntriesWrittenToCache)
+            for (uint i = 0; i < EntriesWrittenToCache.Count; ++i)
             {
-                TLBEntry Entry = TLBEntries[index];
+                TLBEntry Entry = TLBEntries[EntriesWrittenToCache[(int)i]];
 
                 uint VPN = Entry.EntryHi & ~(Entry.PageMask | 0x1FFF);
 

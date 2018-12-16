@@ -12,7 +12,7 @@
 
             public static void PrintRegisterInfo()
             {
-                for (int i = 0; i < Reg.Length; ++i)
+                for (uint i = 0; i < Reg.Length; ++i)
                     Common.Logger.PrintInfoLine($"R[{i}]: 0x{Reg[i]:x16}");
             }
         }
