@@ -25,23 +25,40 @@ namespace Ryu64.MIPS
 
         private readonly static TLBEntry[] TLBEntries = new TLBEntry[32];
 
+        private readonly static Dictionary<uint, uint> AddressTranslationCache = new Dictionary<uint, uint>();
+
+        private readonly static List<uint> EntriesWrittenToCache = new List<uint>();
+
         public static uint TranslateAddress(uint Address)
         {
-            foreach (TLBEntry Entry in TLBEntries)
+            if (AddressTranslationCache.TryGetValue(Address, out uint TranslatedAddress))
+                return TranslatedAddress;
+
+            foreach (uint index in EntriesWrittenToCache)
             {
-                uint VPN      = (uint)(((Entry.VPN2 << 13) | Entry.ASID) & ~((Entry.PageMask << 13) | 0x1FFF));
+                TLBEntry Entry = TLBEntries[index];
+
+                uint VPN = (uint)(((Entry.VPN2 << 13) | Entry.ASID) & ~((Entry.PageMask << 13) | 0x1FFF));
+
+                if ((Address & (VPN | 0xE0000000)) != VPN) continue;
+                
                 uint Mask     = (uint)((Entry.PageMask << 12) | 0x0FFF);
                 uint PageSize = Mask + 1;
 
-                if ((Address & (VPN | 0xE0000000)) != VPN) continue;
+                bool Odd = (Address & PageSize) == 1;
 
-                uint Valid = ((Address & PageSize) != 1) ? Entry.Valid0 : Entry.Valid1;
+                uint Valid = (!Odd) ? Entry.Valid0 : Entry.Valid1;
 
                 if (Valid == 0) continue;
 
-                uint PFN = ((Address & PageSize) != 1) ? Entry.PFN0 : Entry.PFN1;
+                uint PFN = (!Odd) ? Entry.PFN0 : Entry.PFN1;
 
-                return (PFN * PageSize) | (Address & Mask);
+                uint Result = (PFN * PageSize) | (Address & Mask);
+
+                if (!AddressTranslationCache.ContainsKey(Address))
+                    AddressTranslationCache.Add(Address, Result);
+
+                return Result;
             }
 
             return Address;
@@ -95,6 +112,11 @@ namespace Ryu64.MIPS
                                      & ((byte)Registers.COP0.Reg[Registers.COP0.ENTRYLO1_REG] & 0x1)),
                 ASID = (byte)(Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG] & 0xFF)
             };
+
+            if (!EntriesWrittenToCache.Contains(Index & 0x1F))
+                EntriesWrittenToCache.Add(Index & 0x1F);
+
+            AddressTranslationCache.Clear();
         }
 
         public static void ProbeTLB()
