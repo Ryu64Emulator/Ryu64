@@ -47,6 +47,9 @@ namespace Ryu64.MIPS
         {
             Registers.COP0.Reg[Registers.COP0.EPC_REG] = (R4300.isDelaySlot) ? Registers.R4300.PC : Registers.R4300.PC - 4;
             Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= (uint)ExcCode.Bp | ((R4300.isDelaySlot) ? (0x80000000) : 0);
+
+            Common.Logger.PrintInfoLine($"Break at PC: 0x{Registers.R4300.PC:X8}");
+
             Registers.R4300.PC = 0x80000180;
         }
     }

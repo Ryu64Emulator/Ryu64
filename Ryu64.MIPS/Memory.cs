@@ -151,6 +151,8 @@ namespace Ryu64.MIPS
             for (uint i = 0; i < Rom.Length; ++i)
                 RealRom[i] = Rom[i];
 
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"ROM is {Common.Util.GetByteSizeString(RealRom.Length)} big.");
+
             MemoryMapList.Add(new MemEntry(0x10000000, 0x1F39FFFF, RealRom, RealRom, "Cartridge Domain 1 (Address 2)"));
 
             // PIF

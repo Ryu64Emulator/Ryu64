@@ -183,6 +183,8 @@ namespace Ryu64.MIPS
 
             for (int i = 0; i < FastLookupSize; ++i)
                 FastLookup[i] = Tmp[i].ToArray();
+
+            AllInsts.Clear();
         }
 
         private static int ToFastLookupIndex(int Value)
