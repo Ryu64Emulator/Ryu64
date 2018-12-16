@@ -18,9 +18,8 @@ namespace Ryu64.MIPS
             public byte Dirty1;
             public byte Valid1;
             public byte Global1;
-            public uint VPN2;
-            public byte ASID;
-            public ushort PageMask;
+            public uint EntryHi;
+            public uint PageMask;
         }
 
         private readonly static TLBEntry[] TLBEntries = new TLBEntry[32];
@@ -31,6 +30,9 @@ namespace Ryu64.MIPS
 
         public static uint TranslateAddress(uint Address)
         {
+            if (Common.Settings.TLB_REGLOCKOFF && (Address & 0x04000000) == 0x04000000)
+                return Address;
+
             if (AddressTranslationCache.TryGetValue(Address, out uint TranslatedAddress))
                 return TranslatedAddress;
 
@@ -38,11 +40,11 @@ namespace Ryu64.MIPS
             {
                 TLBEntry Entry = TLBEntries[index];
 
-                uint VPN = (uint)(((Entry.VPN2 << 13) | Entry.ASID) & ~((Entry.PageMask << 13) | 0x1FFF));
+                uint VPN = Entry.EntryHi & ~(Entry.PageMask | 0x1FFF);
 
                 if ((Address & (VPN | 0xE0000000)) != VPN) continue;
                 
-                uint Mask     = (uint)((Entry.PageMask << 12) | 0x0FFF);
+                uint Mask     = (Entry.PageMask >> 1) | 0x0FFF;
                 uint PageSize = Mask + 1;
 
                 bool Odd = (Address & PageSize) == 1;
@@ -89,7 +91,7 @@ namespace Ryu64.MIPS
                                                                | (byte)((Entry.PageCoherency1 & 0b111) << 3);
 
             Registers.COP0.Reg[Registers.COP0.PAGEMASK_REG] = (uint)(Entry.PageMask << 13);
-            Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG] = (Entry.VPN2 << 13) | Entry.ASID;
+            Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG] = Entry.EntryHi;
         }
 
         private static void WriteTLBEntry(uint Index)
@@ -104,13 +106,12 @@ namespace Ryu64.MIPS
                 Valid1         = (byte)((Registers.COP0.Reg[Registers.COP0.ENTRYLO1_REG] & 0b000010) >> 1),
                 Dirty1         = (byte)((Registers.COP0.Reg[Registers.COP0.ENTRYLO1_REG] & 0b000100) >> 2),
                 PageCoherency1 = (byte)((Registers.COP0.Reg[Registers.COP0.ENTRYLO1_REG] & 0b111000) >> 3),
-                VPN2          = (uint)((Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG] & 0xFFFFE000)  >> 13),
-                PageMask      = (ushort)((Registers.COP0.Reg[Registers.COP0.PAGEMASK_REG] & 0x1FFF)   >> 13),
+                EntryHi       = (uint)Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG],
+                PageMask      = (uint)Registers.COP0.Reg[Registers.COP0.PAGEMASK_REG],
                 Global0       = (byte)(((byte)Registers.COP0.Reg[Registers.COP0.ENTRYLO0_REG] & 0x1)
                                      & ((byte)Registers.COP0.Reg[Registers.COP0.ENTRYLO1_REG] & 0x1)),
                 Global1       = (byte)(((byte)Registers.COP0.Reg[Registers.COP0.ENTRYLO0_REG] & 0x1)
                                      & ((byte)Registers.COP0.Reg[Registers.COP0.ENTRYLO1_REG] & 0x1)),
-                ASID = (byte)(Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG] & 0xFF)
             };
 
             if (!EntriesWrittenToCache.Contains(Index & 0x1F))
@@ -131,8 +132,10 @@ namespace Ryu64.MIPS
                 uint EntryHi = (uint)Registers.COP0.Reg[Registers.COP0.ENTRYHI_REG];
                 uint VPN2 = (EntryHi & 0xFFFFE000) >> 13;
                 uint ASID = EntryHi & 0xFF;
+                uint EntryVPN2 = (Entry.EntryHi & 0xFFFFE000) >> 13;
+                uint EntryASID = Entry.EntryHi & 0xFF;
 
-                if (Entry.VPN2 == VPN2 && Entry.ASID == ASID)
+                if (EntryVPN2 == VPN2 && EntryASID == ASID)
                 {
                     FoundEntry = true;
                     Registers.COP0.Reg[Registers.COP0.INDEX_REG] = i & 0x3F;
