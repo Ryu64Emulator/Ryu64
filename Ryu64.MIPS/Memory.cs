@@ -140,11 +140,11 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x0460002C, 0x0460002F, PI_BSD_DOM2_PGS_REG_RW, PI_BSD_DOM2_PGS_REG_RW, "PI_BSD_DOM2_PGS_REG"));
             MemoryMapList.Add(new MemEntry(0x04600030, 0x04600033, PI_BSD_DOM2_RLS_REG_RW, PI_BSD_DOM2_RLS_REG_RW, "PI_BSD_DOM2_RLS_REG"));
 
-            // SI Registers
-            MemoryMapList.Add(new MemEntry(0x04800018, 0x0480001B, SI_STATUS_REG_R, SI_STATUS_REG_W, "SI_STATUS_REG"));
-
             // RI Registers
             MemoryMapList.Add(new MemEntry(0x0470000C, 0x0470000F, RI_SELECT_REG_RW, RI_SELECT_REG_RW, "RI_SELECT_REG"));
+
+            // SI Registers
+            MemoryMapList.Add(new MemEntry(0x04800018, 0x0480001B, SI_STATUS_REG_R, SI_STATUS_REG_W, "SI_STATUS_REG"));
 
             // Rom
             byte[] RealRom = new byte[0x1F39FFFF - 0x10000000]; // Pretty much to pad the rest with zeros.
@@ -233,26 +233,21 @@ namespace Ryu64.MIPS
 
         private MemEntry GetEntry(uint index, bool Store = false)
         {
-            bool FoundEntry = false;
-            MemEntry Result = new MemEntry()
+            for (int i = 0; i < MemoryMap.Length; ++i)
+            {
+                if (MemoryMap[i].EndAddress < index)
+                    continue;
+
+                if (MemoryMap[i].EndAddress > index)
+                    return MemoryMap[i];
+            }
+
+            ExceptionHandler.InvokeTLBMiss(index, Store);
+
+            return new MemEntry()
             {
                 StartAddress = uint.MaxValue
             };
-
-            for (int i = 0; i < MemoryMap.Length; ++i)
-            {
-                MemEntry CurrentEntry = MemoryMap[i];
-                if (index < CurrentEntry.StartAddress || index > CurrentEntry.EndAddress) continue;
-
-                FoundEntry = true;
-                Result = CurrentEntry;
-                break;
-            }
-
-            if (!FoundEntry)
-                ExceptionHandler.InvokeTLBMiss(index, Store);
-
-            return Result;
         }
 
         public byte this[uint index]
