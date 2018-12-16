@@ -78,6 +78,8 @@ namespace Ryu64.MIPS
         private List<MemEntry> MemoryMapList = new List<MemEntry>();
         private MemEntry[]     MemoryMap;
 
+        private uint VIScanlineIndex = 0;
+
         public Memory(byte[] Rom)
         {
             // RDRAM
@@ -107,6 +109,9 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x04400008, 0x0440000B, VI_WIDTH_REG_RW,   VI_WIDTH_REG_RW,   "VI_WIDTH_REG"));
             MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW,    VI_INTR_REG_RW,    "VI_INTR_REG"));
             MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_RW, VI_CURRENT_REG_RW, "VI_CURRENT_REG"));
+
+            VIScanlineIndex = (uint)MemoryMapList.Count-1;
+
             MemoryMapList.Add(new MemEntry(0x04400014, 0x04400017, VI_BURST_REG_RW,   VI_BURST_REG_RW,   "VI_BURST_REG"));
             MemoryMapList.Add(new MemEntry(0x04400018, 0x0440001B, VI_V_SYNC_REG_RW,  VI_V_SYNC_REG_RW,  "VI_V_SYNC_REG"));
             MemoryMapList.Add(new MemEntry(0x0440001C, 0x0440001F, VI_H_SYNC_REG_RW,  VI_H_SYNC_REG_RW,  "VI_H_SYNC_REG"));
@@ -233,13 +238,17 @@ namespace Ryu64.MIPS
 
         private MemEntry GetEntry(uint index, bool Store = false)
         {
+            if (index == 0x04400010) return MemoryMap[VIScanlineIndex]; // So that the VIScanline thread runs faster.
+
             for (int i = 0; i < MemoryMap.Length; ++i)
             {
                 if (MemoryMap[i].EndAddress < index)
                     continue;
 
                 if (MemoryMap[i].EndAddress > index)
+                {
                     return MemoryMap[i];
+                }
             }
 
             ExceptionHandler.InvokeTLBMiss(index, Store);
