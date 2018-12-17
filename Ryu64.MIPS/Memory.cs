@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Ryu64.MIPS
 {
@@ -208,9 +209,11 @@ namespace Ryu64.MIPS
 
             PI_STATUS_REG_R[3] |= 0b0001; // Set DMA Busy
 
-            SafeMemoryCopy(DramAddr, CartAddr, (int)WriteLength + 1);
+            FastMemoryCopy(DramAddr, CartAddr, (int)WriteLength + 1);
 
             PI_STATUS_REG_R[3] &= 0b1110; // Clear DMA Busy
+
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"PIDMA: Type: Write, WriteLength: {WriteLength + 1}, CartAddr: 0x{CartAddr:X8}, DramAddr: 0x{DramAddr:X8}");
         }
 
         struct MemEntry
@@ -246,9 +249,7 @@ namespace Ryu64.MIPS
                     continue;
 
                 if (MemoryMap[i].EndAddress > index)
-                {
                     return MemoryMap[i];
-                }
             }
 
             ExceptionHandler.InvokeTLBMiss(index, Store);
@@ -300,7 +301,11 @@ namespace Ryu64.MIPS
                 if (Entry.ReadArray == null)
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not readable.");
 
-                Buffer.BlockCopy(Entry.ReadArray, (int)(nonCachedIndex - Entry.StartAddress), result, 0, size);
+                nonCachedIndex -= Entry.StartAddress;
+
+                if ((int)nonCachedIndex < 0) nonCachedIndex = 0;
+
+                Buffer.BlockCopy(Entry.ReadArray, (int)nonCachedIndex, result, 0, size);
 
                 Entry.ReadEvent?.Invoke();
 
@@ -316,7 +321,11 @@ namespace Ryu64.MIPS
                 if (Entry.WriteArray == null)
                     throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not writable.");
 
-                Buffer.BlockCopy(value, 0, Entry.WriteArray, (int)(nonCachedIndex - Entry.StartAddress), size);
+                nonCachedIndex -= Entry.StartAddress;
+
+                if ((int)nonCachedIndex < 0) nonCachedIndex = 0;
+
+                Buffer.BlockCopy(value, 0, Entry.WriteArray, (int)nonCachedIndex, size);
 
                 Entry.WriteEvent?.Invoke();
             }
@@ -375,15 +384,7 @@ namespace Ryu64.MIPS
         public ushort ReadUInt16(uint index)
         {
             byte[] Res = this[index, 2];
-            Array.Reverse(Res);
-            unsafe
-            {
-                fixed (byte* point = &Res[0])
-                {
-                    ushort* shortPoint = (ushort*)point;
-                    return *shortPoint;
-                }
-            }
+            return (ushort)((Res[1]) | (Res[0] << 8));
         }
 
         public void WriteUInt16(uint index, ushort value)
@@ -413,15 +414,7 @@ namespace Ryu64.MIPS
         public uint ReadUInt32(uint index)
         {
             byte[] Res = this[index, 4];
-            Array.Reverse(Res);
-            unsafe
-            {
-                fixed (byte* point = &Res[0])
-                {
-                    uint* intPoint = (uint*)point;
-                    return *intPoint;
-                }
-            }
+            return (uint)(Res[3] | (Res[2] << 8) | (Res[1] << 16) | (Res[0] << 24));
         }
 
         public void WriteUInt32(uint index, uint value)
@@ -451,15 +444,8 @@ namespace Ryu64.MIPS
         public ulong ReadUInt64(uint index)
         {
             byte[] Res = this[index, 8];
-            Array.Reverse(Res);
-            unsafe
-            {
-                fixed (byte* point = &Res[0])
-                {
-                    ulong* longPoint = (ulong*)point;
-                    return *longPoint;
-                }
-            }
+            return (uint)(Res[7] | (Res[6] << 8) | (Res[5] << 16) | (Res[4] << 24) 
+                | (Res[3] << 32) | (Res[2] << 40) | (Res[1] << 48) | (Res[0] << 56));
         }
 
         public void WriteUInt64(uint index, ulong value)

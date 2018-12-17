@@ -38,9 +38,12 @@ namespace Ryu64.MIPS
             Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= (Store ? (uint)ExcCode.TLBS : (uint)ExcCode.TLBL) 
                                                             | ((R4300.isDelaySlot) ? (0x80000000) : 0);
 
-            Common.Logger.PrintInfoLine($"TLB Miss at PC: 0x{Registers.R4300.PC:X8}, BadVAddr: 0x{AddressWrittenTo:X8}");
+            Common.Logger.PrintWarningLine($"TLB Miss at PC: 0x{Registers.R4300.PC:X8}, BadVAddr: 0x{AddressWrittenTo:X8}");
 
-            Registers.R4300.PC = 0x80000000;
+            if ((Registers.COP0.Reg[Registers.COP0.STATUS_REG] & 0b00000000010000000000000000000000) == 0b00000000010000000000000000000000)
+                Registers.R4300.PC = 0xBFC00200;
+            else
+                Registers.R4300.PC = 0x80000000;
         }
 
         public static void InvokeBreak()
@@ -48,7 +51,7 @@ namespace Ryu64.MIPS
             Registers.COP0.Reg[Registers.COP0.EPC_REG] = (R4300.isDelaySlot) ? Registers.R4300.PC : Registers.R4300.PC - 4;
             Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= (uint)ExcCode.Bp | ((R4300.isDelaySlot) ? (0x80000000) : 0);
 
-            Common.Logger.PrintInfoLine($"Break at PC: 0x{Registers.R4300.PC:X8}");
+            Common.Logger.PrintWarningLine($"Break at PC: 0x{Registers.R4300.PC:X8}");
 
             Registers.R4300.PC = 0x80000180;
         }

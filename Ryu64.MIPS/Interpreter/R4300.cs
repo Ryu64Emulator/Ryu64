@@ -130,15 +130,35 @@ namespace Ryu64.MIPS
             Common.Measure.CycleCounter = CycleCounter;
         }
 
+        public enum RomType_enum : uint
+        {
+            Cart = 0,
+            DD = 1
+        }
+
+        public enum ResetType_enum : uint
+        {
+            Cold_Reset = 0,
+            NMI = 1,
+            Reset_To_Boot_Disk = 2
+        }
+
+        public enum TVType_enum : uint
+        {
+            PAL = 0,
+            NTSC = 1,
+            MPAL = 2
+        }
+
         public static void PowerOnR4300()
         {
             for (int i = 0; i < Registers.R4300.Reg.Length; ++i)
                 Registers.R4300.Reg[i] = 0; // Clear Registers.
 
-            uint RomType   = 0; // 0 = Cart, 1 = DD
-            uint ResetType = 0; // 0 = Cold Reset, 1 = NMI, 2 = Reset to boot disk
+            uint RomType   = (uint)RomType_enum.Cart;
+            uint ResetType = (uint)ResetType_enum.Cold_Reset;
             uint osVersion = 0; // 00 = 1.0, 15 = 2.5, etc.
-            uint TVType    = 1; // 0 = PAL, 1 = NTSC, 2 = MPAL
+            uint TVType    = (uint)TVType_enum.NTSC;
 
             Registers.R4300.Reg[1]  = 0x0000000000000001;
             Registers.R4300.Reg[2]  = 0x000000000EBDA536;

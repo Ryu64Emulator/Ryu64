@@ -4,10 +4,12 @@ namespace Ryu64.Common
 {
     public class Logger
     {
+        private const string TimeFormatting = "mm\\:ss\\.ffff";
+
         public static void PrintInfo(string Info)
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write(Info);
+            Console.Write($"{Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Info}");
             Console.ResetColor();
         }
 
@@ -19,7 +21,7 @@ namespace Ryu64.Common
         public static void PrintError(string Error)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write(Error);
+            Console.Write($"{Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Error}");
             Console.ResetColor();
         }
 
@@ -31,7 +33,7 @@ namespace Ryu64.Common
         public static void PrintWarning(string Warning)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Write(Warning);
+            Console.Write($"{Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Warning}");
             Console.ResetColor();
         }
 
