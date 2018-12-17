@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace Ryu64.MIPS
 {
@@ -79,7 +78,7 @@ namespace Ryu64.MIPS
         private List<MemEntry> MemoryMapList = new List<MemEntry>();
         private MemEntry[]     MemoryMap;
 
-        private uint VIScanlineIndex = 0;
+        private readonly uint VIScanlineIndex = 0;
 
         public Memory(byte[] Rom)
         {
@@ -330,6 +329,19 @@ namespace Ryu64.MIPS
                 Entry.WriteEvent?.Invoke();
             }
         }
+
+        // This makes the VIScanline thread slower?  Might be useful later.
+        /*
+        public void WriteScanLine(uint value)
+        {
+            byte[] writeBytes = new byte[4];
+            writeBytes[3] = (byte)(value & 0xFF);
+            writeBytes[2] = (byte)((value >> 8) & 0xFF);
+            writeBytes[1] = (byte)((value >> 16) & 0xFF);
+            writeBytes[0] = (byte)((value >> 24) & 0xFF);
+            Buffer.BlockCopy(writeBytes, 0, MemoryMap[VIScanlineIndex].WriteArray, 0, 4);
+        }
+        */
 
         public void FastMemoryWrite(uint Dest, byte[] ToWrite)
         {

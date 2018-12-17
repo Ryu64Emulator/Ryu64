@@ -33,8 +33,8 @@ namespace Ryu64.MIPS
             if (Common.Settings.TLB_REGLOCKOFF && (Address & 0x04000000) == 0x04000000)
                 return Address;
 
-            if (AddressTranslationCache.TryGetValue(Address, out uint TranslatedAddress))
-                return TranslatedAddress;
+            if (AddressTranslationCache.ContainsKey(Address))
+                return AddressTranslationCache[Address];
 
             for (uint i = 0; i < EntriesWrittenToCache.Count; ++i)
             {

@@ -31,8 +31,10 @@ namespace Ryu64.Graphics
                     if (CurrentScanline == 525)
                         CurrentScanline = 0;
                 }
-            });
-            ScanlineThread.Name = "VIScanlineThread";
+            })
+            {
+                Name = "VIScanlineThread"
+            };
             ScanlineThread.Start();
         }
 

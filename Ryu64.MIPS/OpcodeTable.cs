@@ -49,7 +49,7 @@ namespace Ryu64.MIPS
         }
 
         private static List<InstInfo> AllInsts;
-        private static int FastLookupSize = 0x1000;
+        private const int FastLookupSize = 0x1000;
         private static InstInfo[][] FastLookup;
 
         public static void Init()

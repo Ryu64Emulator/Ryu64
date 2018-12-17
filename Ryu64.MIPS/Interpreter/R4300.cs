@@ -107,6 +107,8 @@ namespace Ryu64.MIPS
         {
             isDelaySlot = DelaySlot;
 
+            ExceptionHandler.PollSoftwareInt();
+
             if (Registers.R4300.Reg[0] != 0) Registers.R4300.Reg[0] = 0;
 
             if (Registers.COP0.Reg[Registers.COP0.COUNT_REG] >= 0xFFFFFFFF)
@@ -195,8 +197,8 @@ namespace Ryu64.MIPS
 
             OpcodeTable.Init();
 
-            Thread CPUThread = 
-            new Thread(() => 
+            Thread CPUThread =
+            new Thread(() =>
             {
                 Common.Measure.MeasureTime.Start();
                 while (R4300_ON)
@@ -204,7 +206,7 @@ namespace Ryu64.MIPS
                     uint Opcode = memory.ReadUInt32(Registers.R4300.PC);
                     InterpretOpcode(Opcode);
 
-                    while (Common.Settings.STEP_MODE && !Common.Variables.Step);
+                    while (Common.Settings.STEP_MODE && !Common.Variables.Step) ;
                     if (Common.Settings.STEP_MODE)
                     {
                         Registers.R4300.PrintRegisterInfo();
@@ -215,8 +217,10 @@ namespace Ryu64.MIPS
                     }
                 }
                 Common.Measure.MeasureTime.Stop();
-            });
-            CPUThread.Name = "R4300";
+            })
+            {
+                Name = "R4300"
+            };
             CPUThread.Start();
         }
     }
