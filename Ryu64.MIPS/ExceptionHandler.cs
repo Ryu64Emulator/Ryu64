@@ -63,13 +63,16 @@ namespace Ryu64.MIPS
                 uint Status = (uint)Registers.COP0.Reg[Registers.COP0.STATUS_REG] & 0xFF00;
                 if (Status > 0)
                 {
+                    if (Registers.COP0.Reg[Registers.COP0.COUNT_REG] == Registers.COP0.Reg[Registers.COP0.COMPARE_REG])
+                        Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= 0x8000;
+
                     uint Cause = (uint)Registers.COP0.Reg[Registers.COP0.CAUSE_REG] & 0xFF00;
                     if ((Status & Cause) > 0)
                     {
                         Registers.COP0.Reg[Registers.COP0.EPC_REG] = (R4300.isDelaySlot) ? Registers.R4300.PC : Registers.R4300.PC - 4;
                         Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= (uint)ExcCode.Int | ((R4300.isDelaySlot) ? (0x80000000) : 0);
 
-                        Common.Logger.PrintWarningLine($"Interrupt at PC: 0x{Registers.R4300.PC:X8}");
+                        Common.Logger.PrintInfoLine($"Interrupt at PC: 0x{Registers.R4300.PC:X8}");
 
                         Registers.R4300.PC = 0x80000180;
                     }

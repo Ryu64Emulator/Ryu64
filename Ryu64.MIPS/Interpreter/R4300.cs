@@ -123,9 +123,10 @@ namespace Ryu64.MIPS
             Info.Interpret(Desc);
             CycleCounter += Info.Cycles;
             Count        += Info.Cycles;
-            Registers.COP0.Reg[Registers.COP0.COUNT_REG] = Count >> 1;
+            Registers.COP0.Reg[Registers.COP0.COUNT_REG] = (uint)(Count >> 1);
             --Registers.COP0.Reg[Registers.COP0.RANDOM_REG];
-            if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG])
+            if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG] 
+             || Registers.COP0.Reg[Registers.COP0.RANDOM_REG] == 0)
                 Registers.COP0.Reg[Registers.COP0.RANDOM_REG] = 0x1F; // TODO: Reset the Random Register to 0x1F after writing to the Wired Register.
 
             Common.Measure.InstructionCount += 1;
