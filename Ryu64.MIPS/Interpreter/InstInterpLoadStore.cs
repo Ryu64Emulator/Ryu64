@@ -1,4 +1,4 @@
-﻿namespace Ryu64.MIPS
+﻿namespace Ryu64.MIPS.Interpreter
 {
     public partial class InstInterp
     {
@@ -17,6 +17,13 @@
         public static void LD(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op2] = (ulong)R4300.memory.ReadInt64((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
+            Registers.R4300.PC += 4;
+        }
+
+        public static void LLD(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)R4300.memory.ReadInt64((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
+            Registers.R4300.LLbit = 1;
             Registers.R4300.PC += 4;
         }
 
@@ -93,6 +100,14 @@
         public static void SDR(OpcodeTable.OpcodeDesc Desc)
         {
             R4300.memory.WriteUInt32((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm) + 4, (uint)Registers.R4300.Reg[Desc.op2]);
+            Registers.R4300.PC += 4;
+        }
+
+        public static void SCD(OpcodeTable.OpcodeDesc Desc)
+        {
+            if (Registers.R4300.LLbit == 1)
+                R4300.memory.WriteUInt64((uint)((int)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), Registers.R4300.Reg[Desc.op2]);
+            Registers.R4300.Reg[Desc.op2] = Registers.R4300.LLbit;
             Registers.R4300.PC += 4;
         }
 

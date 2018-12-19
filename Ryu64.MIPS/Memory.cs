@@ -8,72 +8,73 @@ namespace Ryu64.MIPS
     {
         private delegate void MemoryEvent();
 
-        public readonly byte[] SP_DMEM_RW         = new byte[0x1000];
-        public readonly byte[] SP_IMEM_RW         = new byte[0x1000];
-        public readonly byte[] SP_STATUS_REG_R    = new byte[4];
-        public readonly byte[] SP_STATUS_REG_W    = new byte[4];
-        public readonly byte[] SP_DMA_BUSY_REG_R  = new byte[4];
-        public readonly byte[] SP_DMA_BUSY_REG_W  = new byte[4];
-        public readonly byte[] SP_SEMAPHORE_REG_R = new byte[4];
-        public readonly byte[] SP_SEMAPHORE_REG_W = new byte[4];
-        public readonly byte[] SP_PC_REG_RW       = new byte[4];
+        public byte[] SP_DMEM_RW         = new byte[0x1000];
+        public byte[] SP_IMEM_RW         = new byte[0x1000];
+        public byte[] SP_STATUS_REG_R    = new byte[4];
+        public byte[] SP_STATUS_REG_W    = new byte[4];
+        public byte[] SP_DMA_BUSY_REG_R  = new byte[4];
+        public byte[] SP_DMA_BUSY_REG_W  = new byte[4];
+        public byte[] SP_SEMAPHORE_REG_R = new byte[4];
+        public byte[] SP_SEMAPHORE_REG_W = new byte[4];
+        public byte[] SP_PC_REG_RW       = new byte[4];
 
-        public readonly byte[] DPC_STATUS_REG_R = new byte[4];
-        public readonly byte[] DPC_STATUS_REG_W = new byte[4];
+        public byte[] DPC_STATUS_REG_R = new byte[4];
+        public byte[] DPC_STATUS_REG_W = new byte[4];
 
-        public readonly byte[] MI_INIT_MODE_REG_R = new byte[4];
-        public readonly byte[] MI_INIT_MODE_REG_W = new byte[4];
-        public readonly byte[] MI_VERSION_REG_RW  = new byte[4];
-        public readonly byte[] MI_INTR_REG_R      = new byte[4];
-        public readonly byte[] MI_INTR_MASK_REG_R = new byte[4];
-        public readonly byte[] MI_INTR_MASK_REG_W = new byte[4];
+        public byte[] MI_INIT_MODE_REG_R = new byte[4];
+        public byte[] MI_INIT_MODE_REG_W = new byte[4];
+        public byte[] MI_VERSION_REG_RW  = new byte[4];
+        public byte[] MI_INTR_REG_RW     = new byte[4];
+        public byte[] MI_INTR_MASK_REG_R = new byte[4];
+        public byte[] MI_INTR_MASK_REG_W = new byte[4];
 
-        public readonly byte[] VI_STATUS_REG_RW  = new byte[4];
-        public readonly byte[] VI_ORIGIN_REG_RW  = new byte[4];
-        public readonly byte[] VI_WIDTH_REG_RW   = new byte[4];
-        public readonly byte[] VI_INTR_REG_RW    = new byte[4];
-        public readonly byte[] VI_CURRENT_REG_RW = new byte[4];
-        public readonly byte[] VI_BURST_REG_RW   = new byte[4];
-        public readonly byte[] VI_V_SYNC_REG_RW  = new byte[4];
-        public readonly byte[] VI_H_SYNC_REG_RW  = new byte[4];
-        public readonly byte[] VI_LEAP_REG_RW    = new byte[4];
-        public readonly byte[] VI_H_START_REG_RW = new byte[4];
-        public readonly byte[] VI_V_START_REG_RW = new byte[4];
-        public readonly byte[] VI_V_BURST_REG_RW = new byte[4];
-        public readonly byte[] VI_X_SCALE_REG_RW = new byte[4];
-        public readonly byte[] VI_Y_SCALE_REG_RW = new byte[4];
+        public byte[] VI_STATUS_REG_RW  = new byte[4];
+        public byte[] VI_ORIGIN_REG_RW  = new byte[4];
+        public byte[] VI_WIDTH_REG_RW   = new byte[4];
+        public byte[] VI_INTR_REG_RW    = new byte[4];
+        public byte[] VI_CURRENT_REG_R  = new byte[4];
+        public byte[] VI_CURRENT_REG_W  = new byte[4];
+        public byte[] VI_BURST_REG_RW   = new byte[4];
+        public byte[] VI_V_SYNC_REG_RW  = new byte[4];
+        public byte[] VI_H_SYNC_REG_RW  = new byte[4];
+        public byte[] VI_LEAP_REG_RW    = new byte[4];
+        public byte[] VI_H_START_REG_RW = new byte[4];
+        public byte[] VI_V_START_REG_RW = new byte[4];
+        public byte[] VI_V_BURST_REG_RW = new byte[4];
+        public byte[] VI_X_SCALE_REG_RW = new byte[4];
+        public byte[] VI_Y_SCALE_REG_RW = new byte[4];
 
-        public readonly byte[] AI_DRAM_ADDR_REG_W = new byte[4];
-        public readonly byte[] AI_LEN_REG_RW      = new byte[4];
-        public readonly byte[] AI_CONTROL_REG_W   = new byte[4];
-        public readonly byte[] AI_STATUS_REG_R    = new byte[4];
-        public readonly byte[] AI_STATUS_REG_W    = new byte[4];
-        public readonly byte[] AI_DACRATE_REG_W   = new byte[4];
-        public readonly byte[] AI_BITRATE_REG_W   = new byte[4];
+        public byte[] AI_DRAM_ADDR_REG_W = new byte[4];
+        public byte[] AI_LEN_REG_RW      = new byte[4];
+        public byte[] AI_CONTROL_REG_W   = new byte[4];
+        public byte[] AI_STATUS_REG_R    = new byte[4];
+        public byte[] AI_STATUS_REG_W    = new byte[4];
+        public byte[] AI_DACRATE_REG_W   = new byte[4];
+        public byte[] AI_BITRATE_REG_W   = new byte[4];
 
-        public readonly byte[] PI_DRAM_ADDR_REG_RW    = new byte[4];
-        public readonly byte[] PI_CART_ADDR_REG_RW    = new byte[4];
-        public readonly byte[] PI_WR_LEN_REG_RW       = new byte[4];
-        public readonly byte[] PI_STATUS_REG_R        = new byte[4];
-        public readonly byte[] PI_STATUS_REG_W        = new byte[4];
-        public readonly byte[] PI_BSD_DOM1_LAT_REG_RW = new byte[4];
-        public readonly byte[] PI_BSD_DOM1_PWD_REG_RW = new byte[4];
-        public readonly byte[] PI_BSD_DOM1_PGS_REG_RW = new byte[4];
-        public readonly byte[] PI_BSD_DOM1_RLS_REG_RW = new byte[4];
-        public readonly byte[] PI_BSD_DOM2_LAT_REG_RW = new byte[4];
-        public readonly byte[] PI_BSD_DOM2_PWD_REG_RW = new byte[4];
-        public readonly byte[] PI_BSD_DOM2_PGS_REG_RW = new byte[4];
-        public readonly byte[] PI_BSD_DOM2_RLS_REG_RW = new byte[4];
+        public byte[] PI_DRAM_ADDR_REG_RW    = new byte[4];
+        public byte[] PI_CART_ADDR_REG_RW    = new byte[4];
+        public byte[] PI_WR_LEN_REG_RW       = new byte[4];
+        public byte[] PI_STATUS_REG_R        = new byte[4];
+        public byte[] PI_STATUS_REG_W        = new byte[4];
+        public byte[] PI_BSD_DOM1_LAT_REG_RW = new byte[4];
+        public byte[] PI_BSD_DOM1_PWD_REG_RW = new byte[4];
+        public byte[] PI_BSD_DOM1_PGS_REG_RW = new byte[4];
+        public byte[] PI_BSD_DOM1_RLS_REG_RW = new byte[4];
+        public byte[] PI_BSD_DOM2_LAT_REG_RW = new byte[4];
+        public byte[] PI_BSD_DOM2_PWD_REG_RW = new byte[4];
+        public byte[] PI_BSD_DOM2_PGS_REG_RW = new byte[4];
+        public byte[] PI_BSD_DOM2_RLS_REG_RW = new byte[4];
 
-        public readonly byte[] SI_STATUS_REG_R  = new byte[4];
-        public readonly byte[] SI_STATUS_REG_W  = new byte[4];
+        public byte[] SI_STATUS_REG_R  = new byte[4];
+        public byte[] SI_STATUS_REG_W  = new byte[4];
 
-        public readonly byte[] RI_SELECT_REG_RW = new byte[4];
+        public byte[] RI_SELECT_REG_RW = new byte[4];
 
-        public readonly byte[] RDRAM     = new byte[8388608];
-        public readonly byte[] RDRAMReg  = new byte[1048576];
-        public readonly byte[] PIFROM    = new byte[1984];
-        public readonly byte[] PIFRAM    = new byte[64];
+        public byte[] RDRAM     = new byte[8388608];
+        public byte[] RDRAMReg  = new byte[1048576];
+        public byte[] PIFROM    = new byte[1984];
+        public byte[] PIFRAM    = new byte[64];
 
         private List<MemEntry> MemoryMapList = new List<MemEntry>();
         private MemEntry[]     MemoryMap;
@@ -100,15 +101,18 @@ namespace Ryu64.MIPS
             // MI Registers
             MemoryMapList.Add(new MemEntry(0x04300000, 0x04300003, MI_INIT_MODE_REG_R, MI_INIT_MODE_REG_W, "MI_INIT_MODE_REG"));
             MemoryMapList.Add(new MemEntry(0x04300004, 0x04300007, MI_VERSION_REG_RW,  MI_VERSION_REG_RW,  "MI_VERSION_REG"));
-            MemoryMapList.Add(new MemEntry(0x04300008, 0x0430000B, MI_INTR_REG_R,      null,               "MI_INTR_REG"));
-            MemoryMapList.Add(new MemEntry(0x0430000C, 0x0430000F, MI_INTR_MASK_REG_R, MI_INTR_MASK_REG_W, "MI_INTR_MASK_REG"));
+            MemoryMapList.Add(new MemEntry(0x04300008, 0x0430000B, MI_INTR_REG_RW,     MI_INTR_REG_RW,     "MI_INTR_REG"));
+            MemoryMapList.Add(new MemEntry(0x0430000C, 0x0430000F, MI_INTR_MASK_REG_R, MI_INTR_MASK_REG_W, "MI_INTR_MASK_REG", 
+                null, MI_INTR_MASK_WRITE_EVENT));
 
             // VI Registers
             MemoryMapList.Add(new MemEntry(0x04400000, 0x04400003, VI_STATUS_REG_RW,  VI_STATUS_REG_RW,  "VI_STATUS_REG"));
-            MemoryMapList.Add(new MemEntry(0x04400004, 0x04400007, VI_ORIGIN_REG_RW,  VI_ORIGIN_REG_RW,  "VI_ORIGIN_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400004, 0x04400007, VI_ORIGIN_REG_RW,  VI_ORIGIN_REG_RW,  "VI_ORIGIN_REG",
+                null, VI_ORIGIN_WRITE_EVENT));
             MemoryMapList.Add(new MemEntry(0x04400008, 0x0440000B, VI_WIDTH_REG_RW,   VI_WIDTH_REG_RW,   "VI_WIDTH_REG"));
             MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW,    VI_INTR_REG_RW,    "VI_INTR_REG"));
-            MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_RW, VI_CURRENT_REG_RW, "VI_CURRENT_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_R,  VI_CURRENT_REG_W,  "VI_CURRENT_REG",
+                null, VI_CURRENT_WRITE_EVENT));
 
             VIScanlineIndex = (uint)MemoryMapList.Count-1;
 
@@ -208,11 +212,106 @@ namespace Ryu64.MIPS
 
             PI_STATUS_REG_R[3] |= 0b0001; // Set DMA Busy
 
-            FastMemoryCopy(DramAddr, CartAddr, (int)WriteLength + 1);
+            FastMemoryCopy(DramAddr, CartAddr, (int)((WriteLength + 1) & 0xFFFFFFFF));
 
-            PI_STATUS_REG_R[3] &= 0b1110; // Clear DMA Busy
+            PI_STATUS_REG_R[3] &= ~0b0001 & 0xFF; // Clear DMA Busy
 
             if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"PIDMA: Type: Write, WriteLength: {WriteLength + 1}, CartAddr: 0x{CartAddr:X8}, DramAddr: 0x{DramAddr:X8}");
+        }
+
+        public void MI_INTR_MASK_WRITE_EVENT()
+        {
+            if ((MI_INTR_MASK_REG_W[0] & 0b00000011) > 0) // SP
+            {
+                if ((MI_INTR_MASK_REG_W[0] & 0b00000011) == 0b01)
+                {
+                    MI_INTR_MASK_REG_R[0] |= 0b000001;
+                }
+                else if ((MI_INTR_MASK_REG_W[0] & 0b00000011) == 0b10)
+                {
+                    MI_INTR_MASK_REG_R[0] &= ~0b000001 & 0xFF;
+                }
+            }
+
+            if ((MI_INTR_MASK_REG_W[0] & 0b00001100) > 0) // SI
+            {
+                if ((MI_INTR_MASK_REG_W[0] & 0b00001100) == 0b0100)
+                {
+                    MI_INTR_MASK_REG_R[0] |= 0b000010;
+                }
+                else if ((MI_INTR_MASK_REG_W[0] & 0b00001100) == 0b1000)
+                {
+                    MI_INTR_MASK_REG_R[0] &= ~0b000010 & 0xFF;
+                }
+            }
+
+            if ((MI_INTR_MASK_REG_W[0] & 0b00110000) > 0) // AI
+            {
+                if ((MI_INTR_MASK_REG_W[0] & 0b00110000) == 0b010000)
+                {
+                    MI_INTR_MASK_REG_R[0] |= 0b000100;
+                }
+                else if ((MI_INTR_MASK_REG_W[0] & 0b00110000) == 0b100000)
+                {
+                    MI_INTR_MASK_REG_R[0] &= ~0b000100 & 0xFF;
+                }
+            }
+
+            if ((MI_INTR_MASK_REG_W[0] & 0b11000000) > 0) // VI
+            {
+                if ((MI_INTR_MASK_REG_W[0] & 0b11000000) == 0b01000000)
+                {
+                    MI_INTR_MASK_REG_R[0] |= 0b001000;
+                }
+                else if ((MI_INTR_MASK_REG_W[0] & 0b11000000) == 0b10000000)
+                {
+                    MI_INTR_MASK_REG_R[0] &= ~0b001000 & 0xFF;
+                }
+            }
+
+            if ((MI_INTR_MASK_REG_W[1] & 0b00000011) > 0) // PI
+            {
+                if ((MI_INTR_MASK_REG_W[1] & 0b00000011) == 0b01)
+                {
+                    MI_INTR_MASK_REG_R[0] |= 0b010000;
+                }
+                else if ((MI_INTR_MASK_REG_W[1] & 0b00000011) == 0b10)
+                {
+                    MI_INTR_MASK_REG_R[0] &= ~0b010000 & 0xFF;
+                }
+            }
+
+            if ((MI_INTR_MASK_REG_W[1] & 0b00001100) > 0) // DP
+            {
+                if ((MI_INTR_MASK_REG_W[1] & 0b00001100) == 0b0100)
+                {
+                    MI_INTR_MASK_REG_R[0] |= 0b100000;
+                }
+                else if ((MI_INTR_MASK_REG_W[1] & 0b00001100) == 0b1000)
+                {
+                    MI_INTR_MASK_REG_R[0] &= ~0b100000 & 0xFF;
+                }
+            }
+
+            MI_INTR_MASK_REG_W[0] = 0;
+            MI_INTR_MASK_REG_W[1] = 0;
+            MI_INTR_MASK_REG_W[2] = 0;
+            MI_INTR_MASK_REG_W[3] = 0;
+        }
+
+        public void VI_CURRENT_WRITE_EVENT()
+        {
+            VI_CURRENT_REG_W[0] = 0;
+            VI_CURRENT_REG_W[1] = 0;
+            VI_CURRENT_REG_W[2] = 0;
+            VI_CURRENT_REG_W[3] = 0;
+
+            MI_INTR_REG_RW[0] &= ~0b001000 & 0xFF;
+        }
+
+        public void VI_ORIGIN_WRITE_EVENT()
+        {
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"Set Framebuffer Origin to 0x{ReadUInt32(0x04400004):X8}.");
         }
 
         struct MemEntry
@@ -269,7 +368,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return 0;
 
                 if (Entry.ReadArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not readable.");
+                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not readable.");
 
                 return Entry.ReadArray[nonCachedIndex - Entry.StartAddress];
             }
@@ -281,7 +380,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return;
 
                 if (Entry.WriteArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not writable.");
+                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not writable.");
 
                 Entry.WriteArray[nonCachedIndex - Entry.StartAddress] = value;
             }
@@ -298,7 +397,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return result;
 
                 if (Entry.ReadArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not readable.");
+                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not readable.");
 
                 nonCachedIndex -= Entry.StartAddress;
 
@@ -318,7 +417,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return;
 
                 if (Entry.WriteArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{index:x8}\" is not writable.");
+                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not writable.");
 
                 nonCachedIndex -= Entry.StartAddress;
 
@@ -332,7 +431,7 @@ namespace Ryu64.MIPS
 
         // This makes the VIScanline thread slower?  Might be useful later.
         /*
-        public void WriteScanLine(uint value)
+        public void WriteScanline(uint value)
         {
             byte[] writeBytes = new byte[4];
             writeBytes[3] = (byte)(value & 0xFF);
@@ -342,6 +441,35 @@ namespace Ryu64.MIPS
             Buffer.BlockCopy(writeBytes, 0, MemoryMap[VIScanlineIndex].WriteArray, 0, 4);
         }
         */
+
+        public void WriteScanline(uint value)
+        {
+            unsafe
+            {
+                uint* point = &value;
+                byte[] PointArray = new byte[4];
+                Marshal.Copy(new IntPtr(point), PointArray, 0, 4);
+
+                Array.Reverse(PointArray);
+
+                Buffer.BlockCopy(PointArray, 0, VI_CURRENT_REG_R, 0, 4);
+            }
+        }
+
+        public void InvokeMIInt(byte Bit)
+        {
+            unsafe
+            {
+                uint value = (uint)(1 << Bit) | ReadUInt32(0x04300008);
+                uint* point = &value;
+                byte[] PointArray = new byte[4];
+                Marshal.Copy(new IntPtr(point), PointArray, 0, 4);
+
+                Array.Reverse(PointArray);
+
+                Buffer.BlockCopy(PointArray, 0, MI_INTR_REG_RW, 0, 4);
+            }
+        }
 
         public void FastMemoryWrite(uint Dest, byte[] ToWrite)
         {
@@ -456,7 +584,7 @@ namespace Ryu64.MIPS
         public ulong ReadUInt64(uint index)
         {
             byte[] Res = this[index, 8];
-            return (uint)(Res[7] | (Res[6] << 8) | (Res[5] << 16) | (Res[4] << 24) 
+            return (ulong)(Res[7] | (Res[6] << 8) | (Res[5] << 16) | (Res[4] << 24) 
                 | (Res[3] << 32) | (Res[2] << 40) | (Res[1] << 48) | (Res[0] << 56));
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Ryu64.MIPS
+﻿namespace Ryu64.MIPS.Interpreter
 {
     public partial class InstInterp
     {
@@ -23,6 +23,12 @@
         public static void ADDU(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op1] + (uint)Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.PC += 4;
+        }
+
+        public static void DADDU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op1] + Registers.R4300.Reg[Desc.op2];
             Registers.R4300.PC += 4;
         }
 
@@ -88,7 +94,7 @@
 
         public static void ORI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] | (uint)(Desc.Imm & 0xFFFF);
+            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] | Desc.Imm;
             Registers.R4300.PC += 4;
         }
 

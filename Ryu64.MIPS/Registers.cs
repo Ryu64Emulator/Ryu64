@@ -5,10 +5,10 @@
         public class R4300
         {
             public static ulong[] Reg = new ulong[32];
-            public static ulong  HI;
-            public static ulong  LO;
-            public static uint   PC;
-            public static byte   LLbit;
+            public static ulong HI;
+            public static ulong LO;
+            public static uint  PC;
+            public static byte  LLbit;
 
             public static void PrintRegisterInfo()
             {

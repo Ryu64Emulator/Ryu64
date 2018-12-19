@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ryu64.MIPS
+namespace Ryu64.MIPS.Interpreter
 {
     public partial class InstInterp
     {

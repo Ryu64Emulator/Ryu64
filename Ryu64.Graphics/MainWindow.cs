@@ -11,8 +11,7 @@ namespace Ryu64.Graphics
     public class MainWindow : GameWindow
     {
         private static string BaseTitle = "Ryu64";
-        private static uint  CurrentScanline = 0;
-        private static int   FramebufferTexture;
+        private static int    FramebufferTexture;
 
         public MainWindow(string GameName) : base(960, 720, GraphicsMode.Default, BaseTitle, 
             GameWindowFlags.FixedWindow, 
@@ -21,21 +20,6 @@ namespace Ryu64.Graphics
             GraphicsContextFlags.ForwardCompatible)
         {
             BaseTitle += $" | {GameName}";
-
-            Thread ScanlineThread = new Thread(() =>
-            {
-                while (MIPS.R4300.R4300_ON)
-                {
-                    ++CurrentScanline;
-                    MIPS.R4300.memory.WriteUInt32(0x04400010, CurrentScanline); // VI_CURRENT_REG
-                    if (CurrentScanline == 525)
-                        CurrentScanline = 0;
-                }
-            })
-            {
-                Name = "VIScanlineThread"
-            };
-            ScanlineThread.Start();
         }
 
         protected override void OnResize(EventArgs e)

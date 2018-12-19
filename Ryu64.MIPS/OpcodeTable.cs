@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ryu64.MIPS.Interpreter;
+using System;
 using System.Collections.Generic;
 
 namespace Ryu64.MIPS
@@ -77,6 +78,7 @@ namespace Ryu64.MIPS
             SetOpcode("110111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LD,  "LD R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("011010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LDL, "LDL R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("011011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LDR, "LDR R[{1}], 0x{4:x4}(R[{0}])");
+            SetOpcode("110100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LLD, "LLD R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("100001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LH,  "LH R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("100101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LHU, "LHU R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("100011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LW,  "LW R[{1}], 0x{4:x4}(R[{0}])");
@@ -87,6 +89,7 @@ namespace Ryu64.MIPS
             SetOpcode("111111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SD,  "SD R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("101100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDL, "SDL R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("101101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDR, "SDR R[{1}], 0x{4:x4}(R[{0}])");
+            SetOpcode("111100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SCD, "SCD R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("101001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SH,  "SH R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("101011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SW,  "SW R[{1}], 0x{4:x4}(R[{0}])");
             SetOpcode("101010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SWL, "SWL R[{1}], 0x{4:x4}(R[{0}])");
@@ -97,6 +100,7 @@ namespace Ryu64.MIPS
             SetOpcode("001000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDI,   "ADDI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("001001XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ADDIU,  "ADDIU R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100001", InstInterp.ADDU,   "ADDU R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000101101", InstInterp.DADDU,  "DADDU R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100100", InstInterp.AND,    "AND R[{2}], R[{0}], R[{1}]");
             SetOpcode("001100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ANDI,   "ANDI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100010", InstInterp.SUB,    "SUB R[{2}], R[{0}], R[{1}]");

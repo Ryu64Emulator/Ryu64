@@ -107,7 +107,7 @@ namespace Ryu64.MIPS
         {
             isDelaySlot = DelaySlot;
 
-            ExceptionHandler.PollSoftwareInt();
+            ExceptionHandler.PollInt();
 
             if (Registers.R4300.Reg[0] != 0) Registers.R4300.Reg[0] = 0;
 
@@ -223,6 +223,8 @@ namespace Ryu64.MIPS
                 Name = "R4300"
             };
             CPUThread.Start();
+
+            VI.Start();
         }
     }
 }

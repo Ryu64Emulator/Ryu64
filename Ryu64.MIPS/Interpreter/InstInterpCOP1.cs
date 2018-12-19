@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Ryu64.MIPS
+namespace Ryu64.MIPS.Interpreter
 {
     public partial class InstInterp
     {

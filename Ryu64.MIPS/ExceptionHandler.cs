@@ -56,7 +56,7 @@ namespace Ryu64.MIPS
             Registers.R4300.PC = 0x80000180;
         }
 
-        public static void PollSoftwareInt()
+        public static void PollInt()
         {
             if ((Registers.COP0.Reg[Registers.COP0.STATUS_REG] & 0b111) == 0b001)
             {
