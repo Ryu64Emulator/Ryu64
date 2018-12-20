@@ -106,12 +106,11 @@ namespace Ryu64.MIPS
                 null, MI_INTR_MASK_WRITE_EVENT));
 
             // VI Registers
-            MemoryMapList.Add(new MemEntry(0x04400000, 0x04400003, VI_STATUS_REG_RW,  VI_STATUS_REG_RW,  "VI_STATUS_REG"));
-            MemoryMapList.Add(new MemEntry(0x04400004, 0x04400007, VI_ORIGIN_REG_RW,  VI_ORIGIN_REG_RW,  "VI_ORIGIN_REG",
-                null, VI_ORIGIN_WRITE_EVENT));
-            MemoryMapList.Add(new MemEntry(0x04400008, 0x0440000B, VI_WIDTH_REG_RW,   VI_WIDTH_REG_RW,   "VI_WIDTH_REG"));
-            MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW,    VI_INTR_REG_RW,    "VI_INTR_REG"));
-            MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_R,  VI_CURRENT_REG_W,  "VI_CURRENT_REG",
+            MemoryMapList.Add(new MemEntry(0x04400000, 0x04400003, VI_STATUS_REG_RW,  VI_STATUS_REG_RW, "VI_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400004, 0x04400007, VI_ORIGIN_REG_RW,  VI_ORIGIN_REG_RW, "VI_ORIGIN_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400008, 0x0440000B, VI_WIDTH_REG_RW,   VI_WIDTH_REG_RW,  "VI_WIDTH_REG"));
+            MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW,    VI_INTR_REG_RW,   "VI_INTR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_R,  VI_CURRENT_REG_W, "VI_CURRENT_REG",
                 null, VI_CURRENT_WRITE_EVENT));
 
             VIScanlineIndex = (uint)MemoryMapList.Count-1;
@@ -309,11 +308,6 @@ namespace Ryu64.MIPS
             MI_INTR_REG_RW[0] &= ~0b001000 & 0xFF;
         }
 
-        public void VI_ORIGIN_WRITE_EVENT()
-        {
-            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"Set Framebuffer Origin to 0x{ReadUInt32(0x04400004):X8}.");
-        }
-
         struct MemEntry
         {
             public uint StartAddress;
@@ -364,6 +358,8 @@ namespace Ryu64.MIPS
             {
                 uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
                 MemEntry Entry = GetEntry(nonCachedIndex, false);
+
+                Common.Logger.PrintInfoLine(Entry.Name);
 
                 if (Entry.StartAddress == uint.MaxValue) return 0;
 
@@ -509,6 +505,7 @@ namespace Ryu64.MIPS
         public void WriteUInt8(uint index, byte value)
         {
             this[index] = value;
+            //Common.Logger.PrintInfoLine($"Wrote at 0x{index:X8}: 0x{value:X8}, PC: 0x{Registers.R4300.PC:X8}");
         }
 
         public sbyte ReadInt8(uint index)

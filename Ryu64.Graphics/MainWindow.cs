@@ -101,6 +101,8 @@ namespace Ryu64.Graphics
             Environment.Exit(0);
         }
 
+        private bool firstLoop = true;
+
         private unsafe void RenderFramebufferDirect()
         {
             uint VIStatus = MIPS.R4300.memory.ReadUInt32(0x04400000); // VI_STATUS_REG
@@ -121,6 +123,12 @@ namespace Ryu64.Graphics
             byte[] Framebuffer = MIPS.R4300.memory.FastMemoryRead(FramebufferOrigin, (int)(FramebufferWidth * FramebufferHeight) * 
                 (PixelSize == 3U ? 4 : 2));
 
+            if (firstLoop && Common.Variables.Debug)
+                Common.Logger.PrintInfoLine($"Framebuffer: PixelSize: {PixelSize}, Width: {FramebufferWidth}, " +
+                    $"Height: {FramebufferHeight}, Total Framebuffer Size: {Framebuffer.LongLength}, " +
+                    $"Origin: 0x{FramebufferOrigin:X8}, Interlace: {Interlace}, " +
+                    $"VerticalEndofVideo: {VerticalEndofVideo}, VerticalStartOfVideo: {VerticalStartOfVideo}");
+
             IntPtr pFramebuffer;
 
             fixed (byte* p = Framebuffer)
@@ -138,12 +146,12 @@ namespace Ryu64.Graphics
                     Framebuffer[i + 1] = temp;
                 }
 
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
                     (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedShort5551, pFramebuffer);
             }
             else if (PixelSize == 3U)
             {
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
                     (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pFramebuffer);
             }
 
@@ -155,6 +163,7 @@ namespace Ryu64.Graphics
             GL.TexCoord2(0, 1); GL.Vertex2(-1, -1);
 
             GL.End();
+            firstLoop = false;
         }
     }
 }
