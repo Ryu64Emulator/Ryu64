@@ -359,8 +359,6 @@ namespace Ryu64.MIPS
                 uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
                 MemEntry Entry = GetEntry(nonCachedIndex, false);
 
-                Common.Logger.PrintInfoLine(Entry.Name);
-
                 if (Entry.StartAddress == uint.MaxValue) return 0;
 
                 if (Entry.ReadArray == null)
@@ -505,7 +503,6 @@ namespace Ryu64.MIPS
         public void WriteUInt8(uint index, byte value)
         {
             this[index] = value;
-            //Common.Logger.PrintInfoLine($"Wrote at 0x{index:X8}: 0x{value:X8}, PC: 0x{Registers.R4300.PC:X8}");
         }
 
         public sbyte ReadInt8(uint index)
