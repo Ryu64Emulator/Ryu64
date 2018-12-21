@@ -1,5 +1,5 @@
 # Welcome to Ryu64!
-![alt](https://cdn.discordapp.com/icons/490752174461157379/429507539db9be45af354bba4e08cc3b.png?size=256)
+![alt](https://cdn.discordapp.com/icons/490752174461157379/3ccf98ef45fe05e701d626428dfc28a4.png?size=256)
 
 Hello, and welcome, to Ryu64!  This emulator aims to emulate the Nintendo 64, don't expect much right now, no commercial games work at the time of writing this.  But hopefully, that is soon to change, if you want to help just make a PR, we'll be glad to accept improvements to the emulator.
 
