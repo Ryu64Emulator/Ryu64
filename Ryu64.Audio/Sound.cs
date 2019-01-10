@@ -42,23 +42,24 @@ namespace Ryu64.Audio
 
             AudioContext Context = new AudioContext();
 
-            IntPtr pBuffer;
             fixed (byte* p = BufferData)
-                pBuffer = (IntPtr)p;
-
-            int Buffer = AL.GenBuffer();
-            AL.BufferData(Buffer, GetSoundFormat(bitrate, channels), pBuffer, BufferData.Length, freq);
-
-            int Source = AL.GenSource();
-            AL.Source(Source, ALSourcei.Buffer, Buffer);
-            AL.SourcePlay(Source);
-
-            return new PCMSample
             {
-                Source  = Source,
-                Buffer  = Buffer,
-                Context = Context
-            };
+                IntPtr pBuffer = (IntPtr)p;
+
+                int Buffer = AL.GenBuffer();
+                AL.BufferData(Buffer, GetSoundFormat(bitrate, channels), pBuffer, BufferData.Length, freq);
+
+                int Source = AL.GenSource();
+                AL.Source(Source, ALSourcei.Buffer, Buffer);
+                AL.SourcePlay(Source);
+
+                return new PCMSample
+                {
+                    Source = Source,
+                    Buffer = Buffer,
+                    Context = Context
+                };
+            }
         }
 
         public static bool IsSoundPlaying(PCMSample Sample)

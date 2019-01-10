@@ -9,7 +9,10 @@
             if ((R4300.memory.ReadUInt32(0x0430000C) & (1 << VI_Intr_Bit)) > 0)
             {
                 if (CurrentScanline == R4300.memory.ReadUInt32(0x0440000C))
+                {
                     R4300.memory.InvokeMIInt(VI_Intr_Bit);
+                    Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= 0x400;
+                }
             }
         }
     }

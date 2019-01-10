@@ -129,40 +129,40 @@ namespace Ryu64.Graphics
                     $"Origin: 0x{FramebufferOrigin:X8}, Interlace: {Interlace}, " +
                     $"VerticalEndofVideo: {VerticalEndofVideo}, VerticalStartOfVideo: {VerticalStartOfVideo}");
 
-            IntPtr pFramebuffer;
-
             fixed (byte* p = Framebuffer)
-                pFramebuffer = (IntPtr)p;
-
-            if (PixelSize == 2U)
             {
-                int limit = Framebuffer.Length - (Framebuffer.Length % 2);
-                if (limit < 1) throw new Exception("Framebuffer too small to be swapped to Little Endian.");
+                IntPtr pFramebuffer = (IntPtr)p;
 
-                for (int i = 0; i < limit - 1; i += 2)
+                if (PixelSize == 2U)
                 {
-                    byte temp = Framebuffer[i];
-                    Framebuffer[i] = Framebuffer[i + 1];
-                    Framebuffer[i + 1] = temp;
+                    int limit = Framebuffer.Length - (Framebuffer.Length % 2);
+                    if (limit < 1) throw new Exception("Framebuffer too small to be swapped to Little Endian.");
+
+                    for (int i = 0; i < limit - 1; i += 2)
+                    {
+                        byte temp = Framebuffer[i];
+                        Framebuffer[i] = Framebuffer[i + 1];
+                        Framebuffer[i + 1] = temp;
+                    }
+
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
+                        (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedShort5551, pFramebuffer);
+                }
+                else if (PixelSize == 3U)
+                {
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
+                        (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pFramebuffer);
                 }
 
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
-                    (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedShort5551, pFramebuffer);
+                GL.Begin(PrimitiveType.Quads);
+
+                GL.TexCoord2(0, 0); GL.Vertex2(-1, 1);
+                GL.TexCoord2(1, 0); GL.Vertex2(1, 1);
+                GL.TexCoord2(1, 1); GL.Vertex2(1, -1);
+                GL.TexCoord2(0, 1); GL.Vertex2(-1, -1);
+
+                GL.End();
             }
-            else if (PixelSize == 3U)
-            {
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
-                    (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pFramebuffer);
-            }
-
-            GL.Begin(PrimitiveType.Quads);
-
-            GL.TexCoord2(0, 0); GL.Vertex2(-1, 1);
-            GL.TexCoord2(1, 0); GL.Vertex2(1, 1);
-            GL.TexCoord2(1, 1); GL.Vertex2(1, -1);
-            GL.TexCoord2(0, 1); GL.Vertex2(-1, -1);
-
-            GL.End();
             firstLoop = false;
         }
     }

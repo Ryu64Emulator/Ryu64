@@ -15,7 +15,7 @@ namespace Ryu64.MIPS
                     R4300.memory.WriteScanline(CurrentScanline);
                     MI.PollVIInterrupt(CurrentScanline);
                     ++CurrentScanline;
-                    if (CurrentScanline == 525)
+                    if (CurrentScanline >= R4300.memory.ReadUInt32(0x04400018))
                         CurrentScanline = 0;
                     Thread.Sleep(2);
                 }
