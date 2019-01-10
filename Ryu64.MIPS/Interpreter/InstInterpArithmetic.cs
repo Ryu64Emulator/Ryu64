@@ -28,6 +28,24 @@ namespace Ryu64.MIPS.Interpreter
             Registers.R4300.PC += 4;
         }
 
+        public static void DADD(OpcodeTable.OpcodeDesc Desc)
+        {
+            // TODO: Correctly check for Overflow and Underflow
+            DADDU(Desc);
+        }
+
+        public static void DADDI(OpcodeTable.OpcodeDesc Desc)
+        {
+            // TODO: Correctly check for Overflow and Underflow
+            DADDIU(Desc);
+        }
+
+        public static void DADDIU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op2] = (ulong)((long)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm);
+            Registers.R4300.PC += 4;
+        }
+
         public static void DADDU(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op1] + Registers.R4300.Reg[Desc.op2];
@@ -134,6 +152,11 @@ namespace Ryu64.MIPS.Interpreter
             Registers.R4300.LO = (uint)(Res & 0xFFFFFFFF);
             Registers.R4300.HI = (uint)(Res >> 32);
             Registers.R4300.PC += 4;
+        }
+
+        public static void DDIV(OpcodeTable.OpcodeDesc Desc)
+        {
+            DDIVU(Desc);
         }
 
         public static void DDIVU(OpcodeTable.OpcodeDesc Desc)
