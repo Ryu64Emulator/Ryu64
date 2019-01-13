@@ -443,18 +443,19 @@ namespace Ryu64.MIPS
             }
         }
 
-        // This makes the VIScanline thread slower?  Might be useful later.
-        /*
-        public void WriteScanline(uint value)
+        public void WriteRDPPC(uint value)
         {
-            byte[] writeBytes = new byte[4];
-            writeBytes[3] = (byte)(value & 0xFF);
-            writeBytes[2] = (byte)((value >> 8) & 0xFF);
-            writeBytes[1] = (byte)((value >> 16) & 0xFF);
-            writeBytes[0] = (byte)((value >> 24) & 0xFF);
-            Buffer.BlockCopy(writeBytes, 0, MemoryMap[VIScanlineIndex].WriteArray, 0, 4);
+            unsafe
+            {
+                uint* point = &value;
+                byte[] PointArray = new byte[4];
+                Marshal.Copy(new IntPtr(point), PointArray, 0, 4);
+
+                Array.Reverse(PointArray);
+
+                Buffer.BlockCopy(PointArray, 0, DPC_CURRENT_REG_R, 0, 4);
+            }
         }
-        */
 
         public void WriteScanline(uint value)
         {
