@@ -18,8 +18,15 @@ namespace Ryu64.MIPS
         public byte[] SP_SEMAPHORE_REG_W = new byte[4];
         public byte[] SP_PC_REG_RW       = new byte[4];
 
-        public byte[] DPC_STATUS_REG_R = new byte[4];
-        public byte[] DPC_STATUS_REG_W = new byte[4];
+        public byte[] DPC_START_REG_RW   = new byte[4];
+        public byte[] DPC_END_REG_RW     = new byte[4];
+        public byte[] DPC_CURRENT_REG_R  = new byte[4];
+        public byte[] DPC_STATUS_REG_R   = new byte[4];
+        public byte[] DPC_STATUS_REG_W   = new byte[4];
+        public byte[] DPC_CLOCK_REG_R    = new byte[4];
+        public byte[] DPC_BUFBUSY_REG_R  = new byte[4];
+        public byte[] DPC_PIPEBUSY_REG_R = new byte[4];
+        public byte[] DPC_TMEM_REG_R     = new byte[4];
 
         public byte[] MI_INIT_MODE_REG_R = new byte[4];
         public byte[] MI_INIT_MODE_REG_W = new byte[4];
@@ -84,7 +91,7 @@ namespace Ryu64.MIPS
         public Memory(byte[] Rom)
         {
             // RDRAM
-            MemoryMapList.Add(new MemEntry(0x00000000, 0x007FFFFF, RDRAM, RDRAM,       "RDRAM"));
+            MemoryMapList.Add(new MemEntry(0x00000000, 0x007FFFFF, RDRAM,    RDRAM,    "RDRAM"));
             MemoryMapList.Add(new MemEntry(0x03F00000, 0x03FFFFFF, RDRAMReg, RDRAMReg, "RDRAM Registers"));
 
             // SP Registers
@@ -96,7 +103,15 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x04080000, 0x04080003, SP_PC_REG_RW,       SP_PC_REG_RW,        "SP_PC_REG"));
 
             // DPC Registers
-            MemoryMapList.Add(new MemEntry(0x0410000C, 0x0410000F, DPC_STATUS_REG_R, DPC_STATUS_REG_W, "DPC_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04100000, 0x04100003, DPC_START_REG_RW, DPC_START_REG_RW, "DPC_START_REG"));
+            MemoryMapList.Add(new MemEntry(0x04100004, 0x04100007, DPC_END_REG_RW,   DPC_END_REG_RW,   "DPC_END_REG",
+                null, DPC_END_WRITE_EVENT));
+            MemoryMapList.Add(new MemEntry(0x04100008, 0x0410000B, DPC_CURRENT_REG_R,  null,             "DPC_CURRENT_REG"));
+            MemoryMapList.Add(new MemEntry(0x0410000C, 0x0410000F, DPC_STATUS_REG_R,   DPC_STATUS_REG_W, "DPC_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04100010, 0x04100013, DPC_CLOCK_REG_R,    null,             "DPC_CLOCK_REG"));
+            MemoryMapList.Add(new MemEntry(0x04100014, 0x04100017, DPC_BUFBUSY_REG_R,  null,             "DPC_BUFBUSY_REG"));
+            MemoryMapList.Add(new MemEntry(0x04100018, 0x0410001B, DPC_PIPEBUSY_REG_R, null,             "DPC_PIPEBUSY_REG"));
+            MemoryMapList.Add(new MemEntry(0x0410001C, 0x0410001F, DPC_TMEM_REG_R,     null,             "DPC_TMEM_REG"));
 
             // MI Registers
             MemoryMapList.Add(new MemEntry(0x04300000, 0x04300003, MI_INIT_MODE_REG_R, MI_INIT_MODE_REG_W, "MI_INIT_MODE_REG"));
@@ -201,6 +216,11 @@ namespace Ryu64.MIPS
             WriteUInt32(0x40001010, 0x5500FFFC);
             WriteUInt32(0x40001018, 0x8DA80024);
             WriteUInt32(0x4000101C, 0x3C0BB000);
+        }
+
+        public void DPC_END_WRITE_EVENT()
+        {
+            RDPWrapper.RDPExec = true;
         }
 
         public void PI_WR_LEN_WRITE_EVENT()
@@ -578,8 +598,15 @@ namespace Ryu64.MIPS
         public ulong ReadUInt64(uint index)
         {
             byte[] Res = this[index, 8];
-            return (ulong)(Res[7] | (Res[6] << 8) | (Res[5] << 16) | (Res[4] << 24) 
-                | (Res[3] << 32) | (Res[2] << 40) | (Res[1] << 48) | (Res[0] << 56));
+            Array.Reverse(Res);
+            unsafe
+            {
+                fixed (byte* point = &Res[0])
+                {
+                    ulong* longPoint = (ulong*)point;
+                    return *longPoint;
+                }
+            }
         }
 
         public void WriteUInt64(uint index, ulong value)

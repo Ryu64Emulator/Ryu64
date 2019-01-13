@@ -13,6 +13,7 @@ namespace Ryu64
             public bool UTEsyscall;
             public bool Debug;
             public bool NoWindow;
+            public MIPS.R4300.TVType_enum TVtype;
         }
 
         public struct CLIFlag
@@ -50,6 +51,33 @@ namespace Ryu64
                 {
                     Flags.NoWindow = true;
                 }
+            },
+            new CLIFlag
+            {
+                FlagName = "ntsc",
+                Arguments = 0,
+                Method = (a, i) =>
+                {
+                    Flags.TVtype = MIPS.R4300.TVType_enum.NTSC;
+                }
+            },
+            new CLIFlag
+            {
+                FlagName = "pal",
+                Arguments = 0,
+                Method = (a, i) =>
+                {
+                    Flags.TVtype = MIPS.R4300.TVType_enum.PAL;
+                }
+            },
+            new CLIFlag
+            {
+                FlagName = "mpal",
+                Arguments = 0,
+                Method = (a, i) =>
+                {
+                    Flags.TVtype = MIPS.R4300.TVType_enum.MPAL;
+                }
             }
         };
 
@@ -57,6 +85,8 @@ namespace Ryu64
 
         public static void ParseArguments(string[] args)
         {
+            Flags.TVtype = MIPS.R4300.TVType_enum.NTSC;
+
             for (uint i = 0; i < args.Length; ++i)
             {
                 if (args[i][0] == '-')

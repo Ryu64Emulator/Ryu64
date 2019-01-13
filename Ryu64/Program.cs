@@ -57,7 +57,9 @@ namespace Ryu64
 
             MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
-            MIPS.R4300.PowerOnR4300();
+            MIPS.R4300.PowerOnR4300(CLI.Flags.TVtype);
+            if (Common.Settings.GRAPHICS_LLE)
+                RDP.RDP.PowerOnRDP();
 
             if (!CLI.Flags.NoWindow) using (Graphics.MainWindow Window = new Graphics.MainWindow(Rom.Name.Trim())) Window.Run(60.0);
         }

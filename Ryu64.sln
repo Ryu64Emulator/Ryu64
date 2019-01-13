@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64.Graphics", "Ryu64.Gra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64.Audio", "Ryu64.Audio\Ryu64.Audio.csproj", "{2339742E-CD4E-407E-8E0F-B12E6FECFC9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ryu64.RDP", "Ryu64.RDP\Ryu64.RDP.csproj", "{B5F05240-04DC-4600-B22D-B185A6DD773D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{2339742E-CD4E-407E-8E0F-B12E6FECFC9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2339742E-CD4E-407E-8E0F-B12E6FECFC9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2339742E-CD4E-407E-8E0F-B12E6FECFC9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5F05240-04DC-4600-B22D-B185A6DD773D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F05240-04DC-4600-B22D-B185A6DD773D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F05240-04DC-4600-B22D-B185A6DD773D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F05240-04DC-4600-B22D-B185A6DD773D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
