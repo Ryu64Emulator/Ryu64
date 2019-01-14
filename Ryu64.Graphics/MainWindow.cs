@@ -14,7 +14,7 @@ namespace Ryu64.Graphics
         private static int    FramebufferTexture;
 
         public MainWindow(string GameName) : base(960, 720, GraphicsMode.Default, BaseTitle, 
-            GameWindowFlags.FixedWindow, 
+            GameWindowFlags.Default, 
             DisplayDevice.Default, 
             3, 1,
             GraphicsContextFlags.ForwardCompatible)
@@ -26,7 +26,7 @@ namespace Ryu64.Graphics
         {
             base.OnResize(e);
 
-            GL.Viewport(0, 0, Width, Height);
+            GL.Viewport((Width / 2) - (960 / 2), (Height / 2) - (720 / 2), 960, 720);
         }
 
         protected override void OnLoad(EventArgs e)

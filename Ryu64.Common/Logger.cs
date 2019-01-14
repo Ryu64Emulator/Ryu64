@@ -9,7 +9,7 @@ namespace Ryu64.Common
         public static void PrintInfo(string Info)
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write($"{Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Info}");
+            Console.Write($"Info: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Info}");
             Console.ResetColor();
         }
 
@@ -21,7 +21,7 @@ namespace Ryu64.Common
         public static void PrintError(string Error)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write($"{Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Error}");
+            Console.Write($"Err:  {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Error}");
             Console.ResetColor();
         }
 
@@ -33,7 +33,7 @@ namespace Ryu64.Common
         public static void PrintWarning(string Warning)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Write($"{Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Warning}");
+            Console.Write($"Warn: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Warning}");
             Console.ResetColor();
         }
 
