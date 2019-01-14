@@ -53,6 +53,8 @@ namespace Ryu64.Graphics
             }
         }
 
+        bool LastFrameF11;
+
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
@@ -62,7 +64,14 @@ namespace Ryu64.Graphics
             KeyboardState KeyboardState = Keyboard.GetState();
 
             if (KeyboardState.IsKeyDown(Key.Escape)) Exit();
+            if (LastFrameF11 && KeyboardState.IsKeyUp(Key.F11))
+                if (WindowState != WindowState.Fullscreen)
+                    WindowState = WindowState.Fullscreen;
+                else
+                    WindowState = WindowState.Normal;
             if (Common.Settings.STEP_MODE && KeyboardState.IsKeyDown(Key.Enter)) Common.Variables.Step = true;
+
+            LastFrameF11 = KeyboardState.IsKeyDown(Key.F11);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
