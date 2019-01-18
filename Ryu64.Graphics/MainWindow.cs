@@ -59,7 +59,7 @@ namespace Ryu64.Graphics
         {
             base.OnUpdateFrame(e);
 
-            Title = $"{BaseTitle} | FPS: {(int)RenderFrequency}";
+            Title = $"{BaseTitle} | FPS: {RenderFrequency:N2} | Game Speed: {(Common.Variables.CPUMHz / Common.Variables.N64CPUMHz) * 100:N2}% | CPU MHz: {Common.Variables.CPUMHz:N2}";
 
             KeyboardState KeyboardState = Keyboard.GetState();
 

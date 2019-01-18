@@ -7,8 +7,7 @@ namespace Ryu64.Common
         public static void Cleanup(uint PC)
         {
             Measure.MeasureTime.Stop();
-            double MHz = Measure.CycleCounter / (1000000 * Measure.MeasureTime.Elapsed.TotalSeconds);
-            Logger.PrintSuccessLine($"Took {Measure.MeasureTime.Elapsed:c}, Instructions Executed: {Measure.InstructionCount}, Cycles Counted: {Measure.CycleCounter}, Estimated MHz: {MHz}, stopped at 0x{PC:x8}.");
+            Logger.PrintSuccessLine($"Took {Measure.MeasureTime.Elapsed:c}, Instructions Executed: {Measure.InstructionCount}, Cycles Counted: {Measure.CycleCounter}, Estimated MHz: {Variables.CPUMHz}, stopped at 0x{PC:x8}.");
             Logger.PrintSuccessLine($"Total memory allocated: {GetByteSizeString(GC.GetTotalMemory(true))}");
         }
 

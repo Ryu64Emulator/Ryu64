@@ -5,6 +5,8 @@ namespace Ryu64.RDP
 {
     public class RDP
     {
+        private static IRasterizer Rasterizer;
+
         // Color Image Variables
         public static uint   ColorImageAddr   = 0x0;
         public static byte   ColorImageFormat = 0;
@@ -26,8 +28,51 @@ namespace Ryu64.RDP
         // Current Fill Color
         public static uint FillColor = 0;
 
+        public enum ImageFormat
+        {
+            RGBA = 0,
+            YUV = 1,
+            ColorIndx = 3,
+            IA = 3,
+            I = 4
+        }
+
+        public enum BPP
+        {
+            BPP4 = 0,
+            BPP8 = 1,
+            BPP16 = 2,
+            BPP32 = 3,
+            Other = 4
+        }
+
+        public struct Tile
+        {
+            public ImageFormat format;
+            public BPP Size;
+            public ushort Line;
+            public ushort TmemAddr;
+            public byte Palette;
+
+            public byte CT;
+            public byte MT;
+            public byte MaskT;
+            public byte ShiftT;
+
+            public byte CS;
+            public byte MS;
+            public byte MaskS;
+            public byte ShiftS;
+        }
+
+        public static Tile[] Tiles;
+
         public static void PowerOnRDP()
         {
+            Tiles = new Tile[8];
+
+            Rasterizer = new SoftwareRasterizer();
+
             Thread RDPThread = new Thread(() =>
             {
                 while (MIPS.R4300.R4300_ON)
@@ -95,7 +140,7 @@ namespace Ryu64.RDP
                                     PC += 8;
                                     break;
                                 case 0x29: // Sync Full
-                                    // Stubbed.
+                                    MIPS.MI.InvokeDPInterrupt();
                                     PC += 8;
                                     break;
                                 case 0x31: // Sync Load
@@ -114,6 +159,10 @@ namespace Ryu64.RDP
 
                                     PC += 8;
                                     break;
+                                case 0x35: // Set Tile
+                                    // Stubbed.
+                                    PC += 8;
+                                    break;
                                 case 0x36: // Fill Rectangle
                                     ushort FR_XL = (ushort)((Instruction & 0x00FFF00000000000) >> 44);
                                     ushort FR_YL = (ushort)((Instruction & 0x00000FFF00000000) >> 32);
@@ -124,6 +173,7 @@ namespace Ryu64.RDP
                                         Common.Logger.PrintInfoLine($"RDP | Fill Rectangle - XL: {FR_XL >> 2}.{FR_XL & 3}, YL: {FR_YL >> 2}.{FR_YL & 3}, XH: {FR_XH >> 2}.{FR_XH & 3}, YH: {FR_YH >> 2}.{FR_YH & 3}");
 
                                     Rasterizer.FillRect(FR_XL, FR_YL, FR_XH, FR_YH);
+
                                     PC += 8;
                                     break;
                                 case 0x08: // Non-Shaded Triangle
@@ -173,23 +223,6 @@ namespace Ryu64.RDP
                 Name = "RDP"
             };
             RDPThread.Start();
-        }
-
-        public enum ImageFormat
-        {
-            RGBA      = 0,
-            YUV       = 1,
-            ColorIndx = 3,
-            IA        = 3,
-            I         = 4
-        }
-
-        public enum BPP
-        {
-            BPP4  = 0,
-            BPP8  = 1,
-            BPP16 = 2,
-            BPP32 = 3
         }
     }
 }

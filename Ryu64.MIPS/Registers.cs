@@ -1,7 +1,49 @@
-﻿namespace Ryu64.MIPS
+﻿using System;
+
+namespace Ryu64.MIPS
 {
     public class Registers
     {
+        public static ulong ReadMainReg(byte Index, bool RSP, bool CPU)
+        {
+            if (CPU)
+                return R4300.Reg[Index];
+            else if (RSP)
+                return RSPReg.Reg[Index];
+
+            throw new ArgumentException("When reading a Main Register RSP nor CPU was true.");
+        }
+
+        public static ulong ReadCop0Reg(byte Index, bool RSP, bool CPU)
+        {
+            if (CPU)
+                return COP0.Reg[Index];
+            else if (RSP)
+                return RSPCOP0.Reg[Index];
+
+            throw new ArgumentException("When reading a COP0 Register RSP nor CPU was true.");
+        }
+
+        public static void SetMainReg(byte Index, ulong Value, bool RSP, bool CPU)
+        {
+            if (CPU)
+                R4300.Reg[Index] = Value;
+            else if (RSP)
+                RSPReg.Reg[Index] = Value;
+
+            throw new ArgumentException("When setting a Main Register RSP nor CPU was true.");
+        }
+
+        public static void SetCop0Reg(byte Index, ulong Value, bool RSP, bool CPU)
+        {
+            if (CPU)
+                COP0.Reg[Index] = Value;
+            else if (RSP)
+                RSPCOP0.Reg[Index] = Value;
+
+            throw new ArgumentException("When setting a COP0 Register RSP nor CPU was true.");
+        }
+
         public class R4300
         {
             public static ulong[] Reg = new ulong[32];
@@ -52,6 +94,32 @@
             public const int ERROREPC_REG  = 0x1E;
             public const int RESERVED6_REG = 0x1F;
 
+            public static ulong[] Reg = new ulong[32];
+
+            public static void PrintRegisterInfo()
+            {
+                for (int i = 0; i < Reg.Length; ++i)
+                    Common.Logger.PrintInfoLine($"CP0R[{i}]: 0x{Reg[i]:x16}");
+            }
+        }
+
+        public class RSPReg
+        {
+            public static ulong[] Reg = new ulong[32];
+            public static ulong HI;
+            public static ulong LO;
+            public static uint PC;
+            public static byte LLbit;
+
+            public static void PrintRegisterInfo()
+            {
+                for (uint i = 0; i < Reg.Length; ++i)
+                    Common.Logger.PrintInfoLine($"R[{i}]: 0x{Reg[i]:x16}");
+            }
+        }
+
+        public class RSPCOP0
+        {
             public static ulong[] Reg = new ulong[32];
 
             public static void PrintRegisterInfo()

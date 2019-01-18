@@ -58,5 +58,23 @@ namespace Ryu64.Common
             public InvalidOperationException(string format, Exception innerException, params object[] args)
                 : base(string.Format(format, args), innerException) { }
         }
+
+        public class InstructionNotSupported : Exception
+        {
+            public InstructionNotSupported()
+                : base() { }
+
+            public InstructionNotSupported(string message)
+                : base(message) { }
+
+            public InstructionNotSupported(string format, params object[] args)
+                : base(string.Format(format, args)) { }
+
+            public InstructionNotSupported(string message, Exception innerException)
+                : base(message, innerException) { }
+
+            public InstructionNotSupported(string format, Exception innerException, params object[] args)
+                : base(string.Format(format, args), innerException) { }
+        }
     }
 }

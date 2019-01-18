@@ -13,15 +13,21 @@ namespace Ryu64.MIPS
             public uint Cycles;
             public string FormattedASM;
 
+            public bool RSP;
+            public bool CPU;
+
             public InstInterp.InterpretOpcode Interpret;
 
-            public InstInfo(uint Mask, uint Value, InstInterp.InterpretOpcode Interpret, string FormattedASM, uint Cycles)
+            public InstInfo(uint Mask, uint Value, InstInterp.InterpretOpcode Interpret, string FormattedASM, uint Cycles, bool RSP, bool CPU)
             {
                 this.Mask         = Mask;
                 this.Value        = Value;
                 this.Interpret    = Interpret;
                 this.FormattedASM = FormattedASM;
                 this.Cycles = Cycles;
+
+                this.RSP = RSP;
+                this.CPU = CPU;
             }
         }
 
@@ -36,7 +42,10 @@ namespace Ryu64.MIPS
             public ushort Imm;
             public uint   Target;
 
-            public OpcodeDesc(uint Opcode)
+            public bool RSP;
+            public bool CPU;
+
+            public OpcodeDesc(uint Opcode, bool RSP, bool CPU)
             {
                 this.Opcode = Opcode;
 
@@ -46,6 +55,9 @@ namespace Ryu64.MIPS
                 op4                = (byte)  ((Opcode & 0b00000000000000000000011111000000) >> 6);
                 Imm                = (ushort)((Opcode & 0b00000000000000001111111111111111));
                 Target             =         ((Opcode & 0b00000011111111111111111111111111));
+
+                this.RSP = RSP;
+                this.CPU = CPU;
             }
         }
 
@@ -200,24 +212,29 @@ namespace Ryu64.MIPS
             return ((Value >> 10) & 0x00F) | ((Value >> 18) & 0xFF0);
         }
 
-        public static InstInfo GetOpcodeInfo(uint Opcode)
+        public static InstInfo GetOpcodeInfo(uint Opcode, bool RSP, bool CPU)
         {
-            return GetOpcodeInfoFromList(FastLookup[ToFastLookupIndex(Opcode)], Opcode);
+            return GetOpcodeInfoFromList(FastLookup[ToFastLookupIndex(Opcode)], Opcode, RSP, CPU);
         }
 
-        public static InstInfo GetOpcodeInfoFromList(InstInfo[] InstList, uint Opcode)
+        public static InstInfo GetOpcodeInfoFromList(InstInfo[] InstList, uint Opcode, bool RSP, bool CPU)
         {
             for (uint i = 0; i < InstList.Length; ++i)
             {
                 InstInfo Info = InstList[i];
                 if ((Opcode & Info.Mask) == Info.Value)
-                    return Info;
+                {
+                    if (Info.CPU == CPU || Info.RSP == RSP)
+                        return Info;
+                    else
+                        throw new Common.Exceptions.InstructionNotSupported($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" is not supported by this Core [RSP = {RSP}, CPU = {CPU}].  PC: 0x{Registers.R4300.PC:x8}");
+                }
             }
 
             throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction.  PC: 0x{Registers.R4300.PC:x8}");
         }
 
-        private static void SetOpcode(string Encoding, InstInterp.InterpretOpcode Interpret, string FormattedASM = "", uint Cycles = 1)
+        private static void SetOpcode(string Encoding, InstInterp.InterpretOpcode Interpret, string FormattedASM = "", uint Cycles = 1, bool RSP = true, bool CPU = true)
         {
             uint Bit   = (uint)Encoding.Length - 1;
             uint Value = 0;
@@ -237,7 +254,7 @@ namespace Ryu64.MIPS
 
             XMask = ~XMask;
 
-            AllInsts.Add(new InstInfo(XMask, Value, Interpret, FormattedASM, Cycles));
+            AllInsts.Add(new InstInfo(XMask, Value, Interpret, FormattedASM, Cycles, RSP, CPU));
         }
     }
 }
