@@ -4,19 +4,19 @@
     {
         public static void MFC0(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)Registers.COP0.Reg[Desc.op3];
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (uint)Registers.ReadCop0Reg(Desc.op3, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void MTC0(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.COP0.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2];
-            Registers.R4300.PC += 4;
+            Registers.SetCop0Reg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void CACHE(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.PC += 4; // Stubbed.
+            Registers.AddPC(4, Desc.RSP, Desc.CPU); // Stubbed.
         }
 
         public static void ERET(OpcodeTable.OpcodeDesc Desc)

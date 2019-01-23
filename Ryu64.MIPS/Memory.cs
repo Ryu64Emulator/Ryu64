@@ -86,8 +86,6 @@ namespace Ryu64.MIPS
         private List<MemEntry> MemoryMapList = new List<MemEntry>();
         private MemEntry[]     MemoryMap;
 
-        private readonly uint VIScanlineIndex = 0;
-
         public Memory(byte[] Rom)
         {
             // RDRAM
@@ -127,9 +125,6 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x0440000C, 0x0440000F, VI_INTR_REG_RW,    VI_INTR_REG_RW,   "VI_INTR_REG"));
             MemoryMapList.Add(new MemEntry(0x04400010, 0x04400013, VI_CURRENT_REG_R,  VI_CURRENT_REG_W, "VI_CURRENT_REG",
                 null, VI_CURRENT_WRITE_EVENT));
-
-            VIScanlineIndex = (uint)MemoryMapList.Count-1;
-
             MemoryMapList.Add(new MemEntry(0x04400014, 0x04400017, VI_BURST_REG_RW,   VI_BURST_REG_RW,   "VI_BURST_REG"));
             MemoryMapList.Add(new MemEntry(0x04400018, 0x0440001B, VI_V_SYNC_REG_RW,  VI_V_SYNC_REG_RW,  "VI_V_SYNC_REG"));
             MemoryMapList.Add(new MemEntry(0x0440001C, 0x0440001F, VI_H_SYNC_REG_RW,  VI_H_SYNC_REG_RW,  "VI_H_SYNC_REG"));
@@ -353,8 +348,6 @@ namespace Ryu64.MIPS
 
         private MemEntry GetEntry(uint index, bool Store = false)
         {
-            if (index == 0x04400010) return MemoryMap[VIScanlineIndex]; // So that the VIScanline thread runs faster.
-
             for (int i = 0; i < MemoryMap.Length; ++i)
             {
                 if (MemoryMap[i].EndAddress < index)
@@ -521,9 +514,35 @@ namespace Ryu64.MIPS
             return this[index];
         }
 
+        public byte ReadUInt8(uint index, bool RSP, bool CPU)
+        {
+            if (CPU)
+                return ReadUInt8(index);
+            else if (RSP)
+                return SP_DMEM_RW[index & 0xFFF];
+
+            throw new ArgumentException("When reading a byte RSP nor CPU was true.");
+        }
+
         public void WriteUInt8(uint index, byte value)
         {
             this[index] = value;
+        }
+
+        public void WriteUInt8(uint index, byte value, bool RSP, bool CPU)
+        {
+            if (CPU)
+            {
+                WriteUInt8(index, value);
+                return;
+            }
+            else if (RSP)
+            {
+                SP_DMEM_RW[index & 0xFFF] = value;
+                return;
+            }
+
+            throw new ArgumentException("When writing a byte RSP nor CPU was true.");
         }
 
         public sbyte ReadInt8(uint index)
@@ -531,15 +550,35 @@ namespace Ryu64.MIPS
             return (sbyte)ReadUInt8(index);
         }
 
+        public sbyte ReadInt8(uint index, bool RSP, bool CPU)
+        {
+            return (sbyte)ReadUInt8(index, RSP, CPU);
+        }
+
         public void WriteInt8(uint index, sbyte value)
         {
             WriteUInt8(index, (byte)value);
+        }
+
+        public void WriteInt8(uint index, sbyte value, bool RSP, bool CPU)
+        {
+            WriteUInt8(index, (byte)value, RSP, CPU);
         }
 
         public ushort ReadUInt16(uint index)
         {
             byte[] Res = this[index, 2];
             return (ushort)((Res[1]) | (Res[0] << 8));
+        }
+
+        public ushort ReadUInt16(uint index, bool RSP, bool CPU)
+        {
+            if (CPU)
+                return ReadUInt16(index);
+            else if (RSP)
+                return (ushort)((SP_DMEM_RW[(index & 0xFFF) + 1]) | (SP_DMEM_RW[index & 0xFFF] << 8));
+
+            throw new ArgumentException("When reading a short RSP nor CPU was true.");
         }
 
         public void WriteUInt16(uint index, ushort value)
@@ -556,9 +595,39 @@ namespace Ryu64.MIPS
             }
         }
 
+        public void WriteUInt16(uint index, ushort value, bool RSP, bool CPU)
+        {
+            if (CPU)
+            {
+                WriteUInt16(index, value);
+                return;
+            }
+            else if (RSP)
+            {
+                unsafe
+                {
+                    ushort* point = &value;
+                    byte[] PointArray = new byte[2];
+                    Marshal.Copy(new IntPtr(point), PointArray, 0, 2);
+
+                    Array.Reverse(PointArray);
+
+                    Buffer.BlockCopy(PointArray, 0, SP_DMEM_RW, (int)index, 2);
+                }
+                return;
+            }
+
+            throw new ArgumentException("When writing a short RSP nor CPU was true.");
+        }
+
         public short ReadInt16(uint index)
         {
             return (short)ReadUInt16(index);
+        }
+
+        public short ReadInt16(uint index, bool RSP, bool CPU)
+        {
+            return (short)ReadUInt16(index, RSP, CPU);
         }
 
         public void WriteInt16(uint index, short value)
@@ -566,10 +635,25 @@ namespace Ryu64.MIPS
             WriteUInt16(index, (ushort)value);
         }
 
+        public void WriteInt16(uint index, short value, bool RSP, bool CPU)
+        {
+            WriteUInt16(index, (ushort)value, RSP, CPU);
+        }
+
         public uint ReadUInt32(uint index)
         {
             byte[] Res = this[index, 4];
             return (uint)(Res[3] | (Res[2] << 8) | (Res[1] << 16) | (Res[0] << 24));
+        }
+
+        public uint ReadUInt32(uint index, bool RSP, bool CPU)
+        {
+            if (CPU)
+                return ReadUInt32(index);
+            else if (RSP)
+                return (uint)((SP_DMEM_RW[(index & 0xFFF) + 3]) | (SP_DMEM_RW[(index & 0xFFF) + 2] << 8) | (SP_DMEM_RW[(index & 0xFFF) + 1] << 16) | (SP_DMEM_RW[index & 0xFFF] << 24));
+
+            throw new ArgumentException("When reading a uint RSP nor CPU was true.");
         }
 
         public void WriteUInt32(uint index, uint value)
@@ -586,14 +670,47 @@ namespace Ryu64.MIPS
             }
         }
 
+        public void WriteUInt32(uint index, uint value, bool RSP, bool CPU)
+        {
+            if (CPU)
+            {
+                WriteUInt32(index, value);
+                return;
+            }
+            else if (RSP)
+            {
+                unsafe
+                {
+                    uint* point = &value;
+                    byte[] PointArray = new byte[4];
+                    Marshal.Copy(new IntPtr(point), PointArray, 0, 4);
+
+                    Array.Reverse(PointArray);
+
+                    Buffer.BlockCopy(PointArray, 0, SP_DMEM_RW, (int)index, 4);
+                }
+                return;
+            }
+        }
+
         public int ReadInt32(uint index)
         {
             return (int)ReadUInt32(index);
         }
 
+        public int ReadInt32(uint index, bool RSP, bool CPU)
+        {
+            return (int)ReadUInt32(index, RSP, CPU);
+        }
+
         public void WriteInt32(uint index, int value)
         {
             WriteUInt32(index, (uint)value);
+        }
+
+        public void WriteInt32(uint index, int value, bool RSP, bool CPU)
+        {
+            WriteUInt32(index, (uint)value, RSP, CPU);
         }
 
         public ulong ReadUInt64(uint index)

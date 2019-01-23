@@ -207,16 +207,6 @@ namespace Ryu64.MIPS
                     uint Opcode = memory.ReadUInt32(Registers.R4300.PC);
                     InterpretOpcode(Opcode);
 
-                    while (Common.Settings.STEP_MODE && !Common.Variables.Step);
-                    if (Common.Settings.STEP_MODE)
-                    {
-                        Registers.R4300.PrintRegisterInfo();
-                        Registers.COP0.PrintRegisterInfo();
-                        Registers.COP1.PrintRegisterInfo();
-                        Thread.Sleep(250);
-                        Common.Variables.Step = false;
-                    }
-
                     Common.Variables.CPUMHz = (Common.Measure.CycleCounter / 1000000) / Common.Measure.MeasureTime.Elapsed.TotalSeconds;
                 }
                 Common.Measure.MeasureTime.Stop();

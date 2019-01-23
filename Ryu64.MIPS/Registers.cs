@@ -27,9 +27,15 @@ namespace Ryu64.MIPS
         public static void SetMainReg(byte Index, ulong Value, bool RSP, bool CPU)
         {
             if (CPU)
+            {
                 R4300.Reg[Index] = Value;
+                return;
+            }
             else if (RSP)
-                RSPReg.Reg[Index] = Value;
+            {
+                RSPReg.Reg[Index] = (uint)Value;
+                return;
+            }
 
             throw new ArgumentException("When setting a Main Register RSP nor CPU was true.");
         }
@@ -37,11 +43,59 @@ namespace Ryu64.MIPS
         public static void SetCop0Reg(byte Index, ulong Value, bool RSP, bool CPU)
         {
             if (CPU)
+            {
                 COP0.Reg[Index] = Value;
+                return;
+            }
             else if (RSP)
+            {
                 RSPCOP0.Reg[Index] = Value;
+                return;
+            }
 
             throw new ArgumentException("When setting a COP0 Register RSP nor CPU was true.");
+        }
+
+        public static uint ReadPC(bool RSP, bool CPU)
+        {
+            if (CPU)
+                return R4300.PC;
+            else if (RSP)
+                return RSPReg.PC;
+
+            throw new ArgumentException("When reading the PC RSP nor CPU was true.");
+        }
+
+        public static void SetPC(uint Value, bool RSP, bool CPU)
+        {
+            if (CPU)
+            {
+                R4300.PC = Value;
+                return;
+            }
+            else if (RSP)
+            {
+                RSPReg.PC = (ushort)Value;
+                return;
+            }
+
+            throw new ArgumentException("When setting the PC RSP nor CPU was true.");
+        }
+
+        public static void AddPC(uint Add, bool RSP, bool CPU)
+        {
+            if (CPU)
+            {
+                R4300.PC += Add;
+                return;
+            }
+            else if (RSP)
+            {
+                RSPReg.PC += (ushort)Add;
+                return;
+            }
+
+            throw new ArgumentException("When adding to the PC RSP nor CPU was true.");
         }
 
         public class R4300
@@ -105,33 +159,30 @@ namespace Ryu64.MIPS
 
         public class RSPReg
         {
-            public static ulong[] Reg = new ulong[32];
-            public static ulong HI;
-            public static ulong LO;
-            public static uint PC;
-            public static byte LLbit;
+            public static uint[] Reg = new uint[32];
+            public static ushort PC;
 
             public static void PrintRegisterInfo()
             {
                 for (uint i = 0; i < Reg.Length; ++i)
-                    Common.Logger.PrintInfoLine($"R[{i}]: 0x{Reg[i]:x16}");
+                    Common.Logger.PrintInfoLine($"RSPR[{i}]: 0x{Reg[i]:x16}");
             }
         }
 
         public class RSPCOP0
         {
-            public static ulong[] Reg = new ulong[32];
+            public static ulong[] Reg = new ulong[16];
 
             public static void PrintRegisterInfo()
             {
                 for (int i = 0; i < Reg.Length; ++i)
-                    Common.Logger.PrintInfoLine($"CP0R[{i}]: 0x{Reg[i]:x16}");
+                    Common.Logger.PrintInfoLine($"RSPCP0R[{i}]: 0x{Reg[i]:x16}");
             }
         }
 
         public class COP1
         {
-            public static double[] Reg = new double[32];
+            public static ulong[] Reg = new ulong[32];
 
             public static void PrintRegisterInfo()
             {

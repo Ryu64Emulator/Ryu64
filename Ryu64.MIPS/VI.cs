@@ -21,7 +21,7 @@ namespace Ryu64.MIPS
                 }
             })
             {
-                Name = "VIThread"
+                Name = "VI"
             };
             VIThread.Start();
         }

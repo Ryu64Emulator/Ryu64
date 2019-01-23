@@ -30,6 +30,9 @@ namespace Ryu64.MIPS
 
         public static uint TranslateAddress(uint Address)
         {
+            if ((Address & 0xC0000000) == 0x80000000)
+                return Address;
+
             if (Common.Settings.TLB_REGLOCKOFF && (Address & 0x04000000) == 0x04000000)
                 return Address;
 

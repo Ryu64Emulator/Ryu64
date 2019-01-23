@@ -10,7 +10,7 @@ namespace Ryu64.MIPS.Interpreter
         {
             if (Desc.op3 == 0 || Desc.op3 == 31)
             {
-                Registers.R4300.Reg[Desc.op2] = Common.Util.DoubleToUInt64(Registers.COP1.Reg[Desc.op3]) & 0xFFFFFFFF;
+                Registers.R4300.Reg[Desc.op2] = (uint)Registers.COP1.Reg[Desc.op3];
             }
             else
             {
@@ -24,7 +24,7 @@ namespace Ryu64.MIPS.Interpreter
         {
             if (Desc.op3 == 0 || Desc.op3 == 31)
             {
-                Registers.COP1.Reg[Desc.op3] = Common.Util.UInt64ToDouble((uint)Registers.R4300.Reg[Desc.op2]);
+                Registers.COP1.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2];
             }
             else
             {

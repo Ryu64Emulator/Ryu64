@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace Ryu64.Common
 {
@@ -8,8 +9,9 @@ namespace Ryu64.Common
 
         public static void PrintInfo(string Info)
         {
+            string ThreadName = (!string.IsNullOrEmpty(Thread.CurrentThread.Name)) ? $" | {Thread.CurrentThread.Name}" : "";
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write($"Info: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Info}");
+            Console.Write($"Info: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | {Info}");
             Console.ResetColor();
         }
 
@@ -20,8 +22,9 @@ namespace Ryu64.Common
 
         public static void PrintError(string Error)
         {
+            string ThreadName = (!string.IsNullOrEmpty(Thread.CurrentThread.Name)) ? $" | {Thread.CurrentThread.Name}" : "";
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write($"Err:  {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Error}");
+            Console.Write($"Err:  {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | {Error}");
             Console.ResetColor();
         }
 
@@ -32,8 +35,9 @@ namespace Ryu64.Common
 
         public static void PrintWarning(string Warning)
         {
+            string ThreadName = (!string.IsNullOrEmpty(Thread.CurrentThread.Name)) ? $" | {Thread.CurrentThread.Name}" : "";
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Write($"Warn: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)} | {Warning}");
+            Console.Write($"Warn: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | {Warning}");
             Console.ResetColor();
         }
 

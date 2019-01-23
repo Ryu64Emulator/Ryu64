@@ -81,13 +81,13 @@ namespace Ryu64.RDP
                     {
                         uint PC = MIPS.R4300.memory.ReadUInt32(0x04100000);
                         if (Common.Variables.Debug)
-                            Common.Logger.PrintInfoLine($"RDP | Starting Command Buffer, 0x{MIPS.R4300.memory.ReadUInt32(0x04100000):x8} to 0x{MIPS.R4300.memory.ReadUInt32(0x04100004):x8}.");
+                            Common.Logger.PrintInfoLine($"Starting Command Buffer, 0x{MIPS.R4300.memory.ReadUInt32(0x04100000):x8} to 0x{MIPS.R4300.memory.ReadUInt32(0x04100004):x8}.");
                         while (PC < MIPS.R4300.memory.ReadUInt32(0x04100004))
                         {
                             ulong Instruction = MIPS.R4300.memory.ReadUInt64(PC);
                             byte Command = (byte)(((Instruction & 0xFF00000000000000) >> 56) & 0xFF);
                             if (Common.Variables.Debug)
-                                Common.Logger.PrintInfoLine($"RDP | 0x{PC:x8}: 0x{Instruction:x16}");
+                                Common.Logger.PrintInfoLine($"0x{PC:x8}: 0x{Instruction:x16}");
                             switch (Command)
                             {
                                 case 0x3F: // Set Color Image
@@ -102,7 +102,7 @@ namespace Ryu64.RDP
                                     ColorImageWidth  = SCI_Width;
 
                                     if (Common.Variables.Debug)
-                                        Common.Logger.PrintInfoLine($"RDP | Set Color Image - Address: 0x{ColorImageAddr:x8}, Format: {ColorImageFormat}, Size: {ColorImageSize}, Image Width: {ColorImageWidth + 1}");
+                                        Common.Logger.PrintInfoLine($"Set Color Image - Address: 0x{ColorImageAddr:x8}, Format: {ColorImageFormat}, Size: {ColorImageSize}, Image Width: {ColorImageWidth + 1}");
 
                                     PC += 8;
                                     break;
@@ -118,7 +118,7 @@ namespace Ryu64.RDP
                                     TexImageWidth  = STI_Width;
 
                                     if (Common.Variables.Debug)
-                                        Common.Logger.PrintInfoLine($"RDP | Set Texture Image - Address: 0x{TexImageAddr:x8}, Format: {TexImageFormat}, Size: {TexImageSize}, Image Width: {TexImageWidth + 1}");
+                                        Common.Logger.PrintInfoLine($"Set Texture Image - Address: 0x{TexImageAddr:x8}, Format: {TexImageFormat}, Size: {TexImageSize}, Image Width: {TexImageWidth + 1}");
 
                                     PC += 8;
                                     break;
@@ -155,7 +155,7 @@ namespace Ryu64.RDP
                                     FillColor = (uint)(Instruction & 0xFFFFFFFF);
 
                                     if (Common.Variables.Debug)
-                                        Common.Logger.PrintInfoLine($"RDP | Set Fill Color - Color: 0x{FillColor:x8}");
+                                        Common.Logger.PrintInfoLine($"Set Fill Color - Color: 0x{FillColor:x8}");
 
                                     PC += 8;
                                     break;
@@ -170,7 +170,7 @@ namespace Ryu64.RDP
                                     ushort FR_YH = (ushort) (Instruction & 0x0000000000000FFF);
 
                                     if (Common.Variables.Debug)
-                                        Common.Logger.PrintInfoLine($"RDP | Fill Rectangle - XL: {FR_XL >> 2}.{FR_XL & 3}, YL: {FR_YL >> 2}.{FR_YL & 3}, XH: {FR_XH >> 2}.{FR_XH & 3}, YH: {FR_YH >> 2}.{FR_YH & 3}");
+                                        Common.Logger.PrintInfoLine($"Fill Rectangle - XL: {FR_XL >> 2}.{FR_XL & 3}, YL: {FR_YL >> 2}.{FR_YL & 3}, XH: {FR_XH >> 2}.{FR_XH & 3}, YH: {FR_YH >> 2}.{FR_YH & 3}");
 
                                     Rasterizer.FillRect(FR_XL, FR_YL, FR_XH, FR_YH);
 
@@ -196,7 +196,7 @@ namespace Ryu64.RDP
                                     uint NST_DxMDy = (uint) (NST_EdgeCoefficient3 & 0x00000000FFFFFFFF);
 
                                     if (Common.Variables.Debug)
-                                        Common.Logger.PrintInfoLine($"RDP | Fill Triangle - YL: {NST_YL >> 2}, YM: {NST_YM >> 2}, YH: {NST_YH}, XL: {NST_XL >> 16}, DxLDy: {(short)(NST_DxLDy >> 16) + ((float)(NST_DxLDy & 0xFFFF) / 65535)}, XH: {NST_XH >> 16}, DxHDy: {(short)(NST_DxHDy >> 16) + ((float)(NST_DxHDy & 0xFFFF) / 65535)}, XM: {NST_XM >> 16}, DxMDy: {(short)(NST_DxMDy >> 16) + ((float)(NST_DxMDy & 0xFFFF) / 65535)}, Dir: {NST_Dir}");
+                                        Common.Logger.PrintInfoLine($"Fill Triangle - YL: {NST_YL >> 2}, YM: {NST_YM >> 2}, YH: {NST_YH}, XL: {NST_XL >> 16}, DxLDy: {(short)(NST_DxLDy >> 16) + ((float)(NST_DxLDy & 0xFFFF) / 65535)}, XH: {NST_XH >> 16}, DxHDy: {(short)(NST_DxHDy >> 16) + ((float)(NST_DxHDy & 0xFFFF) / 65535)}, XM: {NST_XM >> 16}, DxMDy: {(short)(NST_DxMDy >> 16) + ((float)(NST_DxMDy & 0xFFFF) / 65535)}, Dir: {NST_Dir}");
 
                                     Rasterizer.FillTriangle(NST_YL, NST_YM, NST_YH, NST_XL, NST_DxLDy, NST_XH, NST_DxHDy, NST_XM, NST_DxMDy, NST_Dir);
 
@@ -212,7 +212,7 @@ namespace Ryu64.RDP
                             MIPS.R4300.memory.WriteRDPPC(PC);
                         }
                         if (Common.Variables.Debug)
-                            Common.Logger.PrintInfoLine("RDP | Ended command buffer.");
+                            Common.Logger.PrintInfoLine("Ended command buffer.");
                         MIPS.RDPWrapper.RDPExec = false;
                         MIPS.R4300.memory.WriteRDPPC(0);
                     }

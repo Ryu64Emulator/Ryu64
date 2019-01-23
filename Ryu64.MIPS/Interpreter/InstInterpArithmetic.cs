@@ -18,14 +18,14 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void ADDIU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm);
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void ADDU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op1] + (uint)Registers.R4300.Reg[Desc.op2];
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void DADD(OpcodeTable.OpcodeDesc Desc)
@@ -42,26 +42,26 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void DADDIU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (ulong)((long)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm);
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (ulong)((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void DADDU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op1] + Registers.R4300.Reg[Desc.op2];
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void AND(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op1] & (uint)Registers.R4300.Reg[Desc.op2];
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) & (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void ANDI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] & Desc.Imm;
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) & Desc.Imm, Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SUB(OpcodeTable.OpcodeDesc Desc)
@@ -72,26 +72,26 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void SUBU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op1] - (uint)Registers.R4300.Reg[Desc.op2];
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) - (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void XOR(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op1] ^ (uint)Registers.R4300.Reg[Desc.op2];
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) ^ (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void XORI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] ^ Desc.Imm;
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) ^ Desc.Imm, Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void LUI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)(Desc.Imm << 16);
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (uint)(Desc.Imm << 16), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void MFHI(OpcodeTable.OpcodeDesc Desc)
@@ -108,14 +108,14 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void OR(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op1] | (uint)Registers.R4300.Reg[Desc.op2];
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) | (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void ORI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (uint)Registers.R4300.Reg[Desc.op1] | Desc.Imm;
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) | Desc.Imm, Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void MTLO(OpcodeTable.OpcodeDesc Desc)
@@ -168,100 +168,100 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void SLL(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] << Desc.op4;
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) << Desc.op4, Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void DSLL32(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op2] << (Desc.op4 + 32);
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) << (Desc.op4 + 32), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SLLV(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] << (byte)(Registers.R4300.Reg[Desc.op1] & 0x1F);
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) << (byte)(Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) & 0x1F), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SRA(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] >> Desc.op4;
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) >> Desc.op4, Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void DSRA32(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op2] >> (Desc.op4 + 32);
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) >> (Desc.op4 + 32), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SRL(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] >> Desc.op4;
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) >> Desc.op4, Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SRLV(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op3] = (uint)Registers.R4300.Reg[Desc.op2] >> (byte)(Registers.R4300.Reg[Desc.op1] & 0x1F);
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) >> (byte)(Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) & 0x1F), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SLTI(OpcodeTable.OpcodeDesc Desc)
         {
-            if ((long)Registers.R4300.Reg[Desc.op1] < (short)Desc.Imm)
+            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) < (short)Desc.Imm)
             {
-                Registers.R4300.Reg[Desc.op2] = 1;
+                Registers.SetMainReg(Desc.op2, 1, Desc.RSP, Desc.CPU);
             }
             else
             {
-                Registers.R4300.Reg[Desc.op2] = 0;
+                Registers.SetMainReg(Desc.op2, 0, Desc.RSP, Desc.CPU);
             }
 
-            Registers.R4300.PC += 4;
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SLTIU(OpcodeTable.OpcodeDesc Desc)
         {
-            if (Registers.R4300.Reg[Desc.op1] < Desc.Imm)
+            if (Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) < Desc.Imm)
             {
-                Registers.R4300.Reg[Desc.op2] = 1;
+                Registers.SetMainReg(Desc.op2, 1, Desc.RSP, Desc.CPU);
             }
             else
             {
-                Registers.R4300.Reg[Desc.op2] = 0;
+                Registers.SetMainReg(Desc.op2, 0, Desc.RSP, Desc.CPU);
             }
 
-            Registers.R4300.PC += 4;
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SLT(OpcodeTable.OpcodeDesc Desc)
         {
-            if ((long)Registers.R4300.Reg[Desc.op1] < (long)Registers.R4300.Reg[Desc.op2])
+            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) < (long)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
             {
-                Registers.R4300.Reg[Desc.op3] = 1;
+                Registers.SetMainReg(Desc.op3, 1, Desc.RSP, Desc.CPU);
             }
             else
             {
-                Registers.R4300.Reg[Desc.op3] = 0;
+                Registers.SetMainReg(Desc.op3, 0, Desc.RSP, Desc.CPU);
             }
 
-            Registers.R4300.PC += 4;
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SLTU(OpcodeTable.OpcodeDesc Desc)
         {
-            if (Registers.R4300.Reg[Desc.op1] < Registers.R4300.Reg[Desc.op2])
+            if (Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) < Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
             {
-                Registers.R4300.Reg[Desc.op3] = 1;
+                Registers.SetMainReg(Desc.op3, 1, Desc.RSP, Desc.CPU);
             }
             else
             {
-                Registers.R4300.Reg[Desc.op3] = 0;
+                Registers.SetMainReg(Desc.op3, 0, Desc.RSP, Desc.CPU);
             }
 
-            Registers.R4300.PC += 4;
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
     }
 }

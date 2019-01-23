@@ -117,7 +117,7 @@ namespace Ryu64.RDP
                         uint xMin = Scanbuffer[(y * 2)    ];
                         uint xMax = Scanbuffer[(y * 2) + 1];
 
-                        for (uint x = xMin; x < xMax; x += 2)
+                        for (uint x = xMin; x < xMax; ++x)
                             SetPixel16BPP(x, y, RDP.FillColor, ScreenX1, ScreenY1, ScreenX2, ScreenY2, ImageWidth);
                     }
                 }

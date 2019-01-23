@@ -8,7 +8,6 @@ namespace Ryu64.Common
     public class Settings
     {
         public static bool TLB_REGLOCKOFF;
-        public static bool STEP_MODE;
         public static bool GRAPHICS_LLE;
 
         public static void Parse(string SettingsFile)
@@ -18,13 +17,11 @@ namespace Ryu64.Common
                 IniParser Parse = new IniParser(SettingsFile);
                 TLB_REGLOCKOFF  = bool.Parse(Parse.Value("TLB_REGLOCKOFF", "true"));
                 GRAPHICS_LLE    = bool.Parse(Parse.Value("GRAPHICS_LLE",   "false"));
-                STEP_MODE       = bool.Parse(Parse.Value("STEP_MODE",      "false"));
             }
             catch
             {
                 TLB_REGLOCKOFF = true;
                 GRAPHICS_LLE   = false;
-                STEP_MODE      = false;
             }
         }
 

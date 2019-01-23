@@ -5,13 +5,14 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using Ryu64.RDP;
 
 namespace Ryu64.Graphics
 {
     public class MainWindow : GameWindow
     {
         private static string BaseTitle = "Ryu64";
-        private static int    FramebufferTexture;
+        private static IRenderer Renderer;
 
         public MainWindow(string GameName) : base(960, 720, GraphicsMode.Default, BaseTitle, 
             GameWindowFlags.Default, 
@@ -33,24 +34,18 @@ namespace Ryu64.Graphics
         {
             base.OnLoad(e);
 
+            if (Common.Settings.GRAPHICS_LLE)
+                Renderer = new LLERenderer();
+            else
+                Renderer = new HLERenderer();
+
             GL.Enable(EnableCap.Texture2D);
 
             GL.Enable(EnableCap.Blend);
 
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            if (Common.Settings.GRAPHICS_LLE)
-            {
-                GL.Disable(EnableCap.DepthTest);
-
-                FramebufferTexture = GL.GenTexture();
-                GL.BindTexture(TextureTarget.Texture2D, FramebufferTexture);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            }
+            Renderer.Init();
         }
 
         bool LastFrameF11;
@@ -59,7 +54,9 @@ namespace Ryu64.Graphics
         {
             base.OnUpdateFrame(e);
 
-            Title = $"{BaseTitle} | FPS: {RenderFrequency:N2} | Game Speed: {(Common.Variables.CPUMHz / Common.Variables.N64CPUMHz) * 100:N2}% | CPU MHz: {Common.Variables.CPUMHz:N2}";
+            Renderer.Update();
+
+            Title = $"{BaseTitle} | FPS: {RenderFrequency:N2} | CPU MHz: {Common.Variables.CPUMHz:N2}";
 
             KeyboardState KeyboardState = Keyboard.GetState();
 
@@ -69,7 +66,6 @@ namespace Ryu64.Graphics
                     WindowState = WindowState.Fullscreen;
                 else
                     WindowState = WindowState.Normal;
-            if (Common.Settings.STEP_MODE && KeyboardState.IsKeyDown(Key.Enter)) Common.Variables.Step = true;
 
             LastFrameF11 = KeyboardState.IsKeyDown(Key.F11);
         }
@@ -78,16 +74,7 @@ namespace Ryu64.Graphics
         {
             base.OnRenderFrame(e);
 
-            GL.ClearColor(0, 0, 0, 1);
-            if (Common.Settings.GRAPHICS_LLE)
-            {
-                GL.Clear(ClearBufferMask.ColorBufferBit);
-                RenderFramebufferDirect();
-            }
-            else
-            {
-                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            }
+            Renderer.Render();
 
             SwapBuffers();
         }
@@ -96,8 +83,7 @@ namespace Ryu64.Graphics
         {
             base.OnClosing(e);
 
-            if (Common.Settings.GRAPHICS_LLE)
-                GL.DeleteTexture(FramebufferTexture);
+            Renderer.Cleanup();
 
             Common.Util.Cleanup(MIPS.Registers.R4300.PC);
 
@@ -108,71 +94,6 @@ namespace Ryu64.Graphics
             Console.ResetColor();
 
             Environment.Exit(0);
-        }
-
-        private bool firstLoop = true;
-
-        private unsafe void RenderFramebufferDirect()
-        {
-            uint VIStatus = MIPS.R4300.memory.ReadUInt32(0x04400000); // VI_STATUS_REG
-            uint PixelSize = VIStatus & 0b000000000000000000000011;
-            if (PixelSize == 0U) return;
-
-            uint FramebufferWidth = MIPS.R4300.memory.ReadUInt32(0x04400008); // VI_H_WIDTH_REG
-
-            byte Interlace = (byte)((VIStatus & 0b000000000000000001000000) >> 6);
-            uint VIvStart = MIPS.R4300.memory.ReadUInt32(0x04400028);
-            uint VerticalEndofVideo   =  VIvStart        & 0x000003FF;
-            uint VerticalStartOfVideo = (VIvStart >> 16) & 0x000003FF;
-
-            uint FramebufferHeight = ((VerticalEndofVideo - VerticalStartOfVideo) + 6) >> (~Interlace & 0x01);
-
-            uint FramebufferOrigin = MIPS.R4300.memory.ReadUInt32(0x04400004);
-
-            byte[] Framebuffer = MIPS.R4300.memory.FastMemoryRead(FramebufferOrigin, (int)(FramebufferWidth * FramebufferHeight) * 
-                (PixelSize == 3U ? 4 : 2));
-
-            if (firstLoop && Common.Variables.Debug)
-                Common.Logger.PrintInfoLine($"Framebuffer: PixelSize: {PixelSize}, Width: {FramebufferWidth}, " +
-                    $"Height: {FramebufferHeight}, Total Framebuffer Size: {Framebuffer.LongLength}, " +
-                    $"Origin: 0x{FramebufferOrigin:X8}, Interlace: {Interlace}, " +
-                    $"VerticalEndofVideo: {VerticalEndofVideo}, VerticalStartOfVideo: {VerticalStartOfVideo}");
-
-            fixed (byte* p = Framebuffer)
-            {
-                IntPtr pFramebuffer = (IntPtr)p;
-
-                if (PixelSize == 2U)
-                {
-                    int limit = Framebuffer.Length - (Framebuffer.Length % 2);
-                    if (limit < 1) throw new Exception("Framebuffer too small to be swapped to Little Endian.");
-
-                    for (int i = 0; i < limit - 1; i += 2)
-                    {
-                        byte temp = Framebuffer[i];
-                        Framebuffer[i] = Framebuffer[i + 1];
-                        Framebuffer[i + 1] = temp;
-                    }
-
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
-                        (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedShort5551, pFramebuffer);
-                }
-                else if (PixelSize == 3U)
-                {
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb,
-                        (int)FramebufferWidth, (int)FramebufferHeight, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pFramebuffer);
-                }
-
-                GL.Begin(PrimitiveType.Quads);
-
-                GL.TexCoord2(0, 0); GL.Vertex2(-1, 1);
-                GL.TexCoord2(1, 0); GL.Vertex2(1, 1);
-                GL.TexCoord2(1, 1); GL.Vertex2(1, -1);
-                GL.TexCoord2(0, 1); GL.Vertex2(-1, -1);
-
-                GL.End();
-            }
-            firstLoop = false;
         }
     }
 }
