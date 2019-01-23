@@ -165,13 +165,9 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x04800018, 0x0480001B, SI_STATUS_REG_R, SI_STATUS_REG_W, "SI_STATUS_REG"));
 
             // Rom
-            byte[] RealRom = new byte[0x1F39FFFF - 0x10000000]; // Pretty much to pad the rest with zeros.
-            for (uint i = 0; i < Rom.Length; ++i)
-                RealRom[i] = Rom[i];
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"ROM is {Common.Util.GetByteSizeString(Rom.Length)} big.");
 
-            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"ROM is {Common.Util.GetByteSizeString(RealRom.Length)} big.");
-
-            MemoryMapList.Add(new MemEntry(0x10000000, 0x1F39FFFF, RealRom, RealRom, "Cartridge Domain 1 (Address 2)"));
+            MemoryMapList.Add(new MemEntry(0x10000000, 0x10000000 + (uint)Rom.Length, Rom, Rom, "Cartridge Domain 1 (Address 2)"));
 
             // PIF
             MemoryMapList.Add(new MemEntry(0x1FC00000, 0x1FC007BF, PIFROM, PIFROM, "PIF Rom"));
