@@ -7,11 +7,12 @@ namespace Ryu64.Common
     {
         private const string TimeFormatting = "mm\\:ss\\.ffff";
 
-        public static void PrintInfo(string Info)
+        public static void PrintInfo(string Info, bool Timestamp = true)
         {
             string ThreadName = (!string.IsNullOrEmpty(Thread.CurrentThread.Name)) ? $" | {Thread.CurrentThread.Name}" : "";
+            string TimestampStr = Timestamp ? $"Info: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | " : "";
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write($"Info: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | {Info}");
+            Console.Write($"{TimestampStr}{Info}");
             Console.ResetColor();
         }
 
@@ -20,11 +21,12 @@ namespace Ryu64.Common
             PrintInfo(Info + '\n');
         }
 
-        public static void PrintError(string Error)
+        public static void PrintError(string Error, bool Timestamp = true)
         {
             string ThreadName = (!string.IsNullOrEmpty(Thread.CurrentThread.Name)) ? $" | {Thread.CurrentThread.Name}" : "";
+            string TimestampStr = Timestamp ? $"Err:  {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | " : "";
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write($"Err:  {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | {Error}");
+            Console.Write($"{TimestampStr}{Error}");
             Console.ResetColor();
         }
 
@@ -33,11 +35,12 @@ namespace Ryu64.Common
             PrintError(Error + '\n');
         }
 
-        public static void PrintWarning(string Warning)
+        public static void PrintWarning(string Warning, bool Timestamp = true)
         {
             string ThreadName = (!string.IsNullOrEmpty(Thread.CurrentThread.Name)) ? $" | {Thread.CurrentThread.Name}" : "";
+            string TimestampStr = Timestamp ? $"Warn: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | " : "";
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.Write($"Warn: {Measure.MeasureTime.Elapsed.ToString(TimeFormatting)}{ThreadName} | {Warning}");
+            Console.Write($"{TimestampStr}{Warning}");
             Console.ResetColor();
         }
 

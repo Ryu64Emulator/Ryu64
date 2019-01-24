@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64", "Ryu64\Ryu64.csproj", "{5E913DC0-FDAC-49BD-9063-D50E235D45A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64.CLI", "Ryu64.CLI\Ryu64.CLI.csproj", "{5E913DC0-FDAC-49BD-9063-D50E235D45A7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64.MIPS", "Ryu64.MIPS\Ryu64.MIPS.csproj", "{68B31C1A-A10F-4AD3-A8A7-C7E8C5CDEA79}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64.Graphics", "Ryu64.Gra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64.Audio", "Ryu64.Audio\Ryu64.Audio.csproj", "{2339742E-CD4E-407E-8E0F-B12E6FECFC9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ryu64.RDP", "Ryu64.RDP\Ryu64.RDP.csproj", "{B5F05240-04DC-4600-B22D-B185A6DD773D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ryu64.RDP", "Ryu64.RDP\Ryu64.RDP.csproj", "{B5F05240-04DC-4600-B22D-B185A6DD773D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

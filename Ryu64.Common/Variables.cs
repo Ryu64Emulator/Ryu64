@@ -4,8 +4,6 @@ namespace Ryu64.Common
 {
     public class Variables
     {
-        public const double N64CPUMHz = 93.75;
-
         public static bool UTEsyscall = false;
         public static bool Debug      = false;
         public static double CPUMHz   = 0;

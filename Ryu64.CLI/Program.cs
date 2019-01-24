@@ -29,16 +29,16 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org/>
 */
 
-namespace Ryu64
+namespace Ryu64.CLI
 {
     public class Program
     {
         [STAThread]
         static void Main(string[] args)
         {
-            CLI.ParseArguments(args);
+            ArgumentParser.ParseArguments(args);
 
-            Z64 Rom = new Z64(CLI.Flags.InputRom);
+            Z64 Rom = new Z64(ArgumentParser.Flags.InputRom);
             Rom.Parse();
 
             if (!Rom.HasBeenParsed)
@@ -57,11 +57,11 @@ namespace Ryu64
 
             MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
 
-            MIPS.R4300.PowerOnR4300(CLI.Flags.TVtype);
+            MIPS.R4300.PowerOnR4300(ArgumentParser.Flags.TVtype);
             if (Common.Settings.GRAPHICS_LLE)
                 RDP.RDP.PowerOnRDP();
 
-            if (!CLI.Flags.NoWindow) using (Graphics.MainWindow Window = new Graphics.MainWindow(Rom.Name.Trim())) Window.Run(60.0);
+            if (!ArgumentParser.Flags.NoWindow) using (Graphics.MainWindow Window = new Graphics.MainWindow(Rom.Name.Trim())) Window.Run(60.0);
         }
     }
 }
