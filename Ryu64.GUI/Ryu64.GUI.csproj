@@ -39,7 +39,7 @@
 
   <ItemGroup>
     <None Update="GUISettings.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

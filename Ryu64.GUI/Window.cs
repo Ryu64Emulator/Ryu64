@@ -108,7 +108,7 @@ namespace Ryu64.GUI
         private static FileIniDataParser IniParser;
         private static IniData GUISettings;
 
-        private static string GUISettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}\\GUISettings.ini";
+        private static string GUISettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}GUISettings.ini";
 
         private static void LoadIni()
         {
@@ -238,16 +238,10 @@ namespace Ryu64.GUI
 
                     if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, 256)))
                     {
-                        foreach (DriveInfo Info in DriveInfo.GetDrives())
+                        foreach (string Drive in Directory.GetLogicalDrives())
                         {
-                            if (Info.DriveType == DriveType.Fixed 
-                                || Info.DriveType == DriveType.Removable 
-                                || Info.DriveType == DriveType.Ram
-                                || Info.DriveType == DriveType.CDRom)
-                            {
-                                if (ImGui.Selectable(Info.Name))
-                                    Path = Info.RootDirectory.FullName;
-                            }
+                            if (ImGui.Selectable(Drive))
+                                Path = Drive;
                         }
                         ImGui.EndChild();
                     }
