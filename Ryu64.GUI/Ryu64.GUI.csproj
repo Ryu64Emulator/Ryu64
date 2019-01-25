@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="ImGui.NET" Version="1.67.0" />
+    <PackageReference Include="ini-parser" Version="2.5.2" />
     <PackageReference Include="Veldrid" Version="4.5.0" />
     <PackageReference Include="Veldrid.ImGui" Version="5.67.0" />
     <PackageReference Include="Veldrid.StartupUtilities" Version="4.5.0" />
@@ -34,6 +35,12 @@
     <ProjectReference Include="..\Ryu64.Formats\Ryu64.Formats.csproj" />
     <ProjectReference Include="..\Ryu64.Graphics\Ryu64.Graphics.csproj" />
     <ProjectReference Include="..\Ryu64.RDP\Ryu64.RDP.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="GUISettings.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

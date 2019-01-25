@@ -11,6 +11,9 @@ using System.Threading;
 using Veldrid;
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
+using IniParser;
+using IniParser.Model;
+using IniParser.Parser;
 
 namespace Ryu64.GUI
 {
@@ -102,6 +105,23 @@ namespace Ryu64.GUI
 
         private static string DefaultPath = AppDomain.CurrentDomain.BaseDirectory;
 
+        private static FileIniDataParser IniParser;
+        private static IniData GUISettings;
+
+        private static string GUISettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}\\GUISettings.ini";
+
+        private static void LoadIni()
+        {
+            Common.Variables.Debug = bool.Parse(GUISettings.Global["debug"]);
+        }
+
+        private static void SaveIni()
+        {
+            GUISettings.Global["debug"] = Common.Variables.Debug.ToString();
+
+            IniParser.WriteFile(GUISettingsPath, GUISettings);
+        }
+
         private static unsafe void InitUI()
         {
             WindowOpenState = new bool[64];
@@ -109,13 +129,17 @@ namespace Ryu64.GUI
             // WindowOpenState[0] = true;
             FileDialogRom_CurrPath = DefaultPath;
             ImGui.GetStyle().WindowTitleAlign = new Vector2(0.5f, 0.5f);
+            IniParser = new FileIniDataParser();
+            GUISettings = IniParser.ReadFile(GUISettingsPath);
+
+            LoadIni();
         }
 
         private static unsafe void MemoryViewer(ref uint Addr, ref bool WindowOpen, ref byte[] AddrBuf, string WindowTitle)
         {
             if (WindowOpen)
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(580, 430), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new Vector2(570, 430), new Vector2(2048, 2048));
                 if (ImGui.Begin(WindowTitle, ref WindowOpen, ImGuiWindowFlags.NoCollapse))
                 {
                     byte[] Buf = new byte[256];
@@ -132,10 +156,44 @@ namespace Ryu64.GUI
                         Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
                     }
 
-                    ImGui.InputText("Address", AddrBuf, (uint)AddrBuf.Length);
+                    ImGui.Text("Address: 0x");
+                    ImGui.SameLine();
+                    ImGui.InputText("##Address", AddrBuf, (uint)AddrBuf.Length, ImGuiInputTextFlags.CharsHexadecimal);
 
+                    ImGui.SameLine();
                     if (ImGui.Button("Go"))
                         Addr = uint.Parse(Encoding.Default.GetString(AddrBuf).Split('\0')[0], NumberStyles.HexNumber);
+                    if (ImGui.Button($"Sub {Buf.Length}"))
+                    {
+                        string AddrStr = Encoding.Default.GetString(AddrBuf);
+
+                        uint AddrInt = uint.Parse(AddrStr, NumberStyles.HexNumber);
+
+                        if (AddrInt >= Buf.Length)
+                        {
+                            AddrStr = (AddrInt - Buf.Length).ToString("X8");
+
+                            byte[] AddrStrBytes = Encoding.Default.GetBytes(AddrStr);
+
+                            Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
+                        }
+                    }
+                    ImGui.SameLine();
+                    if (ImGui.Button($"Add {Buf.Length}"))
+                    {
+                        string AddrStr = Encoding.Default.GetString(AddrBuf);
+
+                        uint AddrInt = uint.Parse(AddrStr, NumberStyles.HexNumber);
+
+                        if (AddrInt <= uint.MaxValue)
+                        {
+                            AddrStr = (AddrInt + Buf.Length).ToString("X8");
+
+                            byte[] AddrStrBytes = Encoding.Default.GetBytes(AddrStr);
+
+                            Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
+                        }
+                    }
 
                     ImGui.Separator();
                     for (uint i = 0; i < Buf.Length; ++i)
@@ -178,13 +236,17 @@ namespace Ryu64.GUI
                     IEnumerable<string> Dirs  = Directory.EnumerateDirectories(Path);
                     IEnumerable<string> Files = Directory.EnumerateFiles(Path);
 
-                    if (ImGui.BeginChild("FileDialog_Drives", new Vector2(256, 256)))
+                    if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, 256)))
                     {
                         foreach (DriveInfo Info in DriveInfo.GetDrives())
                         {
-                            if (ImGui.Selectable(Info.Name))
+                            if (Info.DriveType == DriveType.Fixed 
+                                || Info.DriveType == DriveType.Removable 
+                                || Info.DriveType == DriveType.Ram
+                                || Info.DriveType == DriveType.CDRom)
                             {
-                                Path = Info.RootDirectory.FullName;
+                                if (ImGui.Selectable(Info.Name))
+                                    Path = Info.RootDirectory.FullName;
                             }
                         }
                         ImGui.EndChild();
@@ -193,23 +255,15 @@ namespace Ryu64.GUI
 
                     Vector2 size = ImGui.GetContentRegionMax() - new Vector2(0.0f, 120.0f);
 
-                    if (ImGui.BeginChild("FileDialog_FileList", size))
+                    if (ImGui.BeginChild("##FileDialog_FileList", size))
                     {
                         foreach (string Dir in Dirs)
-                        {
                             if (ImGui.Selectable($"[Dir] {System.IO.Path.GetFileName(Dir)}"))
-                            {
                                 Path = Dir;
-                            }
-                        }
 
                         foreach (string File in Files)
-                        {
                             if (ImGui.Selectable($"[File] {System.IO.Path.GetFileName(File)}"))
-                            {
                                 FilePath = File;
-                            }
-                        }
                         ImGui.EndChild();
                     }
 
@@ -226,8 +280,8 @@ namespace Ryu64.GUI
 
                     if (ImGui.Button("Ok"))
                     {
-                        WindowOpen = false;
-                        Result = true;
+                        WindowOpen = string.IsNullOrEmpty(FilePath);
+                        Result = !string.IsNullOrEmpty(FilePath);
                     }
 
                     ImGui.SameLine();
@@ -253,9 +307,7 @@ namespace Ryu64.GUI
                 if (ImGui.BeginMenu("File"))
                 {
                     if (ImGui.MenuItem("Open ROM", !MIPS.R4300.R4300_ON))
-                    {
                         WindowOpenState[2] = true;
-                    }
                     ImGui.EndMenu();
                 }
 
@@ -264,6 +316,7 @@ namespace Ryu64.GUI
                     if (ImGui.MenuItem("Settings"))
                     {
                         WindowOpenState[1] = true;
+                        LoadIni();
                     }
                     ImGui.EndMenu();
                 }
@@ -273,14 +326,10 @@ namespace Ryu64.GUI
                     if (ImGui.BeginMenu("Debugger", MIPS.R4300.R4300_ON))
                     {
                         if (ImGui.MenuItem("Register Viewer"))
-                        {
                             WindowOpenState[3] = true;
-                        }
 
                         if (ImGui.MenuItem("Memory Viewer"))
-                        {
                             WindowOpenState[5] = true;
-                        }
                         ImGui.EndMenu();
                     }
 
@@ -289,9 +338,7 @@ namespace Ryu64.GUI
                     if (ImGui.BeginMenu("ImGui"))
                     {
                         if (ImGui.MenuItem("Style Editor"))
-                        {
                             WindowOpenState[4] = true;
-                        }
                         ImGui.EndMenu();
                     }
                     */
@@ -366,6 +413,8 @@ namespace Ryu64.GUI
                 if (ImGui.Begin("Settings", ref WindowOpenState[1], ImGuiWindowFlags.NoCollapse))
                 {
                     ImGui.Checkbox("Debug", ref Common.Variables.Debug);
+                    if (ImGui.Button("Apply"))
+                        SaveIni();
                     ImGui.End();
                 }
             }
