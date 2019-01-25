@@ -96,9 +96,10 @@ namespace Ryu64.GUI
         }
 
         private static bool[] WindowOpenState;
-        private static string FileDialogRom_CurrPath;
 
+        private static string FileDialogRom_CurrPath;
         private static string FileDialogRom_FilePath = "";
+        private static bool   FileDialogRom_HideDotFilesOnUnix = true;
 
         private static uint   MemoryViewer_CurrAddr = 0;
         private static byte[] MemoryViewer_AddrBuf  = new byte[1024];
@@ -207,7 +208,7 @@ namespace Ryu64.GUI
             }
         }
 
-        private static unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, string WindowTitle)
+        private static unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, ref bool HideDotFilesOnUnix, string WindowTitle)
         {
             bool Result = false;
 
@@ -221,7 +222,7 @@ namespace Ryu64.GUI
                     for (uint i = 0; i < DecompPath.Length; ++i)
                     {
                         string Str = DecompPath[i];
-                        if (string.IsNullOrWhiteSpace(Str)) break;
+                        if (string.IsNullOrWhiteSpace(Str)) continue;
                         ImGui.SameLine();
                         if (ImGui.Button(Str))
                         {
@@ -232,9 +233,6 @@ namespace Ryu64.GUI
                         }
                     }
                     ImGui.Separator();
-
-                    IEnumerable<string> Dirs  = Directory.EnumerateDirectories(Path);
-                    IEnumerable<string> Files = Directory.EnumerateFiles(Path);
 
                     if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, 256)))
                     {
@@ -261,15 +259,24 @@ namespace Ryu64.GUI
 
                     Vector2 size = ImGui.GetContentRegionMax() - new Vector2(0.0f, 120.0f);
 
+                    IEnumerable<string> Dirs = Directory.EnumerateDirectories(Path);
+                    IEnumerable<string> Files = Directory.EnumerateFiles(Path);
+
                     if (ImGui.BeginChild("##FileDialog_FileList", size))
                     {
                         foreach (string Dir in Dirs)
+                        {
+                            if (HideDotFilesOnUnix && Environment.OSVersion.Platform == PlatformID.Unix && Dir[0] == '.') continue;
                             if (ImGui.Selectable($"[Dir] {System.IO.Path.GetFileName(Dir)}"))
                                 Path = Dir;
+                        }
 
                         foreach (string File in Files)
+                        {
+                            if (HideDotFilesOnUnix && Environment.OSVersion.Platform == PlatformID.Unix && File[0] == '.') continue;
                             if (ImGui.Selectable($"[File] {System.IO.Path.GetFileName(File)}"))
                                 FilePath = File;
+                        }
                         ImGui.EndChild();
                     }
 
@@ -297,6 +304,9 @@ namespace Ryu64.GUI
                         WindowOpen = false;
                         Result = false;
                     }
+
+                    if (Environment.OSVersion.Platform == PlatformID.Unix)
+                        ImGui.Checkbox("Hide all directories and files starting with \".\"", ref HideDotFilesOnUnix);
 
                     FilePath = Encoding.Default.GetString(FilenameBuffer).Split('\0')[0];
 
@@ -463,7 +473,7 @@ namespace Ryu64.GUI
             if (WindowOpenState[5] && !MIPS.R4300.R4300_ON) WindowOpenState[5] = false;
             MemoryViewer(ref MemoryViewer_CurrAddr, ref WindowOpenState[5], ref MemoryViewer_AddrBuf, "Memory Viewer");
 
-            if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, ref WindowOpenState[2], "Select a ROM to load."))
+            if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, ref WindowOpenState[2], ref FileDialogRom_HideDotFilesOnUnix, "Select a ROM to load."))
             {
                 InitEmulator(FileDialogRom_FilePath);
 
