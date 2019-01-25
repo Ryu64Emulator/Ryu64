@@ -228,7 +228,7 @@ namespace Ryu64.GUI
                         {
                             string NewPath = "";
                             for (uint j = 0; j <= i; ++j)
-                                NewPath += DecompPath[j] + '\\';
+                                NewPath += DecompPath[j] + '/';
                             Path = NewPath;
                         }
                     }
