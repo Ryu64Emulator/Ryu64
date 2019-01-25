@@ -238,21 +238,23 @@ namespace Ryu64.GUI
 
                     if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, 256)))
                     {
-                        foreach (DriveInfo Drive in DriveInfo.GetDrives())
+                        if (Environment.OSVersion.Platform == PlatformID.Unix)
                         {
-                            if (Environment.OSVersion.Platform == PlatformID.Unix)
+                            if (ImGui.Selectable("/home"))
+                                Path = "/home";
+                            if (ImGui.Selectable("/"))
+                                Path = "/";
+                        }
+                        else
+                        {
+                            foreach (DriveInfo Drive in DriveInfo.GetDrives())
                             {
-                                if (ImGui.Selectable("/"))
-                                    Path = "/";
-                                if (ImGui.Selectable("/home"))
-                                    Path = "/home";
-                            }
-                            else
-                            {
-                                if (ImGui.Selectable(Drive.Name))
+                                if (ImGui.Selectable((!Drive.IsReady) ? $"{Drive.Name} (Not Ready)" : Drive.Name, 
+                                        false, (!Drive.IsReady) ? ImGuiSelectableFlags.Disabled : 0))
                                     Path = Drive.Name;
                             }
                         }
+                        
                         ImGui.EndChild();
                     }
                     ImGui.SameLine();
