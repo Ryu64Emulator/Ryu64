@@ -238,10 +238,20 @@ namespace Ryu64.GUI
 
                     if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, 256)))
                     {
-                        foreach (string Drive in Directory.GetLogicalDrives())
+                        foreach (DriveInfo Drive in DriveInfo.GetDrives())
                         {
-                            if (ImGui.Selectable(Drive))
-                                Path = Drive;
+                            if (Environment.OSVersion.Platform == PlatformID.Unix)
+                            {
+                                if (ImGui.Selectable("/"))
+                                    Path = "/";
+                                if (ImGui.Selectable("/home"))
+                                    Path = "/home";
+                            }
+                            else
+                            {
+                                if (ImGui.Selectable(Drive.Name))
+                                    Path = Drive.Name;
+                            }
                         }
                         ImGui.EndChild();
                     }
