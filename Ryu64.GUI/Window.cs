@@ -266,8 +266,8 @@ namespace Ryu64.GUI
                     {
                         foreach (string Dir in Dirs)
                         {
-                            if (HideDotFilesOnUnix)
-                                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                            if (Environment.OSVersion.Platform == PlatformID.Unix)
+                                if (HideDotFilesOnUnix)
                                     if (Dir.StartsWith('.'))
                                         continue;
 
@@ -277,8 +277,8 @@ namespace Ryu64.GUI
 
                         foreach (string File in Files)
                         {
-                            if (HideDotFilesOnUnix)
-                                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                            if (Environment.OSVersion.Platform == PlatformID.Unix)
+                                if (HideDotFilesOnUnix)
                                     if (File.StartsWith('.'))
                                         continue;
 
