@@ -99,7 +99,7 @@ namespace Ryu64.GUI
 
         private static string FileDialogRom_CurrPath;
         private static string FileDialogRom_FilePath = "";
-        private static bool   FileDialogRom_HideDotFilesOnUnix = true;
+        private static bool   HideDotFilesOnUnix;
 
         private static uint   MemoryViewer_CurrAddr = 0;
         private static byte[] MemoryViewer_AddrBuf  = new byte[1024];
@@ -114,11 +114,13 @@ namespace Ryu64.GUI
         private static void LoadIni()
         {
             Common.Variables.Debug = bool.Parse(GUISettings.Global["debug"]);
+            HideDotFilesOnUnix     = bool.Parse(GUISettings.Global["hidedotfilesunix"]);
         }
 
         private static void SaveIni()
         {
-            GUISettings.Global["debug"] = Common.Variables.Debug.ToString();
+            GUISettings.Global["debug"]            = Common.Variables.Debug.ToString();
+            GUISettings.Global["hidedotfilesunix"] = HideDotFilesOnUnix.ToString();
 
             IniParser.WriteFile(GUISettingsPath, GUISettings);
         }
@@ -313,9 +315,6 @@ namespace Ryu64.GUI
                         Result = false;
                     }
 
-                    if (Environment.OSVersion.Platform == PlatformID.Unix)
-                        ImGui.Checkbox("Hide all directories and files starting with \".\"", ref HideDotFilesOnUnix);
-
                     FilePath = Encoding.Default.GetString(FilenameBuffer).Split('\0')[0];
 
                     ImGui.End();
@@ -437,6 +436,8 @@ namespace Ryu64.GUI
                 if (ImGui.Begin("Settings", ref WindowOpenState[1], ImGuiWindowFlags.NoCollapse))
                 {
                     ImGui.Checkbox("Debug", ref Common.Variables.Debug);
+                    if (Environment.OSVersion.Platform == PlatformID.Unix)
+                        ImGui.Checkbox("Hide all directories and files starting with \".\"", ref HideDotFilesOnUnix);
                     if (ImGui.Button("Apply"))
                         SaveIni();
                     ImGui.End();
@@ -481,7 +482,7 @@ namespace Ryu64.GUI
             if (WindowOpenState[5] && !MIPS.R4300.R4300_ON) WindowOpenState[5] = false;
             MemoryViewer(ref MemoryViewer_CurrAddr, ref WindowOpenState[5], ref MemoryViewer_AddrBuf, "Memory Viewer");
 
-            if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, ref WindowOpenState[2], ref FileDialogRom_HideDotFilesOnUnix, "Select a ROM to load."))
+            if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, ref WindowOpenState[2], ref HideDotFilesOnUnix, "Select a ROM to load."))
             {
                 InitEmulator(FileDialogRom_FilePath);
 
