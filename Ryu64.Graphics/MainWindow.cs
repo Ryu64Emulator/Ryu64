@@ -92,8 +92,6 @@ namespace Ryu64.Graphics
             MIPS.COP1.COP1_ON   = false;
 
             Console.ResetColor();
-
-            Environment.Exit(0);
         }
     }
 }

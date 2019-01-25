@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ImGui.NET" Version="1.67.0" />
+    <PackageReference Include="Veldrid" Version="4.5.0" />
+    <PackageReference Include="Veldrid.ImGui" Version="5.67.0" />
+    <PackageReference Include="Veldrid.StartupUtilities" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Ryu64.CLI\Settings.ini" Link="Settings.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ryu64.Formats\Ryu64.Formats.csproj" />
+    <ProjectReference Include="..\Ryu64.Graphics\Ryu64.Graphics.csproj" />
+    <ProjectReference Include="..\Ryu64.RDP\Ryu64.RDP.csproj" />
+  </ItemGroup>
+
+</Project>
