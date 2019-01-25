@@ -266,10 +266,10 @@ namespace Ryu64.GUI
                     {
                         foreach (string Dir in Dirs)
                         {
-                            if (Environment.OSVersion.Platform == PlatformID.Unix)
-                                if (HideDotFilesOnUnix)
-                                    if (Dir.StartsWith('.'))
-                                        continue;
+                            if (HideDotFilesOnUnix 
+                                && Environment.OSVersion.Platform == PlatformID.Unix 
+                                && System.IO.Path.GetFileName(Dir)[0] == '.')
+                                continue;
 
                             if (ImGui.Selectable($"[Dir] {System.IO.Path.GetFileName(Dir)}"))
                                 Path = Dir;
@@ -277,10 +277,10 @@ namespace Ryu64.GUI
 
                         foreach (string File in Files)
                         {
-                            if (Environment.OSVersion.Platform == PlatformID.Unix)
-                                if (HideDotFilesOnUnix)
-                                    if (File.StartsWith('.'))
-                                        continue;
+                            if (HideDotFilesOnUnix
+                                && Environment.OSVersion.Platform == PlatformID.Unix
+                                && System.IO.Path.GetFileName(File)[0] == '.')
+                                continue;
 
                             if (ImGui.Selectable($"[File] {System.IO.Path.GetFileName(File)}"))
                                 FilePath = File;
