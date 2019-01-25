@@ -184,7 +184,7 @@ namespace Ryu64.GUI
                         {
                             if (ImGui.Selectable(Info.Name))
                             {
-                                Path = Info.Name;
+                                Path = Info.RootDirectory.FullName;
                             }
                         }
                         ImGui.EndChild();
