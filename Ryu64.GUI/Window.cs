@@ -210,9 +210,23 @@ namespace Ryu64.GUI
             }
         }
 
-        private static unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, ref bool HideDotFilesOnUnix, string WindowTitle)
+        private static unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, ref bool PermDenyOpen, ref bool HideDotFilesOnUnix, string WindowTitle)
         {
             bool Result = false;
+
+            if (PermDenyOpen)
+            {
+                ImGui.PushStyleColor(ImGuiCol.WindowBg, 0xEE0F0F0F);
+                ImGui.SetNextWindowSizeConstraints(new Vector2(256, 64), new Vector2(2048, 2048));
+                if (ImGui.Begin("Permission Denied.", ref PermDenyOpen, ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize))
+                {
+                    ImGui.Text("Permission to access this directory is denied.");
+                    if (ImGui.Button("Ok"))
+                        PermDenyOpen = false;
+                    ImGui.End();
+                }
+                ImGui.PopStyleColor(1);
+            }
 
             if (WindowOpen)
             {
@@ -236,7 +250,7 @@ namespace Ryu64.GUI
                     }
                     ImGui.Separator();
 
-                    if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, 256)))
+                    if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, ImGui.GetContentRegionMax().Y - 120.0f)))
                     {
                         if (Environment.OSVersion.Platform == PlatformID.Unix)
                         {
@@ -260,7 +274,6 @@ namespace Ryu64.GUI
                     ImGui.SameLine();
 
                     Vector2 size = ImGui.GetContentRegionMax() - new Vector2(0.0f, 120.0f);
-
                     IEnumerable<string> Dirs = Directory.EnumerateDirectories(Path);
                     IEnumerable<string> Files = Directory.EnumerateFiles(Path);
 
@@ -268,13 +281,24 @@ namespace Ryu64.GUI
                     {
                         foreach (string Dir in Dirs)
                         {
-                            if (HideDotFilesOnUnix 
-                                && Environment.OSVersion.Platform == PlatformID.Unix 
+                            if (HideDotFilesOnUnix
+                                && Environment.OSVersion.Platform == PlatformID.Unix
                                 && System.IO.Path.GetFileName(Dir)[0] == '.')
                                 continue;
 
                             if (ImGui.Selectable($"[Dir] {System.IO.Path.GetFileName(Dir)}"))
+                            {
+                                try
+                                {
+                                    Directory.EnumerateDirectories(Dir);
+                                }
+                                catch (UnauthorizedAccessException)
+                                {
+                                    PermDenyOpen = true;
+                                    continue;
+                                }
                                 Path = Dir;
+                            }
                         }
 
                         foreach (string File in Files)
@@ -417,6 +441,8 @@ namespace Ryu64.GUI
 
             ImGui.PushStyleColor(ImGuiCol.NavHighlight, 0xFF404040);
 
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, 0xFF202020);
+
             SubmitMenuBar();
 
             if (WindowOpenState[0])
@@ -482,7 +508,9 @@ namespace Ryu64.GUI
             if (WindowOpenState[5] && !MIPS.R4300.R4300_ON) WindowOpenState[5] = false;
             MemoryViewer(ref MemoryViewer_CurrAddr, ref WindowOpenState[5], ref MemoryViewer_AddrBuf, "Memory Viewer");
 
-            if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, ref WindowOpenState[2], ref HideDotFilesOnUnix, "Select a ROM to load."))
+            if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, 
+                ref WindowOpenState[2], ref WindowOpenState[6], 
+                ref HideDotFilesOnUnix, "Select a ROM to load."))
             {
                 InitEmulator(FileDialogRom_FilePath);
 
