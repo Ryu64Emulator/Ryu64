@@ -266,14 +266,22 @@ namespace Ryu64.GUI
                     {
                         foreach (string Dir in Dirs)
                         {
-                            if (HideDotFilesOnUnix && Environment.OSVersion.Platform == PlatformID.Unix && Dir[0] == '.') continue;
+                            if (HideDotFilesOnUnix)
+                                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                                    if (Dir.StartsWith('.'))
+                                        continue;
+
                             if (ImGui.Selectable($"[Dir] {System.IO.Path.GetFileName(Dir)}"))
                                 Path = Dir;
                         }
 
                         foreach (string File in Files)
                         {
-                            if (HideDotFilesOnUnix && Environment.OSVersion.Platform == PlatformID.Unix && File[0] == '.') continue;
+                            if (HideDotFilesOnUnix)
+                                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                                    if (File.StartsWith('.'))
+                                        continue;
+
                             if (ImGui.Selectable($"[File] {System.IO.Path.GetFileName(File)}"))
                                 FilePath = File;
                         }
