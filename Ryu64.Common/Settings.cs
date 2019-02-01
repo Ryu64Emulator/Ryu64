@@ -7,7 +7,6 @@ namespace Ryu64.Common
 {
     public class Settings
     {
-        public static bool TLB_REGLOCKOFF;
         public static bool GRAPHICS_LLE;
 
         public static void Parse(string SettingsFile)
@@ -15,12 +14,10 @@ namespace Ryu64.Common
             try
             {
                 IniParser Parse = new IniParser(SettingsFile);
-                TLB_REGLOCKOFF  = bool.Parse(Parse.Value("TLB_REGLOCKOFF", "true"));
                 GRAPHICS_LLE    = bool.Parse(Parse.Value("GRAPHICS_LLE",   "false"));
             }
             catch
             {
-                TLB_REGLOCKOFF = true;
                 GRAPHICS_LLE   = false;
             }
         }
@@ -32,7 +29,7 @@ namespace Ryu64.Common
             public IniParser(string path)
             {
                 values = File.ReadLines(path)
-                    .Where(line => (!string.IsNullOrWhiteSpace(line) && !line.StartsWith("#")))
+                    .Where(line => (!string.IsNullOrWhiteSpace(line) && !line.StartsWith(";")))
                     .Select(line => line.Split(new char[] { '=' }, 2, 0))
                     .ToDictionary(parts => parts[0].Trim(), parts => parts.Length > 1 ? parts[1].Trim() : null);
             }

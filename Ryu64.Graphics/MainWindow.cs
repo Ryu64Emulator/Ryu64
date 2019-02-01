@@ -12,6 +12,7 @@ namespace Ryu64.Graphics
     public class MainWindow : GameWindow
     {
         private static string BaseTitle = "Ryu64";
+        private static string GameName;
         private static IRenderer Renderer;
 
         public MainWindow(string GameName) : base(960, 720, GraphicsMode.Default, BaseTitle, 
@@ -20,7 +21,7 @@ namespace Ryu64.Graphics
             3, 1,
             GraphicsContextFlags.ForwardCompatible)
         {
-            BaseTitle += $" | {GameName}";
+            MainWindow.GameName = GameName;
         }
 
         protected override void OnResize(EventArgs e)
@@ -56,7 +57,7 @@ namespace Ryu64.Graphics
 
             Renderer.Update();
 
-            Title = $"{BaseTitle} | FPS: {RenderFrequency:N2} | CPU MHz: {Common.Variables.CPUMHz:N2}";
+            Title = $"{BaseTitle} | {GameName} | FPS: {RenderFrequency:N2} | CPU MHz: {Common.Variables.CPUMHz:N2}";
 
             KeyboardState KeyboardState = Keyboard.GetState();
 

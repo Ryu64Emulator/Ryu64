@@ -1,7 +1,6 @@
 ﻿using ImGuiNET;
 using Ryu64.Formats;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -13,7 +12,6 @@ using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 using IniParser;
 using IniParser.Model;
-using IniParser.Parser;
 
 namespace Ryu64.GUI
 {
@@ -71,6 +69,12 @@ namespace Ryu64.GUI
             Z64 Rom = new Z64(RomPath);
             Rom.Parse();
 
+            if (!Rom.HasBeenParsed)
+            {
+                WindowOpenState[7] = true;
+                return;
+            }
+
             if (!Directory.Exists(Common.Variables.AppdataFolder))
             {
                 Directory.CreateDirectory(Common.Variables.AppdataFolder);
@@ -99,7 +103,13 @@ namespace Ryu64.GUI
 
         private static string FileDialogRom_CurrPath;
         private static string FileDialogRom_FilePath = "";
+
+        private static string FolderDialogRoms_CurrPath;
+        private static string FolderDialogRoms_FilePath = "";
+
         private static bool   HideDotFilesOnUnix;
+        private static string RomDirectory;
+        private static bool   GraphicsLLE;
 
         private static uint   MemoryViewer_CurrAddr = 0;
         private static byte[] MemoryViewer_AddrBuf  = new byte[1024];
@@ -108,33 +118,44 @@ namespace Ryu64.GUI
 
         private static FileIniDataParser IniParser;
         private static IniData GUISettings;
+        private static IniData EMUSettings;
 
         private static string GUISettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}GUISettings.ini";
+        private static string EMUSettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}Settings.ini";
 
         private static void LoadIni()
         {
             Common.Variables.Debug = bool.Parse(GUISettings.Global["debug"]);
             HideDotFilesOnUnix     = bool.Parse(GUISettings.Global["hidedotfilesunix"]);
+            RomDirectory           = GUISettings.Global["romdir"];
+            GraphicsLLE            = bool.Parse(EMUSettings.Global["GRAPHICS_LLE"]);
         }
 
         private static void SaveIni()
         {
             GUISettings.Global["debug"]            = Common.Variables.Debug.ToString();
             GUISettings.Global["hidedotfilesunix"] = HideDotFilesOnUnix.ToString();
+            GUISettings.Global["romdir"]           = RomDirectory;
+
+            EMUSettings.Global["GRAPHICS_LLE"]     = GraphicsLLE.ToString();
 
             IniParser.WriteFile(GUISettingsPath, GUISettings);
+            IniParser.WriteFile(EMUSettingsPath, EMUSettings);
         }
 
         private static unsafe void InitUI()
         {
             WindowOpenState = new bool[64];
-            // Game list WIP
-            // WindowOpenState[0] = true;
-            FileDialogRom_CurrPath = DefaultPath;
-            ImGui.GetStyle().WindowTitleAlign = new Vector2(0.5f, 0.5f);
-            IniParser = new FileIniDataParser();
-            GUISettings = IniParser.ReadFile(GUISettingsPath);
+            WindowOpenState[0] = true;
 
+            FileDialogRom_CurrPath    = DefaultPath;
+            FolderDialogRoms_CurrPath = DefaultPath;
+
+            ImGui.GetStyle().WindowTitleAlign = new Vector2(0.5f, 0.5f);
+
+            IniParser   = new FileIniDataParser();
+            GUISettings = IniParser.ReadFile(GUISettingsPath);
+            EMUSettings = IniParser.ReadFile(EMUSettingsPath);
             LoadIni();
         }
 
@@ -210,7 +231,7 @@ namespace Ryu64.GUI
             }
         }
 
-        private static unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, ref bool PermDenyOpen, ref bool HideDotFilesOnUnix, string WindowTitle)
+        private static unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, ref bool PermDenyOpen, ref bool HideDotFilesOnUnix, string WindowTitle, bool FileSelect)
         {
             bool Result = false;
 
@@ -274,7 +295,7 @@ namespace Ryu64.GUI
                     ImGui.SameLine();
 
                     Vector2 size = ImGui.GetContentRegionMax() - new Vector2(0.0f, 120.0f);
-                    IEnumerable<string> Dirs = Directory.EnumerateDirectories(Path);
+                    IEnumerable<string> Dirs  = Directory.EnumerateDirectories(Path);
                     IEnumerable<string> Files = Directory.EnumerateFiles(Path);
 
                     if (ImGui.BeginChild("##FileDialog_FileList", size))
@@ -301,18 +322,23 @@ namespace Ryu64.GUI
                             }
                         }
 
-                        foreach (string File in Files)
+                        if (FileSelect)
                         {
-                            if (HideDotFilesOnUnix
-                                && Environment.OSVersion.Platform == PlatformID.Unix
-                                && System.IO.Path.GetFileName(File)[0] == '.')
-                                continue;
+                            foreach (string File in Files)
+                            {
+                                if (HideDotFilesOnUnix
+                                    && Environment.OSVersion.Platform == PlatformID.Unix
+                                    && System.IO.Path.GetFileName(File)[0] == '.')
+                                    continue;
 
-                            if (ImGui.Selectable($"[File] {System.IO.Path.GetFileName(File)}"))
-                                FilePath = File;
+                                if (ImGui.Selectable($"[File] {System.IO.Path.GetFileName(File)}"))
+                                    FilePath = File;
+                            }
                         }
                         ImGui.EndChild();
                     }
+
+                    if (!FileSelect) FilePath = Path;
 
                     byte[] FilenameBuffer = new byte[1024];
 
@@ -327,8 +353,16 @@ namespace Ryu64.GUI
 
                     if (ImGui.Button("Ok"))
                     {
-                        WindowOpen = string.IsNullOrEmpty(FilePath);
-                        Result = !string.IsNullOrEmpty(FilePath);
+                        if (FileSelect)
+                        {
+                            WindowOpen = string.IsNullOrEmpty(FilePath);
+                            Result     = !string.IsNullOrEmpty(FilePath);
+                        }
+                        else
+                        {
+                            WindowOpen = false;
+                            Result     = true;
+                        }
                     }
 
                     ImGui.SameLine();
@@ -377,6 +411,9 @@ namespace Ryu64.GUI
 
                         if (ImGui.MenuItem("Memory Viewer"))
                             WindowOpenState[5] = true;
+
+                        if (ImGui.MenuItem("TLB Entries"))
+                            WindowOpenState[10] = true;
                         ImGui.EndMenu();
                     }
 
@@ -414,7 +451,7 @@ namespace Ryu64.GUI
             ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize,  0);
 
             ImGui.PushStyleColor(ImGuiCol.WindowBg,      0xFF0F0F0F);
-            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, 0xFF202020);
+            ImGui.PushStyleColor(ImGuiCol.TitleBgActive, 0xFF404040);
 
             ImGui.PushStyleColor(ImGuiCol.ButtonActive,  0xFF707070);
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, 0xFF404040);
@@ -447,13 +484,37 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[0])
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(256, 256), new Vector2(2048, 2048));
-                if (ImGui.Begin("Games", ref WindowOpenState[0], ImGuiWindowFlags.NoCollapse))
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0);
+                ImGui.SetNextWindowSize(new Vector2(Win.Width, Win.Height - 19.0f));
+                ImGui.SetNextWindowPos(new Vector2(0, 19.0f));
+                if (ImGui.Begin("##Games", ref WindowOpenState[0], ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBringToFrontOnFocus))
                 {
                     ImGui.Text("Game List");
                     ImGui.Separator();
+                    if (ImGui.BeginChild("##Gamelist"))
+                    {
+                        if (!string.IsNullOrEmpty(RomDirectory))
+                        {
+                            IEnumerable<string> Roms = Directory.EnumerateFiles(RomDirectory);
+                            foreach (string Rom in Roms)
+                            {
+                                if ((Path.GetExtension(Rom).ToUpper() == ".Z64" 
+                                  || Path.GetExtension(Rom).ToUpper() == ".N64")
+                                    && ImGui.Selectable(Path.GetFileName(Rom), false, (MIPS.R4300.R4300_ON) ? ImGuiSelectableFlags.Disabled : 0))
+                                {
+                                    InitEmulator(Rom);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ImGui.Selectable("Go to the Settings window (Edit -> Settings) to select the ROM directory.");
+                        }
+                        ImGui.EndChild();
+                    }
                     ImGui.End();
                 }
+                ImGui.PopStyleVar(1);
             }
 
             if (WindowOpenState[1])
@@ -461,9 +522,28 @@ namespace Ryu64.GUI
                 ImGui.SetNextWindowSizeConstraints(new Vector2(735, 464), new Vector2(2048, 2048));
                 if (ImGui.Begin("Settings", ref WindowOpenState[1], ImGuiWindowFlags.NoCollapse))
                 {
-                    ImGui.Checkbox("Debug", ref Common.Variables.Debug);
+                    ImGui.Text("GUI Settings");
+                    ImGui.Separator();
+
                     if (Environment.OSVersion.Platform == PlatformID.Unix)
                         ImGui.Checkbox("Hide all directories and files starting with \".\"", ref HideDotFilesOnUnix);
+
+                    byte[] RomDirBuf = new byte[1024];
+
+                    byte[] RomDirectoryBytes = Encoding.Default.GetBytes(RomDirectory);
+
+                    Buffer.BlockCopy(RomDirectoryBytes, 0, RomDirBuf, 0, RomDirectoryBytes.Length);
+
+                    ImGui.InputText("ROM Directory", RomDirBuf, (uint)RomDirBuf.Length, ImGuiInputTextFlags.ReadOnly);
+
+                    if (ImGui.Button("Choose ROM Directory"))
+                        WindowOpenState[8] = true;
+
+                    ImGui.Text("Emulator Settings");
+                    ImGui.Separator();
+                    ImGui.Checkbox("Debug Logging", ref Common.Variables.Debug);
+                    ImGui.Checkbox("Use Graphics LLE", ref GraphicsLLE);
+
                     if (ImGui.Button("Apply"))
                         SaveIni();
                     ImGui.End();
@@ -477,6 +557,10 @@ namespace Ryu64.GUI
                 if (ImGui.Begin("Register Viewer", ref WindowOpenState[3]))
                 {
                     ImGui.Text($"R4300:");
+                    ImGui.Text($" PC: 0x{MIPS.Registers.R4300.PC:X8}");
+                    ImGui.Text($" HI: 0x{MIPS.Registers.R4300.HI:X16}");
+                    ImGui.Text($" LO: 0x{MIPS.Registers.R4300.LO:X16}");
+                    ImGui.Text($" LL: 0x{MIPS.Registers.R4300.LLbit:X1}");
                     for (uint i = 0; i < MIPS.Registers.R4300.Reg.Length; ++i)
                         ImGui.Text($" R[{i}]: 0x{MIPS.Registers.R4300.Reg[i]:X16}");
                     ImGui.Separator();
@@ -485,12 +569,43 @@ namespace Ryu64.GUI
                         ImGui.Text($" COP0R[{i}]: 0x{MIPS.Registers.COP0.Reg[i]:X16}");
                     ImGui.Separator();
                     ImGui.Text($"RSP:");
+                    ImGui.Text($" PC: 0x{MIPS.Registers.RSPReg.PC:X3}");
                     for (uint i = 0; i < MIPS.Registers.RSPReg.Reg.Length; ++i)
                         ImGui.Text($" RSPR[{i}]: 0x{MIPS.Registers.RSPReg.Reg[i]:X8}");
                     ImGui.Separator();
                     ImGui.Text($"RSPCOP0:");
                     for (uint i = 0; i < MIPS.Registers.RSPCOP0.Reg.Length; ++i)
                         ImGui.Text($" RSPC0R[{i}]: 0x{MIPS.Registers.RSPCOP0.Reg[i]:X16}");
+
+                    ImGui.End();
+                }
+            }
+
+            if (WindowOpenState[10])
+            {
+                if (ImGui.Begin("TLB Entries", ref WindowOpenState[10], ImGuiWindowFlags.NoCollapse))
+                {
+                    ImGui.Text("TLB Entries");
+                    ImGui.Separator();
+
+                    for (uint i = 0; i < MIPS.TLB.TLBEntries.Length; ++i)
+                    {
+                        MIPS.TLB.TLBEntry Entry = MIPS.TLB.TLBEntries[i];
+                        ImGui.Text($"Entry {i}:");
+                        ImGui.Text($" EntryHi:  0x{Entry.EntryHi:X8}");
+                        ImGui.Text($" PageMask: 0x{Entry.PageMask:X8}");
+                        ImGui.Text($" Even:");
+                        ImGui.Text($"  PFN:           0x{Entry.PFN0:X8}");
+                        ImGui.Text($"  PageCoherency: 0x{Entry.PageCoherency0:X2}");
+                        ImGui.Text($"  Valid:         0x{Entry.Valid0:X2}");
+                        ImGui.Text($"  Global:        0x{Entry.Global0:X2}");
+                        ImGui.Text($" Odd:");
+                        ImGui.Text($"  PFN:           0x{Entry.PFN1:X8}");
+                        ImGui.Text($"  PageCoherency: 0x{Entry.PageCoherency1:X2}");
+                        ImGui.Text($"  Valid:         0x{Entry.Valid1:X2}");
+                        ImGui.Text($"  Global:        0x{Entry.Global1:X2}");
+                        ImGui.Separator();
+                    }
 
                     ImGui.End();
                 }
@@ -510,11 +625,28 @@ namespace Ryu64.GUI
 
             if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, 
                 ref WindowOpenState[2], ref WindowOpenState[6], 
-                ref HideDotFilesOnUnix, "Select a ROM to load."))
+                ref HideDotFilesOnUnix, "Select a ROM to load.", true))
             {
                 InitEmulator(FileDialogRom_FilePath);
 
                 FileDialogRom_FilePath = "";
+            }
+
+            if (FileBrowser(ref FolderDialogRoms_CurrPath, ref FolderDialogRoms_FilePath, 
+                ref WindowOpenState[8], ref WindowOpenState[9], 
+                ref HideDotFilesOnUnix, "Select ROM Directory.", false))
+            {
+                RomDirectory = FolderDialogRoms_FilePath;
+            }
+
+            if (WindowOpenState[7])
+            {
+                ImGui.SetNextWindowSizeConstraints(new Vector2(256, 64), new Vector2(2048, 2048));
+                if (ImGui.Begin("ROM Error", ref WindowOpenState[7], ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize))
+                {
+                    ImGui.Text("This ROM is either a bad ROM or it is little endian (byte swapping not implemented yet)");
+                    ImGui.End();
+                }
             }
 
             ImGui.PopStyleVar();

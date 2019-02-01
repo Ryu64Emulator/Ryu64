@@ -22,7 +22,7 @@ namespace Ryu64.MIPS
             public uint PageMask;
         }
 
-        private readonly static TLBEntry[] TLBEntries = new TLBEntry[32];
+        public readonly static TLBEntry[] TLBEntries = new TLBEntry[32];
 
         private readonly static Dictionary<uint, uint> AddressTranslationCache = new Dictionary<uint, uint>();
 
@@ -31,9 +31,6 @@ namespace Ryu64.MIPS
         public static uint TranslateAddress(uint Address)
         {
             if ((Address & 0xC0000000) == 0x80000000)
-                return Address;
-
-            if (Common.Settings.TLB_REGLOCKOFF && (Address & 0x04000000) == 0x04000000)
                 return Address;
 
             if (AddressTranslationCache.ContainsKey(Address))

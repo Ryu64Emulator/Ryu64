@@ -43,8 +43,8 @@
 
         public static void LH(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = (ushort)R4300.memory.ReadInt16((uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, (ushort)R4300.memory.ReadInt16((uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void LHU(OpcodeTable.OpcodeDesc Desc)
