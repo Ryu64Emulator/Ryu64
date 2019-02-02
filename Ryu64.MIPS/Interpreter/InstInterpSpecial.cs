@@ -30,7 +30,13 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void BREAK(OpcodeTable.OpcodeDesc Desc)
         {
-            ExceptionHandler.InvokeBreak();
+            if (Desc.CPU)
+            {
+                ExceptionHandler.InvokeBreak();
+                return;
+            }
+
+            throw new NotImplementedException("BREAK behavior on the RSP is not implemented.");
         }
     }
 }

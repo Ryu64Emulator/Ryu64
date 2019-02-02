@@ -49,14 +49,14 @@
 
         public static void LHU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = R4300.memory.ReadUInt16((uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, R4300.memory.ReadUInt16((uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void LW(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.R4300.Reg[Desc.op2] = R4300.memory.ReadUInt32((uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm));
-            Registers.R4300.PC += 4;
+            Registers.SetMainReg(Desc.op2, R4300.memory.ReadUInt32((uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void LWL(OpcodeTable.OpcodeDesc Desc)
@@ -79,8 +79,8 @@
 
         public static void SB(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteUInt8((uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (byte)Registers.R4300.Reg[Desc.op2]);
-            Registers.R4300.PC += 4;
+            R4300.memory.WriteUInt8((uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), (byte)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SD(OpcodeTable.OpcodeDesc Desc)
@@ -111,14 +111,14 @@
 
         public static void SH(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteUInt16((uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (ushort)Registers.R4300.Reg[Desc.op2]);
-            Registers.R4300.PC += 4;
+            R4300.memory.WriteUInt16((uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), (ushort)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SW(OpcodeTable.OpcodeDesc Desc)
         {
-            R4300.memory.WriteUInt32((uint)((uint)Registers.R4300.Reg[Desc.op1] + (short)Desc.Imm), (uint)Registers.R4300.Reg[Desc.op2]);
-            Registers.R4300.PC += 4;
+            R4300.memory.WriteUInt32((uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (short)Desc.Imm), (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void SWL(OpcodeTable.OpcodeDesc Desc)

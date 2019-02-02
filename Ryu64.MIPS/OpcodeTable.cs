@@ -98,7 +98,7 @@ namespace Ryu64.MIPS
             SetOpcode("100110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LWR, "LWR R[{1}], 0x{4:x4}(R[{0}])", 1, false, true);
             SetOpcode("100111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LWU, "LWU R[{1}], 0x{4:x4}(R[{0}])", 1, false, true);
             SetOpcode("101000XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SB,  "SB R[{1}], 0x{4:x4}(R[{0}])");
-            SetOpcode("111111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SD,  "SD R[{1}], 0x{4:x4}(R[{0}])");
+            SetOpcode("111111XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SD,  "SD R[{1}], 0x{4:x4}(R[{0}])",  1, false, true);
             SetOpcode("101100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDL, "SDL R[{1}], 0x{4:x4}(R[{0}])", 1, false, true);
             SetOpcode("101101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDR, "SDR R[{1}], 0x{4:x4}(R[{0}])", 1, false, true);
             SetOpcode("111100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SCD, "SCD R[{1}], 0x{4:x4}(R[{0}])", 1, false, true);
@@ -174,7 +174,8 @@ namespace Ryu64.MIPS
 
             // SPECIAL Instructions
             SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001100", InstInterp.SYSCALL, "SYSCALL", 1, false, true);
-            SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001101", InstInterp.BREAK,   "BREAK");
+            // BREAK is different on the RSP.
+            SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001101", InstInterp.BREAK, "BREAK");
             // According to the manual, the SYNC instruction is executed as a NOP on the VR4300.
             SetOpcode("00000000000000000000000000001111", InstInterp.NOP, "SYNC", 1, false, true);
 
