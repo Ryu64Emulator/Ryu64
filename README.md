@@ -10,5 +10,7 @@ Why not?  I have a passion for emulation, and a good way to express that is to m
 Simply put, the name just comes from the RyuJIT which is what .NET uses to run applications built in both Visual Basic and C#, we use the latter.
 ### Is there anywhere I can see your guys work on the emulator, and communicate, all in real time?
 There is!  We have a discord where all the developers hang out, talk about development, etc.  [Join here.](https://discord.gg/KPQh9UY)
+### Do you have a website with more information?
+[We do!](https://ryu64emulator.github.io/Ryu64Website/index.html)
 
 Okay hopefully that answered most of your questions, if it didn't, [join the discord and ask](https://discord.gg/KPQh9UY), go ahead, don't be shy!
