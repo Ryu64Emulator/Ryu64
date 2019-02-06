@@ -18,11 +18,6 @@ namespace Ryu64.MIPS.Cores
 
         public static void InterpretOpcode(uint Opcode)
         {
-            Buffer.BlockCopy(Registers.RSPCOP0.Reg, 0, prevCOP0, 0, Registers.RSPCOP0.Reg.Length);
-
-            OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode, true, false);
-            OpcodeTable.InstInfo   Info = OpcodeTable.GetOpcodeInfo (Opcode, true, false);
-
             Registers.RSPCOP0.Reg[0]  = R4300.memory.ReadUInt32(0x04040000);
             Registers.RSPCOP0.Reg[1]  = R4300.memory.ReadUInt32(0x04040004);
             Registers.RSPCOP0.Reg[2]  = R4300.memory.ReadUInt32(0x04040008);
@@ -32,6 +27,11 @@ namespace Ryu64.MIPS.Cores
             Registers.RSPCOP0.Reg[9]  = R4300.memory.ReadUInt32(0x04100004);
             Registers.RSPCOP0.Reg[10] = R4300.memory.ReadUInt32(0x04100008);
             Registers.RSPCOP0.Reg[11] = R4300.memory.ReadUInt32(0x0410000C);
+
+            Buffer.BlockCopy(Registers.RSPCOP0.Reg, 0, prevCOP0, 0, Registers.RSPCOP0.Reg.Length);
+
+            OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode, true, false);
+            OpcodeTable.InstInfo   Info = OpcodeTable.GetOpcodeInfo (Opcode, true, false);
 
             Info.Interpret(Desc);
 
