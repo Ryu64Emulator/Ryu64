@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Ryu64.MIPS.Cores;
 
 namespace Ryu64.MIPS.Interpreter
 {

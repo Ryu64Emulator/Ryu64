@@ -41,22 +41,22 @@ namespace Ryu64.Graphics
 
         private unsafe void RenderFramebuffer()
         {
-            uint VIStatus = MIPS.R4300.memory.ReadUInt32(0x04400000); // VI_STATUS_REG
+            uint VIStatus = MIPS.Cores.R4300.memory.ReadUInt32(0x04400000); // VI_STATUS_REG
             uint PixelSize = VIStatus & 0b000000000000000000000011;
             if (PixelSize == 0U) return;
 
-            uint FramebufferWidth = MIPS.R4300.memory.ReadUInt32(0x04400008); // VI_H_WIDTH_REG
+            uint FramebufferWidth = MIPS.Cores.R4300.memory.ReadUInt32(0x04400008); // VI_H_WIDTH_REG
 
             byte Interlace = (byte)((VIStatus & 0b000000000000000001000000) >> 6);
-            uint VIvStart = MIPS.R4300.memory.ReadUInt32(0x04400028);
+            uint VIvStart = MIPS.Cores.R4300.memory.ReadUInt32(0x04400028);
             uint VerticalEndofVideo = VIvStart & 0x000003FF;
             uint VerticalStartOfVideo = (VIvStart >> 16) & 0x000003FF;
 
             uint FramebufferHeight = ((VerticalEndofVideo - VerticalStartOfVideo) + 6) >> (~Interlace & 0x01);
 
-            uint FramebufferOrigin = MIPS.R4300.memory.ReadUInt32(0x04400004);
+            uint FramebufferOrigin = MIPS.Cores.R4300.memory.ReadUInt32(0x04400004);
 
-            byte[] Framebuffer = MIPS.R4300.memory.FastMemoryRead(FramebufferOrigin, (int)(FramebufferWidth * FramebufferHeight) *
+            byte[] Framebuffer = MIPS.Cores.R4300.memory.FastMemoryRead(FramebufferOrigin, (int)(FramebufferWidth * FramebufferHeight) *
                 (PixelSize == 3U ? 4 : 2));
 
             if (firstLoop && Common.Variables.Debug)

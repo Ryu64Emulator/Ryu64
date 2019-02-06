@@ -75,16 +75,16 @@ namespace Ryu64.RDP
 
             Thread RDPThread = new Thread(() =>
             {
-                while (MIPS.R4300.R4300_ON)
+                while (MIPS.Cores.R4300.R4300_ON)
                 {
                     if (MIPS.RDPWrapper.RDPExec)
                     {
-                        uint PC = MIPS.R4300.memory.ReadUInt32(0x04100000);
+                        uint PC = MIPS.Cores.R4300.memory.ReadUInt32(0x04100000);
                         if (Common.Variables.Debug)
-                            Common.Logger.PrintInfoLine($"Starting Command Buffer, 0x{MIPS.R4300.memory.ReadUInt32(0x04100000):x8} to 0x{MIPS.R4300.memory.ReadUInt32(0x04100004):x8}.");
-                        while (PC < MIPS.R4300.memory.ReadUInt32(0x04100004))
+                            Common.Logger.PrintInfoLine($"Starting Command Buffer, 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100000):x8} to 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100004):x8}.");
+                        while (PC < MIPS.Cores.R4300.memory.ReadUInt32(0x04100004))
                         {
-                            ulong Instruction = MIPS.R4300.memory.ReadUInt64(PC);
+                            ulong Instruction = MIPS.Cores.R4300.memory.ReadUInt64(PC);
                             byte Command = (byte)(((Instruction & 0xFF00000000000000) >> 56) & 0xFF);
                             if (Common.Variables.Debug)
                                 Common.Logger.PrintInfoLine($"0x{PC:x8}: 0x{Instruction:x16}");
@@ -182,9 +182,9 @@ namespace Ryu64.RDP
                                     ushort NST_YM  = (ushort)((Instruction & 0x000000003FFF0000) >> 16);
                                     ushort NST_YH  = (ushort) (Instruction & 0x0000000000003FFF);
 
-                                    ulong NST_EdgeCoefficient1 = MIPS.R4300.memory.ReadUInt64(PC + 8);
-                                    ulong NST_EdgeCoefficient2 = MIPS.R4300.memory.ReadUInt64(PC + 16);
-                                    ulong NST_EdgeCoefficient3 = MIPS.R4300.memory.ReadUInt64(PC + 24);
+                                    ulong NST_EdgeCoefficient1 = MIPS.Cores.R4300.memory.ReadUInt64(PC + 8);
+                                    ulong NST_EdgeCoefficient2 = MIPS.Cores.R4300.memory.ReadUInt64(PC + 16);
+                                    ulong NST_EdgeCoefficient3 = MIPS.Cores.R4300.memory.ReadUInt64(PC + 24);
 
                                     uint NST_XL    = (uint)((NST_EdgeCoefficient1 & 0xFFFFFFFF00000000) >> 32);
                                     uint NST_DxLDy = (uint) (NST_EdgeCoefficient1 & 0x00000000FFFFFFFF);
@@ -209,12 +209,12 @@ namespace Ryu64.RDP
                                     throw new NotImplementedException($"Command 0x{Command:x2} is not an implemented RDP command.  PC: 0x{PC:x8}");
                             }
 
-                            MIPS.R4300.memory.WriteRDPPC(PC);
+                            MIPS.Cores.R4300.memory.WriteRDPPC(PC);
                         }
                         if (Common.Variables.Debug)
                             Common.Logger.PrintInfoLine("Ended command buffer.");
                         MIPS.RDPWrapper.RDPExec = false;
-                        MIPS.R4300.memory.WriteRDPPC(0);
+                        MIPS.Cores.R4300.memory.WriteRDPPC(0);
                     }
                     Thread.Sleep(1);
                 }

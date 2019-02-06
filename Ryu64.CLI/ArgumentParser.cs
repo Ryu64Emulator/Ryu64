@@ -12,7 +12,8 @@ namespace Ryu64.CLI
             public bool UTEsyscall;
             public bool Debug;
             public bool NoWindow;
-            public MIPS.R4300.TVType_enum TVtype;
+            public bool ExpansionPak;
+            public MIPS.Cores.R4300.TVType_enum TVtype;
         }
 
         public struct CLIFlag
@@ -62,7 +63,7 @@ namespace Ryu64.CLI
                 Arguments = 0,
                 Method = (a, i) =>
                 {
-                    Flags.TVtype = MIPS.R4300.TVType_enum.NTSC;
+                    Flags.TVtype = MIPS.Cores.R4300.TVType_enum.NTSC;
                 }
             },
             new CLIFlag
@@ -72,7 +73,7 @@ namespace Ryu64.CLI
                 Arguments = 0,
                 Method = (a, i) =>
                 {
-                    Flags.TVtype = MIPS.R4300.TVType_enum.PAL;
+                    Flags.TVtype = MIPS.Cores.R4300.TVType_enum.PAL;
                 }
             },
             new CLIFlag
@@ -82,7 +83,7 @@ namespace Ryu64.CLI
                 Arguments = 0,
                 Method = (a, i) =>
                 {
-                    Flags.TVtype = MIPS.R4300.TVType_enum.MPAL;
+                    Flags.TVtype = MIPS.Cores.R4300.TVType_enum.MPAL;
                 }
             },
             new CLIFlag
@@ -113,7 +114,8 @@ namespace Ryu64.CLI
 
         public static void ParseArguments(string[] args)
         {
-            Flags.TVtype = MIPS.R4300.TVType_enum.NTSC;
+            Flags.TVtype       = MIPS.Cores.R4300.TVType_enum.NTSC;
+            Flags.ExpansionPak = true;
 
             for (uint i = 0; i < args.Length; ++i)
             {

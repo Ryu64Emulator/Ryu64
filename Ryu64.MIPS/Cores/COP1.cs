@@ -1,4 +1,4 @@
-﻿namespace Ryu64.MIPS
+﻿namespace Ryu64.MIPS.Cores
 {
     public class COP1
     {

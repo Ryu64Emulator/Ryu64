@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 
-namespace Ryu64.MIPS
+namespace Ryu64.MIPS.Cores
 {
     public class R4300
     {
@@ -103,6 +103,8 @@ namespace Ryu64.MIPS
 
         public static bool isDelaySlot = false;
 
+        public static ulong PrevWired = 0;
+
         public static void InterpretOpcode(uint Opcode, bool DelaySlot = false)
         {
             isDelaySlot = DelaySlot;
@@ -120,14 +122,17 @@ namespace Ryu64.MIPS
             OpcodeTable.OpcodeDesc Desc = new OpcodeTable.OpcodeDesc(Opcode, false, true);
             OpcodeTable.InstInfo   Info = OpcodeTable.GetOpcodeInfo (Opcode, false, true);
 
+            PrevWired = Registers.COP0.Reg[Registers.COP0.WIRED_REG];
+
             Info.Interpret(Desc);
             CycleCounter += Info.Cycles;
             Count        += Info.Cycles;
             Registers.COP0.Reg[Registers.COP0.COUNT_REG] = (uint)(Count >> 1);
             --Registers.COP0.Reg[Registers.COP0.RANDOM_REG];
             if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG] 
-             || Registers.COP0.Reg[Registers.COP0.RANDOM_REG] == 0)
-                Registers.COP0.Reg[Registers.COP0.RANDOM_REG] = 0x1F; // TODO: Reset the Random Register to 0x1F after writing to the Wired Register.
+             || Registers.COP0.Reg[Registers.COP0.RANDOM_REG] == 0
+             || Registers.COP0.Reg[Registers.COP0.WIRED_REG]  != PrevWired)
+                Registers.COP0.Reg[Registers.COP0.RANDOM_REG] = 0x1F;
 
             Common.Measure.InstructionCount += 1;
             Common.Measure.CycleCounter = CycleCounter;

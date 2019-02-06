@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Ryu64.MIPS.Cores;
 
 namespace Ryu64.MIPS
 {

@@ -83,9 +83,9 @@ namespace Ryu64.GUI
 
             Common.Settings.Parse($"{AppDomain.CurrentDomain.BaseDirectory}/Settings.ini");
 
-            MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
+            MIPS.Cores.R4300.memory = new MIPS.Memory(Rom.AllData);
 
-            MIPS.R4300.PowerOnR4300(MIPS.R4300.TVType_enum.NTSC);
+            MIPS.Cores.R4300.PowerOnR4300(MIPS.Cores.R4300.TVType_enum.NTSC);
             if (Common.Settings.GRAPHICS_LLE)
                 RDP.RDP.PowerOnRDP();
 
@@ -109,12 +109,16 @@ namespace Ryu64.GUI
 
         private static bool   HideDotFilesOnUnix;
         private static string RomDirectory;
+
         private static bool   GraphicsLLE;
+        private static bool   ExpansionPak;
 
         private static uint   MemoryViewer_CurrAddr = 0;
         private static byte[] MemoryViewer_AddrBuf  = new byte[1024];
 
         private static string DefaultPath = AppDomain.CurrentDomain.BaseDirectory;
+
+        private static IEnumerable<string> Roms;
 
         private static FileIniDataParser IniParser;
         private static IniData GUISettings;
@@ -129,6 +133,7 @@ namespace Ryu64.GUI
             HideDotFilesOnUnix     = bool.Parse(GUISettings.Global["hidedotfilesunix"]);
             RomDirectory           = GUISettings.Global["romdir"];
             GraphicsLLE            = bool.Parse(EMUSettings.Global["GRAPHICS_LLE"]);
+            ExpansionPak           = bool.Parse(EMUSettings.Global["EXPANSION_PAK"]);
         }
 
         private static void SaveIni()
@@ -137,7 +142,8 @@ namespace Ryu64.GUI
             GUISettings.Global["hidedotfilesunix"] = HideDotFilesOnUnix.ToString();
             GUISettings.Global["romdir"]           = RomDirectory;
 
-            EMUSettings.Global["GRAPHICS_LLE"]     = GraphicsLLE.ToString();
+            EMUSettings.Global["GRAPHICS_LLE"]  = GraphicsLLE.ToString();
+            EMUSettings.Global["EXPANSION_PAK"] = ExpansionPak.ToString();
 
             IniParser.WriteFile(GUISettingsPath, GUISettings);
             IniParser.WriteFile(EMUSettingsPath, EMUSettings);
@@ -156,7 +162,9 @@ namespace Ryu64.GUI
             IniParser   = new FileIniDataParser();
             GUISettings = IniParser.ReadFile(GUISettingsPath);
             EMUSettings = IniParser.ReadFile(EMUSettingsPath);
+            Roms        = new string[1];
             LoadIni();
+            ReloadRoms();
         }
 
         private static unsafe void MemoryViewer(ref uint Addr, ref bool WindowOpen, ref byte[] AddrBuf, string WindowTitle)
@@ -169,7 +177,7 @@ namespace Ryu64.GUI
                     byte[] Buf = new byte[256];
 
                     for (uint i = 0; i < Buf.Length; ++i)
-                        Buf[i] = MIPS.R4300.memory[i + Addr, false];
+                        Buf[i] = MIPS.Cores.R4300.memory[i + Addr, false];
 
                     if (AddrBuf[0] == 0)
                     {
@@ -387,7 +395,7 @@ namespace Ryu64.GUI
             {
                 if (ImGui.BeginMenu("File"))
                 {
-                    if (ImGui.MenuItem("Open ROM", !MIPS.R4300.R4300_ON))
+                    if (ImGui.MenuItem("Open ROM", !MIPS.Cores.R4300.R4300_ON))
                         WindowOpenState[2] = true;
                     ImGui.EndMenu();
                 }
@@ -404,7 +412,7 @@ namespace Ryu64.GUI
 
                 if (ImGui.BeginMenu("View"))
                 {
-                    if (ImGui.BeginMenu("Debugger", MIPS.R4300.R4300_ON))
+                    if (ImGui.BeginMenu("Debugger", MIPS.Cores.R4300.R4300_ON))
                     {
                         if (ImGui.MenuItem("Register Viewer"))
                             WindowOpenState[3] = true;
@@ -431,6 +439,12 @@ namespace Ryu64.GUI
 
                 ImGui.EndMainMenuBar();
             }
+        }
+
+        private static void ReloadRoms()
+        {
+            if (!string.IsNullOrEmpty(RomDirectory))
+                Roms = Directory.EnumerateFiles(RomDirectory);
         }
 
         private static unsafe void SubmitUI()
@@ -495,12 +509,11 @@ namespace Ryu64.GUI
                     {
                         if (!string.IsNullOrEmpty(RomDirectory))
                         {
-                            IEnumerable<string> Roms = Directory.EnumerateFiles(RomDirectory);
                             foreach (string Rom in Roms)
                             {
                                 if ((Path.GetExtension(Rom).ToUpper() == ".Z64" 
                                   || Path.GetExtension(Rom).ToUpper() == ".N64")
-                                    && ImGui.Selectable(Path.GetFileName(Rom), false, (MIPS.R4300.R4300_ON) ? ImGuiSelectableFlags.Disabled : 0))
+                                    && ImGui.Selectable(Path.GetFileName(Rom), false, (MIPS.Cores.R4300.R4300_ON) ? ImGuiSelectableFlags.Disabled : 0))
                                 {
                                     InitEmulator(Rom);
                                 }
@@ -539,10 +552,14 @@ namespace Ryu64.GUI
                     if (ImGui.Button("Choose ROM Directory"))
                         WindowOpenState[8] = true;
 
+                    if (ImGui.Button("Reload Game List"))
+                        ReloadRoms();
+
                     ImGui.Text("Emulator Settings");
                     ImGui.Separator();
-                    ImGui.Checkbox("Debug Logging", ref Common.Variables.Debug);
-                    ImGui.Checkbox("Use Graphics LLE", ref GraphicsLLE);
+                    ImGui.Checkbox("Debug Logging",        ref Common.Variables.Debug);
+                    ImGui.Checkbox("Use Graphics LLE",     ref GraphicsLLE);
+                    ImGui.Checkbox("Enable Expansion Pak", ref ExpansionPak);
 
                     if (ImGui.Button("Apply"))
                         SaveIni();
@@ -552,7 +569,7 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[3])
             {
-                if (!MIPS.R4300.R4300_ON) WindowOpenState[3] = false;
+                if (!MIPS.Cores.R4300.R4300_ON) WindowOpenState[3] = false;
                 ImGui.SetNextWindowSizeConstraints(new Vector2(256, 550), new Vector2(2048, 2048));
                 if (ImGui.Begin("Register Viewer", ref WindowOpenState[3]))
                 {
@@ -620,7 +637,7 @@ namespace Ryu64.GUI
                 }
             }
 
-            if (WindowOpenState[5] && !MIPS.R4300.R4300_ON) WindowOpenState[5] = false;
+            if (WindowOpenState[5] && !MIPS.Cores.R4300.R4300_ON) WindowOpenState[5] = false;
             MemoryViewer(ref MemoryViewer_CurrAddr, ref WindowOpenState[5], ref MemoryViewer_AddrBuf, "Memory Viewer");
 
             if (FileBrowser(ref FileDialogRom_CurrPath, ref FileDialogRom_FilePath, 
@@ -637,6 +654,7 @@ namespace Ryu64.GUI
                 ref HideDotFilesOnUnix, "Select ROM Directory.", false))
             {
                 RomDirectory = FolderDialogRoms_FilePath;
+                ReloadRoms();
             }
 
             if (WindowOpenState[7])

@@ -55,9 +55,9 @@ namespace Ryu64.CLI
 
             Common.Settings.Parse($"{AppDomain.CurrentDomain.BaseDirectory}/Settings.ini");
 
-            MIPS.R4300.memory = new MIPS.Memory(Rom.AllData);
+            MIPS.Cores.R4300.memory = new MIPS.Memory(Rom.AllData);
 
-            MIPS.R4300.PowerOnR4300(ArgumentParser.Flags.TVtype);
+            MIPS.Cores.R4300.PowerOnR4300(ArgumentParser.Flags.TVtype);
             if (Common.Settings.GRAPHICS_LLE)
                 RDP.RDP.PowerOnRDP();
 

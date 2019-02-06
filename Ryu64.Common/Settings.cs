@@ -8,17 +8,20 @@ namespace Ryu64.Common
     public class Settings
     {
         public static bool GRAPHICS_LLE;
+        public static bool EXPANSION_PAK;
 
         public static void Parse(string SettingsFile)
         {
             try
             {
                 IniParser Parse = new IniParser(SettingsFile);
-                GRAPHICS_LLE    = bool.Parse(Parse.Value("GRAPHICS_LLE",   "false"));
+                GRAPHICS_LLE    = bool.Parse(Parse.Value("GRAPHICS_LLE",   "true"));
+                EXPANSION_PAK   = bool.Parse(Parse.Value("EXPANSION_PAK",  "true"));
             }
             catch
             {
-                GRAPHICS_LLE   = false;
+                GRAPHICS_LLE  = true;
+                EXPANSION_PAK = true;
             }
         }
 

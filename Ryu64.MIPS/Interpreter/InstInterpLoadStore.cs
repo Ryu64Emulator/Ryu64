@@ -1,4 +1,6 @@
-﻿namespace Ryu64.MIPS.Interpreter
+﻿using Ryu64.MIPS.Cores;
+
+namespace Ryu64.MIPS.Interpreter
 {
     public partial class InstInterp
     {

@@ -11,7 +11,7 @@ namespace Ryu64.RDP
             if ((x < SX1 || y < SY1) || (x > SX2 || y > SY2)) return;
 
             uint Index = x + y * ImageWidth;
-            MIPS.R4300.memory.WriteUInt32(RDP.ColorImageAddr + (Index * 4), Color);
+            MIPS.Cores.R4300.memory.WriteUInt32(RDP.ColorImageAddr + (Index * 4), Color);
         }
 
         private void SetPixel16BPP(uint x, uint y, uint Color, uint SX1, uint SY1, uint SX2, uint SY2, uint ImageWidth)
@@ -19,7 +19,7 @@ namespace Ryu64.RDP
             if ((x < SX1 || y < SY1) || (x > SX2 || y > SY2)) return;
 
             uint Index = x + y * ImageWidth;
-            MIPS.R4300.memory.WriteUInt32(RDP.ColorImageAddr + (Index * 2), Color); // TODO: Correct this to actually make patterns work correctly in 16BPP.
+            MIPS.Cores.R4300.memory.WriteUInt32(RDP.ColorImageAddr + (Index * 2), Color); // TODO: Correct this to actually make patterns work correctly in 16BPP.
         }
 
         private void DrawTexScanBufferRect(uint[] Scanbuffer, ushort S, ushort T, ushort DsDx, ushort DtDy)

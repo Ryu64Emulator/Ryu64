@@ -8,15 +8,19 @@ namespace Ryu64.MIPS
     {
         private delegate void MemoryEvent();
 
-        public byte[] SP_DMEM_RW         = new byte[0x1000];
-        public byte[] SP_IMEM_RW         = new byte[0x1000];
-        public byte[] SP_STATUS_REG_R    = new byte[4];
-        public byte[] SP_STATUS_REG_W    = new byte[4];
-        public byte[] SP_DMA_BUSY_REG_R  = new byte[4];
-        public byte[] SP_DMA_BUSY_REG_W  = new byte[4];
-        public byte[] SP_SEMAPHORE_REG_R = new byte[4];
-        public byte[] SP_SEMAPHORE_REG_W = new byte[4];
-        public byte[] SP_PC_REG_RW       = new byte[4];
+        public byte[] SP_DMEM_RW          = new byte[0x1000];
+        public byte[] SP_IMEM_RW          = new byte[0x1000];
+        public byte[] SP_MEM_ADDR_REG_RW  = new byte[4];
+        public byte[] SP_DRAM_ADDR_REG_RW = new byte[4];
+        public byte[] SP_RD_LEN_REG_RW    = new byte[4];
+        public byte[] SP_WR_LEN_REG_RW    = new byte[4];
+        public byte[] SP_STATUS_REG_R     = new byte[4];
+        public byte[] SP_STATUS_REG_W     = new byte[4];
+        public byte[] SP_DMA_BUSY_REG_R   = new byte[4];
+        public byte[] SP_DMA_BUSY_REG_W   = new byte[4];
+        public byte[] SP_SEMAPHORE_REG_R  = new byte[4];
+        public byte[] SP_SEMAPHORE_REG_W  = new byte[4];
+        public byte[] SP_PC_REG_RW        = new byte[4];
 
         public byte[] DPC_START_REG_RW   = new byte[4];
         public byte[] DPC_END_REG_RW     = new byte[4];
@@ -78,7 +82,7 @@ namespace Ryu64.MIPS
 
         public byte[] RI_SELECT_REG_RW = new byte[4];
 
-        public byte[] RDRAM     = new byte[8388608];
+        public byte[] RDRAM;
         public byte[] RDRAMReg  = new byte[1048576];
         public byte[] PIFROM    = new byte[1984];
         public byte[] PIFRAM    = new byte[64];
@@ -88,17 +92,26 @@ namespace Ryu64.MIPS
 
         public Memory(byte[] Rom)
         {
+            if (Common.Settings.EXPANSION_PAK)
+                RDRAM = new byte[8388608];
+            else
+                RDRAM = new byte[4194304];
+
             // RDRAM
-            MemoryMapList.Add(new MemEntry(0x00000000, 0x007FFFFF, RDRAM,    RDRAM,    "RDRAM"));
+            MemoryMapList.Add(new MemEntry(0x00000000, 0x00000000 + (uint)(RDRAM.Length - 1), RDRAM, RDRAM, "RDRAM"));
             MemoryMapList.Add(new MemEntry(0x03F00000, 0x03FFFFFF, RDRAMReg, RDRAMReg, "RDRAM Registers"));
 
             // SP Registers
-            MemoryMapList.Add(new MemEntry(0x04000000, 0x04000FFF, SP_DMEM_RW,         SP_DMEM_RW,          "SP_DMEM"));
-            MemoryMapList.Add(new MemEntry(0x04001000, 0x04001FFF, SP_IMEM_RW,         SP_IMEM_RW,          "SP_IMEM"));
-            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R,    SP_STATUS_REG_W,     "SP_STATUS_REG"));
-            MemoryMapList.Add(new MemEntry(0x04040018, 0x0404001B, SP_DMA_BUSY_REG_R,  SP_DMA_BUSY_REG_W,   "SP_DMA_BUSY_REG"));
-            MemoryMapList.Add(new MemEntry(0x0404001C, 0x0404001F, SP_SEMAPHORE_REG_R, SP_SEMAPHORE_REG_W,  "SP_SEMAPHORE_REG"));
-            MemoryMapList.Add(new MemEntry(0x04080000, 0x04080003, SP_PC_REG_RW,       SP_PC_REG_RW,        "SP_PC_REG"));
+            MemoryMapList.Add(new MemEntry(0x04000000, 0x04000FFF, SP_DMEM_RW,          SP_DMEM_RW,          "SP_DMEM"));
+            MemoryMapList.Add(new MemEntry(0x04001000, 0x04001FFF, SP_IMEM_RW,          SP_IMEM_RW,          "SP_IMEM"));
+            MemoryMapList.Add(new MemEntry(0x04040000, 0x04040003, SP_MEM_ADDR_REG_RW,  SP_MEM_ADDR_REG_RW,  "SP_MEM_ADDR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04040004, 0x04040007, SP_DRAM_ADDR_REG_RW, SP_DRAM_ADDR_REG_RW, "SP_DRAM_ADDR_REG"));
+            MemoryMapList.Add(new MemEntry(0x04040008, 0x0404000B, SP_RD_LEN_REG_RW,    SP_RD_LEN_REG_RW,    "SP_RD_LEN_REG"));
+            MemoryMapList.Add(new MemEntry(0x0404000C, 0x0404000F, SP_WR_LEN_REG_RW,    SP_WR_LEN_REG_RW,    "SP_WR_LEN_REG"));
+            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R,     SP_STATUS_REG_W,     "SP_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04040018, 0x0404001B, SP_DMA_BUSY_REG_R,   SP_DMA_BUSY_REG_W,   "SP_DMA_BUSY_REG"));
+            MemoryMapList.Add(new MemEntry(0x0404001C, 0x0404001F, SP_SEMAPHORE_REG_R,  SP_SEMAPHORE_REG_W,  "SP_SEMAPHORE_REG"));
+            MemoryMapList.Add(new MemEntry(0x04080000, 0x04080003, SP_PC_REG_RW,        SP_PC_REG_RW,        "SP_PC_REG"));
 
             // DPC Registers
             MemoryMapList.Add(new MemEntry(0x04100000, 0x04100003, DPC_START_REG_RW, DPC_START_REG_RW, "DPC_START_REG"));
@@ -167,7 +180,7 @@ namespace Ryu64.MIPS
             // Rom
             if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"ROM is {Common.Util.GetByteSizeString(Rom.Length)} big.");
 
-            MemoryMapList.Add(new MemEntry(0x10000000, 0x10000000 + (uint)Rom.Length, Rom, Rom, "Cartridge Domain 1 (Address 2)"));
+            MemoryMapList.Add(new MemEntry(0x10000000, 0x10000000 + (uint)(Rom.Length - 1), Rom, Rom, "Cartridge Domain 1 (Address 2)"));
 
             // PIF
             MemoryMapList.Add(new MemEntry(0x1FC00000, 0x1FC007BF, PIFROM, PIFROM, "PIF Rom"));
@@ -209,6 +222,14 @@ namespace Ryu64.MIPS
             WriteUInt32(0x4000101C, 0x3C0BB000);
         }
 
+        public void SP_STATUS_WRITE_EVENT()
+        {
+            SP_STATUS_REG_W[0] = 0;
+            SP_STATUS_REG_W[1] = 0;
+            SP_STATUS_REG_W[2] = 0;
+            SP_STATUS_REG_W[3] = 0;
+        }
+
         public void DPC_END_WRITE_EVENT()
         {
             RDPWrapper.RDPExec = true;
@@ -229,77 +250,90 @@ namespace Ryu64.MIPS
             if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"PIDMA: Type: Write, WriteLength: {WriteLength + 1}, CartAddr: 0x{CartAddr:X8}, DramAddr: 0x{DramAddr:X8}");
         }
 
+        public void MI_INIT_MODE_WRITE_EVENT()
+        {
+            if ((MI_INIT_MODE_REG_W[3] & 0x4) > 0) // Clear DP Interrupt
+            {
+                MI_INTR_REG_RW[3] &= ~0b100000 & 0xFF;
+            }
+
+            MI_INIT_MODE_REG_W[0] = 0;
+            MI_INIT_MODE_REG_W[1] = 0;
+            MI_INIT_MODE_REG_W[2] = 0;
+            MI_INIT_MODE_REG_W[3] = 0;
+        }
+
         public void MI_INTR_MASK_WRITE_EVENT()
         {
-            if ((MI_INTR_MASK_REG_W[0] & 0b00000011) > 0) // SP
+            if ((MI_INTR_MASK_REG_W[3] & 0b00000011) > 0) // SP
             {
-                if ((MI_INTR_MASK_REG_W[0] & 0b00000011) == 0b01)
+                if ((MI_INTR_MASK_REG_W[3] & 0b00000011) == 0b01)
                 {
-                    MI_INTR_MASK_REG_R[0] |= 0b000001;
+                    MI_INTR_MASK_REG_R[3] |= 0b000001;
                 }
-                else if ((MI_INTR_MASK_REG_W[0] & 0b00000011) == 0b10)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b00000011) == 0b10)
                 {
-                    MI_INTR_MASK_REG_R[0] &= ~0b000001 & 0xFF;
+                    MI_INTR_MASK_REG_R[3] &= ~0b000001 & 0xFF;
                 }
             }
 
-            if ((MI_INTR_MASK_REG_W[0] & 0b00001100) > 0) // SI
+            if ((MI_INTR_MASK_REG_W[3] & 0b00001100) > 0) // SI
             {
-                if ((MI_INTR_MASK_REG_W[0] & 0b00001100) == 0b0100)
+                if ((MI_INTR_MASK_REG_W[3] & 0b00001100) == 0b0100)
                 {
-                    MI_INTR_MASK_REG_R[0] |= 0b000010;
+                    MI_INTR_MASK_REG_R[3] |= 0b000010;
                 }
-                else if ((MI_INTR_MASK_REG_W[0] & 0b00001100) == 0b1000)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b00001100) == 0b1000)
                 {
-                    MI_INTR_MASK_REG_R[0] &= ~0b000010 & 0xFF;
+                    MI_INTR_MASK_REG_R[3] &= ~0b000010 & 0xFF;
                 }
             }
 
-            if ((MI_INTR_MASK_REG_W[0] & 0b00110000) > 0) // AI
+            if ((MI_INTR_MASK_REG_W[3] & 0b00110000) > 0) // AI
             {
-                if ((MI_INTR_MASK_REG_W[0] & 0b00110000) == 0b010000)
+                if ((MI_INTR_MASK_REG_W[3] & 0b00110000) == 0b010000)
                 {
-                    MI_INTR_MASK_REG_R[0] |= 0b000100;
+                    MI_INTR_MASK_REG_R[3] |= 0b000100;
                 }
-                else if ((MI_INTR_MASK_REG_W[0] & 0b00110000) == 0b100000)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b00110000) == 0b100000)
                 {
-                    MI_INTR_MASK_REG_R[0] &= ~0b000100 & 0xFF;
+                    MI_INTR_MASK_REG_R[3] &= ~0b000100 & 0xFF;
                 }
             }
 
-            if ((MI_INTR_MASK_REG_W[0] & 0b11000000) > 0) // VI
+            if ((MI_INTR_MASK_REG_W[3] & 0b11000000) > 0) // VI
             {
-                if ((MI_INTR_MASK_REG_W[0] & 0b11000000) == 0b01000000)
+                if ((MI_INTR_MASK_REG_W[3] & 0b11000000) == 0b01000000)
                 {
-                    MI_INTR_MASK_REG_R[0] |= 0b001000;
+                    MI_INTR_MASK_REG_R[3] |= 0b001000;
                 }
-                else if ((MI_INTR_MASK_REG_W[0] & 0b11000000) == 0b10000000)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b11000000) == 0b10000000)
                 {
-                    MI_INTR_MASK_REG_R[0] &= ~0b001000 & 0xFF;
+                    MI_INTR_MASK_REG_R[3] &= ~0b001000 & 0xFF;
                 }
             }
 
-            if ((MI_INTR_MASK_REG_W[1] & 0b00000011) > 0) // PI
+            if ((MI_INTR_MASK_REG_W[2] & 0b00000011) > 0) // PI
             {
-                if ((MI_INTR_MASK_REG_W[1] & 0b00000011) == 0b01)
+                if ((MI_INTR_MASK_REG_W[2] & 0b00000011) == 0b01)
                 {
-                    MI_INTR_MASK_REG_R[0] |= 0b010000;
+                    MI_INTR_MASK_REG_R[3] |= 0b010000;
                 }
-                else if ((MI_INTR_MASK_REG_W[1] & 0b00000011) == 0b10)
+                else if ((MI_INTR_MASK_REG_W[2] & 0b00000011) == 0b10)
                 {
-                    MI_INTR_MASK_REG_R[0] &= ~0b010000 & 0xFF;
+                    MI_INTR_MASK_REG_R[3] &= ~0b010000 & 0xFF;
                 }
             }
 
-            if ((MI_INTR_MASK_REG_W[1] & 0b00001100) > 0) // DP
+            if ((MI_INTR_MASK_REG_W[2] & 0b00001100) > 0) // DP
             {
-                if ((MI_INTR_MASK_REG_W[1] & 0b00001100) == 0b0100)
+                if ((MI_INTR_MASK_REG_W[2] & 0b00001100) == 0b0100)
                 {
-                    MI_INTR_MASK_REG_R[0] |= 0b100000;
+                    MI_INTR_MASK_REG_R[3] |= 0b100000;
                 }
-                else if ((MI_INTR_MASK_REG_W[1] & 0b00001100) == 0b1000)
+                else if ((MI_INTR_MASK_REG_W[2] & 0b00001100) == 0b1000)
                 {
-                    MI_INTR_MASK_REG_R[0] &= ~0b100000 & 0xFF;
+                    MI_INTR_MASK_REG_R[3] &= ~0b100000 & 0xFF;
                 }
             }
 
@@ -316,7 +350,7 @@ namespace Ryu64.MIPS
             VI_CURRENT_REG_W[2] = 0;
             VI_CURRENT_REG_W[3] = 0;
 
-            MI_INTR_REG_RW[0] &= ~0b001000 & 0xFF;
+            MI_INTR_REG_RW[3] &= ~0b001000 & 0xFF;
         }
 
         struct MemEntry

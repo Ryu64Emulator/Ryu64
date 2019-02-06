@@ -88,9 +88,10 @@ namespace Ryu64.Graphics
 
             Common.Util.Cleanup(MIPS.Registers.R4300.PC);
 
-            MIPS.R4300.R4300_ON = false;
-            MIPS.COP0.COP0_ON   = false;
-            MIPS.COP1.COP1_ON   = false;
+            MIPS.Cores.R4300.R4300_ON = false;
+            MIPS.Cores.RSP.RSP_ON     = false;
+            MIPS.Cores.COP0.COP0_ON   = false;
+            MIPS.Cores.COP1.COP1_ON   = false;
 
             Console.ResetColor();
         }

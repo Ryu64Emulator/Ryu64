@@ -1,4 +1,6 @@
-﻿namespace Ryu64.MIPS
+﻿using Ryu64.MIPS.Cores;
+
+namespace Ryu64.MIPS
 {
     public class MI
     {
