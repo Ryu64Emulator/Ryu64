@@ -224,6 +224,18 @@ namespace Ryu64.MIPS
 
         public void SP_STATUS_WRITE_EVENT()
         {
+            if ((SP_STATUS_REG_W[3] & 0b00000011) > 0) // Halt
+            {
+                if ((SP_STATUS_REG_W[3] & 0b00000011) == 0b10)
+                {
+                    SP_STATUS_REG_R[3] |= 0b000001;
+                }
+                else if ((SP_STATUS_REG_W[3] & 0b00000011) == 0b01)
+                {
+                    SP_STATUS_REG_R[3] &= ~0b000001 & 0xFF;
+                }
+            }
+
             SP_STATUS_REG_W[0] = 0;
             SP_STATUS_REG_W[1] = 0;
             SP_STATUS_REG_W[2] = 0;
@@ -267,11 +279,11 @@ namespace Ryu64.MIPS
         {
             if ((MI_INTR_MASK_REG_W[3] & 0b00000011) > 0) // SP
             {
-                if ((MI_INTR_MASK_REG_W[3] & 0b00000011) == 0b01)
+                if ((MI_INTR_MASK_REG_W[3] & 0b00000011) == 0b10)
                 {
                     MI_INTR_MASK_REG_R[3] |= 0b000001;
                 }
-                else if ((MI_INTR_MASK_REG_W[3] & 0b00000011) == 0b10)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b00000011) == 0b01)
                 {
                     MI_INTR_MASK_REG_R[3] &= ~0b000001 & 0xFF;
                 }
@@ -279,11 +291,11 @@ namespace Ryu64.MIPS
 
             if ((MI_INTR_MASK_REG_W[3] & 0b00001100) > 0) // SI
             {
-                if ((MI_INTR_MASK_REG_W[3] & 0b00001100) == 0b0100)
+                if ((MI_INTR_MASK_REG_W[3] & 0b00001100) == 0b1000)
                 {
                     MI_INTR_MASK_REG_R[3] |= 0b000010;
                 }
-                else if ((MI_INTR_MASK_REG_W[3] & 0b00001100) == 0b1000)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b00001100) == 0b0100)
                 {
                     MI_INTR_MASK_REG_R[3] &= ~0b000010 & 0xFF;
                 }
@@ -291,11 +303,11 @@ namespace Ryu64.MIPS
 
             if ((MI_INTR_MASK_REG_W[3] & 0b00110000) > 0) // AI
             {
-                if ((MI_INTR_MASK_REG_W[3] & 0b00110000) == 0b010000)
+                if ((MI_INTR_MASK_REG_W[3] & 0b00110000) == 0b100000)
                 {
                     MI_INTR_MASK_REG_R[3] |= 0b000100;
                 }
-                else if ((MI_INTR_MASK_REG_W[3] & 0b00110000) == 0b100000)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b00110000) == 0b010000)
                 {
                     MI_INTR_MASK_REG_R[3] &= ~0b000100 & 0xFF;
                 }
@@ -303,11 +315,11 @@ namespace Ryu64.MIPS
 
             if ((MI_INTR_MASK_REG_W[3] & 0b11000000) > 0) // VI
             {
-                if ((MI_INTR_MASK_REG_W[3] & 0b11000000) == 0b01000000)
+                if ((MI_INTR_MASK_REG_W[3] & 0b11000000) == 0b10000000)
                 {
                     MI_INTR_MASK_REG_R[3] |= 0b001000;
                 }
-                else if ((MI_INTR_MASK_REG_W[3] & 0b11000000) == 0b10000000)
+                else if ((MI_INTR_MASK_REG_W[3] & 0b11000000) == 0b01000000)
                 {
                     MI_INTR_MASK_REG_R[3] &= ~0b001000 & 0xFF;
                 }
@@ -315,11 +327,11 @@ namespace Ryu64.MIPS
 
             if ((MI_INTR_MASK_REG_W[2] & 0b00000011) > 0) // PI
             {
-                if ((MI_INTR_MASK_REG_W[2] & 0b00000011) == 0b01)
+                if ((MI_INTR_MASK_REG_W[2] & 0b00000011) == 0b10)
                 {
                     MI_INTR_MASK_REG_R[3] |= 0b010000;
                 }
-                else if ((MI_INTR_MASK_REG_W[2] & 0b00000011) == 0b10)
+                else if ((MI_INTR_MASK_REG_W[2] & 0b00000011) == 0b01)
                 {
                     MI_INTR_MASK_REG_R[3] &= ~0b010000 & 0xFF;
                 }
@@ -327,11 +339,11 @@ namespace Ryu64.MIPS
 
             if ((MI_INTR_MASK_REG_W[2] & 0b00001100) > 0) // DP
             {
-                if ((MI_INTR_MASK_REG_W[2] & 0b00001100) == 0b0100)
+                if ((MI_INTR_MASK_REG_W[2] & 0b00001100) == 0b1000)
                 {
                     MI_INTR_MASK_REG_R[3] |= 0b100000;
                 }
-                else if ((MI_INTR_MASK_REG_W[2] & 0b00001100) == 0b1000)
+                else if ((MI_INTR_MASK_REG_W[2] & 0b00001100) == 0b0100)
                 {
                     MI_INTR_MASK_REG_R[3] &= ~0b100000 & 0xFF;
                 }
