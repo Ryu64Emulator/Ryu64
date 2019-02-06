@@ -67,6 +67,18 @@ namespace Ryu64.RDP
 
         public static Tile[] Tiles;
 
+        private static uint PC
+        {
+            get
+            {
+                return MIPS.Cores.R4300.memory.ReadUInt32(0x04100008);
+            }
+            set
+            {
+                MIPS.Cores.R4300.memory.WriteRDPPC(value);
+            }
+        }
+
         public static void PowerOnRDP()
         {
             Tiles = new Tile[8];
@@ -79,7 +91,7 @@ namespace Ryu64.RDP
                 {
                     if (MIPS.RDPWrapper.RDPExec)
                     {
-                        uint PC = MIPS.Cores.R4300.memory.ReadUInt32(0x04100000);
+                        PC = MIPS.Cores.R4300.memory.ReadUInt32(0x04100000);
                         if (Common.Variables.Debug)
                             Common.Logger.PrintInfoLine($"Starting Command Buffer, 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100000):x8} to 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100004):x8}.");
                         while (PC < MIPS.Cores.R4300.memory.ReadUInt32(0x04100004))
@@ -208,13 +220,11 @@ namespace Ryu64.RDP
                                 default:
                                     throw new NotImplementedException($"Command 0x{Command:x2} is not an implemented RDP command.  PC: 0x{PC:x8}");
                             }
-
-                            MIPS.Cores.R4300.memory.WriteRDPPC(PC);
                         }
                         if (Common.Variables.Debug)
                             Common.Logger.PrintInfoLine("Ended command buffer.");
                         MIPS.RDPWrapper.RDPExec = false;
-                        MIPS.Cores.R4300.memory.WriteRDPPC(0);
+                        PC = 0;
                     }
                     Thread.Sleep(1);
                 }

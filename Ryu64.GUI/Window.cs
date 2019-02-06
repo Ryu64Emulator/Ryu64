@@ -87,7 +87,10 @@ namespace Ryu64.GUI
 
             MIPS.Cores.R4300.PowerOnR4300(MIPS.Cores.R4300.TVType_enum.NTSC);
             if (Common.Settings.GRAPHICS_LLE)
+            {
                 RDP.RDP.PowerOnRDP();
+                MIPS.Cores.RSP.PowerOnRSP();
+            }
 
             Thread Graphics = new Thread(() =>
             {
@@ -585,12 +588,12 @@ namespace Ryu64.GUI
                     for (uint i = 0; i < MIPS.Registers.COP0.Reg.Length; ++i)
                         ImGui.Text($" COP0R[{i}]: 0x{MIPS.Registers.COP0.Reg[i]:X16}");
                     ImGui.Separator();
-                    ImGui.Text($"RSP:");
+                    ImGui.Text($"RSP: (Halted = {MIPS.Cores.RSP.RSP_HALT})");
                     ImGui.Text($" PC: 0x{MIPS.Registers.RSPReg.PC:X3}");
                     for (uint i = 0; i < MIPS.Registers.RSPReg.Reg.Length; ++i)
                         ImGui.Text($" RSPR[{i}]: 0x{MIPS.Registers.RSPReg.Reg[i]:X8}");
                     ImGui.Separator();
-                    ImGui.Text($"RSPCOP0:");
+                    ImGui.Text($"RSPCOP0: (Halted = {MIPS.Cores.RSP.RSP_HALT})");
                     for (uint i = 0; i < MIPS.Registers.RSPCOP0.Reg.Length; ++i)
                         ImGui.Text($" RSPC0R[{i}]: 0x{MIPS.Registers.RSPCOP0.Reg[i]:X16}");
 

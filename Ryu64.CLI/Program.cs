@@ -59,7 +59,10 @@ namespace Ryu64.CLI
 
             MIPS.Cores.R4300.PowerOnR4300(ArgumentParser.Flags.TVtype);
             if (Common.Settings.GRAPHICS_LLE)
+            {
                 RDP.RDP.PowerOnRDP();
+                MIPS.Cores.RSP.PowerOnRSP();
+            }
 
             if (!ArgumentParser.Flags.NoWindow) using (Graphics.MainWindow Window = new Graphics.MainWindow(Rom.Name.Trim())) Window.Run(60.0);
         }

@@ -49,7 +49,7 @@ namespace Ryu64.MIPS
             }
             else if (RSP)
             {
-                RSPCOP0.Reg[Index] = Value;
+                RSPCOP0.Reg[Index] = (uint)Value;
                 return;
             }
 
@@ -160,7 +160,17 @@ namespace Ryu64.MIPS
         public class RSPReg
         {
             public static uint[] Reg = new uint[32];
-            public static ushort PC;
+            public static ushort PC
+            {
+                get
+                {
+                    return (ushort)(Cores.R4300.memory.ReadUInt32(0x04080000) & 0xFFF);
+                }
+                set
+                {
+                    Cores.R4300.memory.WriteUInt32(0x04080000, (uint)value & 0xFFF);
+                }
+            }
 
             public static void PrintRegisterInfo()
             {
@@ -171,7 +181,7 @@ namespace Ryu64.MIPS
 
         public class RSPCOP0
         {
-            public static ulong[] Reg = new ulong[16];
+            public static uint[] Reg = new uint[16];
 
             public static void PrintRegisterInfo()
             {

@@ -160,9 +160,6 @@ namespace Ryu64.MIPS.Cores
 
         public static void PowerOnR4300(TVType_enum TVtype)
         {
-            for (int i = 0; i < Registers.R4300.Reg.Length; ++i)
-                Registers.R4300.Reg[i] = 0; // Clear Registers.
-
             uint RomType   = (uint)RomType_enum.Cart;
             uint ResetType = (uint)ResetType_enum.Cold_Reset;
             uint osVersion = 0; // 00 = 1.0, 15 = 2.5, etc.
@@ -196,8 +193,9 @@ namespace Ryu64.MIPS.Cores
 
             memory.FastMemoryCopy(0xA4000000, 0xB0000000, 0xFFF); // Load the Boot Code into the correct memory address.
 
-            COP0.PowerOnCOP0();
-            COP1.PowerOnCOP1();
+            Registers.COP0.Reg[Registers.COP0.COMPARE_REG] = 0xFFFFFFFF;
+            Registers.COP0.Reg[Registers.COP0.STATUS_REG]  = 0x34000000;
+            Registers.COP0.Reg[Registers.COP0.CONFIG_REG]  = 0x0006E463;
 
             R4300_ON = true;
 

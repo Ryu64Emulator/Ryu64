@@ -205,7 +205,8 @@ namespace Ryu64.MIPS
             WriteUInt32(0x0460001C, (BSD_DOM1_CONFIG >> 16) & 0x0F); // PI_BSD_DOM1_PGS_REG
             WriteUInt32(0x04600020, (BSD_DOM1_CONFIG >> 20) & 0x03); // PI_BSD_DOM1_RLS_REG
 
-            SP_STATUS_REG_R[3] = 0x1;
+            // SP Registers
+            SP_STATUS_REG_R[3] = 0x1; // Set the RSP status to be halted.
 
             // RI Registers
             WriteUInt32(0x0470000C, 0b1110); // RI_SELECT_REG
