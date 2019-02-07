@@ -36,7 +36,11 @@ namespace Ryu64.MIPS.Interpreter
                 return;
             }
 
-            throw new NotImplementedException("BREAK behavior on the RSP is not implemented.");
+            Cores.R4300.memory.WriteUInt32(0x04040010, 2); // SP_STATUS_REG
+            Cores.R4300.memory.SetRSPBroke();
+
+            if ((Cores.R4300.memory.ReadUInt32(0x04040010) & 0x40) > 0)
+                MI.InvokeSPInterrupt();
         }
     }
 }

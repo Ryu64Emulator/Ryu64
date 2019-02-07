@@ -4,6 +4,7 @@ namespace Ryu64.MIPS
 {
     public class MI
     {
+        public const byte SP_Intr_Bit = 0;
         public const byte VI_Intr_Bit = 3;
         public const byte DP_Intr_Bit = 5;
 
@@ -22,6 +23,12 @@ namespace Ryu64.MIPS
         public static void InvokeDPInterrupt()
         {
             R4300.memory.InvokeMIInt(DP_Intr_Bit);
+            Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= 0x400;
+        }
+
+        public static void InvokeSPInterrupt()
+        {
+            R4300.memory.InvokeMIInt(SP_Intr_Bit);
             Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= 0x400;
         }
     }

@@ -237,6 +237,18 @@ namespace Ryu64.MIPS
                 }
             }
 
+            if ((SP_STATUS_REG_W[3] & 0b00011000) > 0) // Intr
+            {
+                if ((SP_STATUS_REG_W[3] & 0b00011000) == 0b10000)
+                {
+                    MI_INTR_REG_RW[3] |= 0b000001;
+                }
+                else if ((SP_STATUS_REG_W[3] & 0b00011000) == 0b01000)
+                {
+                    MI_INTR_REG_RW[3] &= ~0b000001 & 0xFF;
+                }
+            }
+
             SP_STATUS_REG_W[0] = 0;
             SP_STATUS_REG_W[1] = 0;
             SP_STATUS_REG_W[2] = 0;
@@ -512,6 +524,11 @@ namespace Ryu64.MIPS
             byte[] Res = new byte[4];
             Buffer.BlockCopy(SP_IMEM_RW, (int)index & 0xFFF, Res, 0, 4);
             return (uint)(Res[3] | (Res[2] << 8) | (Res[1] << 16) | (Res[0] << 24));
+        }
+
+        public void SetRSPBroke()
+        {
+            SP_STATUS_REG_R[3] |= 2;
         }
 
         public void InvokeMIInt(byte Bit)
