@@ -51,7 +51,10 @@ namespace Ryu64.MIPS
 
             Common.Logger.PrintWarningLine($"Break at PC: 0x{Registers.R4300.PC:X8}");
 
-            Registers.R4300.PC = 0x80000180;
+            if ((Registers.COP0.Reg[Registers.COP0.STATUS_REG] & 0b00000000010000000000000000000000) == 0b00000000010000000000000000000000)
+                Registers.R4300.PC = 0xBFC00380;
+            else
+                Registers.R4300.PC = 0x80000180;
         }
 
         public static void PollInt()
@@ -72,7 +75,10 @@ namespace Ryu64.MIPS
 
                         Common.Logger.PrintInfoLine($"Interrupt at PC: 0x{Registers.R4300.PC:X8}");
 
-                        Registers.R4300.PC = 0x80000180;
+                        if ((Registers.COP0.Reg[Registers.COP0.STATUS_REG] & 0b00000000010000000000000000000000) == 0b00000000010000000000000000000000)
+                            Registers.R4300.PC = 0xBFC00380;
+                        else
+                            Registers.R4300.PC = 0x80000180;
                     }
                 }
             }
