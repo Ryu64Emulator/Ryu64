@@ -507,6 +507,13 @@ namespace Ryu64.MIPS
             }
         }
 
+        public uint ReadIMEMInstruction(uint index)
+        {
+            byte[] Res = new byte[4];
+            Buffer.BlockCopy(SP_IMEM_RW, (int)index & 0xFFF, Res, 0, 4);
+            return (uint)(Res[3] | (Res[2] << 8) | (Res[1] << 16) | (Res[0] << 24));
+        }
+
         public void InvokeMIInt(byte Bit)
         {
             unsafe

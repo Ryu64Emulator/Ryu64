@@ -6,6 +6,7 @@ namespace Ryu64.MIPS.Cores
     public class RSP
     {
         public static bool RSP_ON   = false;
+
         public static bool RSP_HALT
         {
             get
@@ -54,7 +55,7 @@ namespace Ryu64.MIPS.Cores
                 {
                     if (!RSP_HALT)
                     {
-                        uint Opcode = R4300.memory.ReadUInt32(Registers.RSPReg.PC, true, false);
+                        uint Opcode = R4300.memory.ReadIMEMInstruction(Registers.RSPReg.PC);
                         InterpretOpcode(Opcode);
                     }
                     else
