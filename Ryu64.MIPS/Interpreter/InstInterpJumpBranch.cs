@@ -6,14 +6,14 @@
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) == (long)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
+            if ((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) == (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
         public static void BEQL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) == (long)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
+            if ((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) == (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
             {
                 InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
@@ -25,7 +25,7 @@
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) >= 0)
+            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) >= 0)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
@@ -34,7 +34,7 @@
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
             Registers.SetMainReg(31, Registers.ReadPC(Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) >= 0)
+            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) >= 0)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
@@ -42,7 +42,7 @@
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) > 0)
+            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) > 0)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
@@ -50,14 +50,14 @@
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
+            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
         public static void BLEZL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
+            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
             {
                 InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
@@ -69,7 +69,7 @@
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
+            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
@@ -78,7 +78,7 @@
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
             Registers.SetMainReg(31, Registers.ReadPC(Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
+            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
@@ -86,14 +86,14 @@
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) != (long)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
+            if ((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) != (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
         public static void BNEL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
-            if ((long)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) != (long)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
+            if ((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) != (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
             {
                 InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);

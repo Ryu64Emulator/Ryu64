@@ -24,7 +24,7 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void ADDU(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.SetMainReg(Desc.op3, (uint)((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) + (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU)), Desc.RSP, Desc.CPU);
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
@@ -90,7 +90,7 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void LUI(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.SetMainReg(Desc.op2, (uint)(Desc.Imm << 16), Desc.RSP, Desc.CPU);
+            Registers.SetMainReg(Desc.op2, (uint)(Desc.Imm << 16) & 0xFFFF0000, Desc.RSP, Desc.CPU);
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
@@ -154,6 +154,18 @@ namespace Ryu64.MIPS.Interpreter
             Registers.R4300.PC += 4;
         }
 
+        public static void DIV(OpcodeTable.OpcodeDesc Desc)
+        {
+            DIVU(Desc);
+        }
+
+        public static void DIVU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.LO = (uint)Registers.R4300.Reg[Desc.op1] / (uint)Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.HI = (uint)Registers.R4300.Reg[Desc.op1] % (uint)Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.PC += 4;
+        }
+
         public static void DDIV(OpcodeTable.OpcodeDesc Desc)
         {
             DDIVU(Desc);
@@ -168,7 +180,7 @@ namespace Ryu64.MIPS.Interpreter
 
         public static void SLL(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) << Desc.op4, Desc.RSP, Desc.CPU);
+            Registers.SetMainReg(Desc.op3, (uint)(Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) << Desc.op4), Desc.RSP, Desc.CPU);
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 

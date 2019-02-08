@@ -109,8 +109,6 @@ namespace Ryu64.MIPS.Cores
         {
             isDelaySlot = DelaySlot;
 
-            ExceptionHandler.PollInt();
-
             if (Registers.R4300.Reg[0] != 0) Registers.R4300.Reg[0] = 0;
 
             if (Registers.COP0.Reg[Registers.COP0.COUNT_REG] >= 0xFFFFFFFF)
@@ -128,14 +126,16 @@ namespace Ryu64.MIPS.Cores
             CycleCounter += Info.Cycles;
             Count        += Info.Cycles;
             Registers.COP0.Reg[Registers.COP0.COUNT_REG] = (uint)(Count >> 1);
-            --Registers.COP0.Reg[Registers.COP0.RANDOM_REG];
-            if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG] 
+            if (Registers.COP0.Reg[Registers.COP0.RANDOM_REG] < Registers.COP0.Reg[Registers.COP0.WIRED_REG]
              || Registers.COP0.Reg[Registers.COP0.RANDOM_REG] == 0
-             || Registers.COP0.Reg[Registers.COP0.WIRED_REG]  != PrevWired)
+             || Registers.COP0.Reg[Registers.COP0.WIRED_REG] != PrevWired)
                 Registers.COP0.Reg[Registers.COP0.RANDOM_REG] = 0x1F;
+            --Registers.COP0.Reg[Registers.COP0.RANDOM_REG];
 
             Common.Measure.InstructionCount += 1;
             Common.Measure.CycleCounter = CycleCounter;
+
+            ExceptionHandler.PollInt();
         }
 
         public enum RomType_enum : uint
@@ -196,6 +196,10 @@ namespace Ryu64.MIPS.Cores
             Registers.COP0.Reg[Registers.COP0.COMPARE_REG] = 0xFFFFFFFF;
             Registers.COP0.Reg[Registers.COP0.STATUS_REG]  = 0x34000000;
             Registers.COP0.Reg[Registers.COP0.CONFIG_REG]  = 0x0006E463;
+
+            uint MemoryDetected = (uint)(Common.Settings.EXPANSION_PAK ? 0x00800000 : 0x00400000);
+
+            memory.WriteUInt32(0x80000318, MemoryDetected); // Set osMemSize to the amount of Memory available (depending on if the Expansion Pack is on or not)
 
             R4300_ON = true;
 
