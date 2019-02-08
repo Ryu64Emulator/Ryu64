@@ -403,16 +403,17 @@ namespace Ryu64.MIPS
 
         private MemEntry GetEntry(uint index, bool Store = false, bool TLBMiss = true)
         {
+            uint realAddress = index & 0x1FFFFFFF;
             for (int i = 0; i < MemoryMap.Length; ++i)
             {
-                if (MemoryMap[i].EndAddress < index || MemoryMap[i].StartAddress > index)
+                if (MemoryMap[i].EndAddress < realAddress || MemoryMap[i].StartAddress > realAddress)
                     continue;
 
-                if (MemoryMap[i].EndAddress >= index)
+                if (MemoryMap[i].EndAddress >= realAddress)
                     return MemoryMap[i];
             }
 
-            if (TLBMiss) ExceptionHandler.InvokeTLBMiss(index, Store);
+            if (TLBMiss && (index & 0xC0000000) != 0x80000000) ExceptionHandler.InvokeTLBMiss(index, Store);
 
             return new MemEntry()
             {
@@ -424,8 +425,9 @@ namespace Ryu64.MIPS
         {
             get
             {
-                uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
+                uint nonCachedIndex = TLB.TranslateAddress(index);
                 MemEntry Entry = GetEntry(nonCachedIndex, false, TLBMiss);
+                nonCachedIndex &= 0x1FFFFFFF;
 
                 if (Entry.StartAddress == uint.MaxValue) return 0;
 
@@ -436,8 +438,9 @@ namespace Ryu64.MIPS
             }
             set
             {
-                uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
+                uint nonCachedIndex = TLB.TranslateAddress(index);
                 MemEntry Entry = GetEntry(nonCachedIndex, true, TLBMiss);
+                nonCachedIndex &= 0x1FFFFFFF;
 
                 if (Entry.StartAddress == uint.MaxValue) return;
 
@@ -452,9 +455,11 @@ namespace Ryu64.MIPS
         {
             get
             {
-                uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
-                byte[] result = new byte[size];
+                uint nonCachedIndex = TLB.TranslateAddress(index);
                 MemEntry Entry = GetEntry(nonCachedIndex, false, TLBMiss);
+                nonCachedIndex &= 0x1FFFFFFF;
+
+                byte[] result = new byte[size];
 
                 if (Entry.StartAddress == uint.MaxValue) return result;
 
@@ -473,8 +478,9 @@ namespace Ryu64.MIPS
             }
             set
             {
-                uint nonCachedIndex = TLB.TranslateAddress(index) & 0x1FFFFFFF;
+                uint nonCachedIndex = TLB.TranslateAddress(index);
                 MemEntry Entry = GetEntry(nonCachedIndex, true, TLBMiss);
+                nonCachedIndex &= 0x1FFFFFFF;
 
                 if (Entry.StartAddress == uint.MaxValue) return;
 

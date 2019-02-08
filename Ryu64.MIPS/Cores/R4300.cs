@@ -64,7 +64,6 @@ namespace Ryu64.MIPS.Cores
         private const uint CRC_iQue_2   = 0xB98CED9A;
         private const uint CRC_iQue_3   = 0xE71C2766;
 
-
         private static uint GetCICSeed()
         {
             uint CRC        = CRC32(0x10000040, 0xFC0);
