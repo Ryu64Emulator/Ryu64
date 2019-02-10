@@ -106,9 +106,12 @@ namespace Ryu64.MIPS
             MemoryMapList.Add(new MemEntry(0x04001000, 0x04001FFF, SP_IMEM_RW,          SP_IMEM_RW,          "SP_IMEM"));
             MemoryMapList.Add(new MemEntry(0x04040000, 0x04040003, SP_MEM_ADDR_REG_RW,  SP_MEM_ADDR_REG_RW,  "SP_MEM_ADDR_REG"));
             MemoryMapList.Add(new MemEntry(0x04040004, 0x04040007, SP_DRAM_ADDR_REG_RW, SP_DRAM_ADDR_REG_RW, "SP_DRAM_ADDR_REG"));
-            MemoryMapList.Add(new MemEntry(0x04040008, 0x0404000B, SP_RD_LEN_REG_RW,    SP_RD_LEN_REG_RW,    "SP_RD_LEN_REG"));
-            MemoryMapList.Add(new MemEntry(0x0404000C, 0x0404000F, SP_WR_LEN_REG_RW,    SP_WR_LEN_REG_RW,    "SP_WR_LEN_REG"));
-            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R,     SP_STATUS_REG_W,     "SP_STATUS_REG"));
+            MemoryMapList.Add(new MemEntry(0x04040008, 0x0404000B, SP_RD_LEN_REG_RW,    SP_RD_LEN_REG_RW,    "SP_RD_LEN_REG",
+                null, SP_RD_LEN_WRITE_EVENT));
+            MemoryMapList.Add(new MemEntry(0x0404000C, 0x0404000F, SP_WR_LEN_REG_RW,    SP_WR_LEN_REG_RW,    "SP_WR_LEN_REG",
+                null, SP_WR_LEN_WRITE_EVENT));
+            MemoryMapList.Add(new MemEntry(0x04040010, 0x04040013, SP_STATUS_REG_R,     SP_STATUS_REG_W,     "SP_STATUS_REG",
+                null, SP_STATUS_WRITE_EVENT));
             MemoryMapList.Add(new MemEntry(0x04040018, 0x0404001B, SP_DMA_BUSY_REG_R,   SP_DMA_BUSY_REG_W,   "SP_DMA_BUSY_REG"));
             MemoryMapList.Add(new MemEntry(0x0404001C, 0x0404001F, SP_SEMAPHORE_REG_R,  SP_SEMAPHORE_REG_W,  "SP_SEMAPHORE_REG"));
             MemoryMapList.Add(new MemEntry(0x04080000, 0x04080003, SP_PC_REG_RW,        SP_PC_REG_RW,        "SP_PC_REG"));
@@ -266,13 +269,73 @@ namespace Ryu64.MIPS
             uint CartAddr    = ReadUInt32(0x04600004); // PI_CART_ADDR_REG
             uint DramAddr    = ReadUInt32(0x04600000); // PI_DRAM_ADDR_REG
 
-            PI_STATUS_REG_R[3] |= 0b0001; // Set DMA Busy
-
             FastMemoryCopy(DramAddr, CartAddr, (int)((WriteLength + 1) & 0xFFFFFFFF));
 
-            PI_STATUS_REG_R[3] &= ~0b0001 & 0xFF; // Clear DMA Busy
-
             if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"PIDMA: Type: Write, WriteLength: {WriteLength + 1}, CartAddr: 0x{CartAddr:X8}, DramAddr: 0x{DramAddr:X8}");
+        }
+
+        public void SP_WR_LEN_WRITE_EVENT()
+        {
+            uint WRLen = ReadUInt32(0x0404000C); // SP_WR_LEN_REG 
+            uint WriteLength = (WRLen & 0xFFF) + 1;
+            uint Count = ((WRLen & 0xFF000) >> 12) + 1;
+            uint Skip = (WRLen & 0xFFF00000) >> 20;
+
+            uint DramAddr = ReadUInt32(0x04040004); // SP_DRAM_ADDR_REG
+            uint SourceAddr = 0;
+
+            uint RSPMemAddr = ReadUInt32(0x04040000);
+            string IMEMorDMEM = "DMEM";
+
+            if ((RSPMemAddr & 0x1000) > 0)
+            {
+                SourceAddr = (RSPMemAddr & 0xFFF) + 0x04001000;
+                IMEMorDMEM = "IMEM";
+            }
+            else
+                SourceAddr = (RSPMemAddr & 0xFFF) + 0x04000000;
+
+            for (uint i = 0; i < Count; ++i)
+            {
+                FastMemoryCopy(DramAddr, SourceAddr, (int)WriteLength);
+
+                DramAddr   += WriteLength + Skip;
+                SourceAddr += WriteLength;
+            }
+
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"SPDMA: Type: Write, WriteLength: {WriteLength}, Count: {Count}, Skip: {Skip}, SourceAddr: 0x{RSPMemAddr & 0xFFF:X8}, Memory Type: {IMEMorDMEM}, DramAddr: 0x{DramAddr:X8}");
+        }
+
+        public void SP_RD_LEN_WRITE_EVENT()
+        {
+            uint RDLen      = ReadUInt32(0x04040008); // SP_RD_LEN_REG 
+            uint ReadLength = (RDLen & 0xFFF) + 1;
+            uint Count      = ((RDLen & 0xFF000) >> 12) + 1;
+            uint Skip       = (RDLen & 0xFFF00000) >> 20;
+
+            uint DramAddr   = ReadUInt32(0x04040004); // SP_DRAM_ADDR_REG
+            uint DestAddr   = 0;
+
+            uint RSPMemAddr = ReadUInt32(0x04040000);
+            string IMEMorDMEM = "DMEM";
+
+            if ((RSPMemAddr & 0x1000) > 0)
+            {
+                DestAddr = (RSPMemAddr & 0xFFF) + 0x04001000;
+                IMEMorDMEM = "IMEM";
+            }
+            else
+                DestAddr = (RSPMemAddr & 0xFFF) + 0x04000000;
+
+            for (uint i = 0; i < Count; ++i)
+            {
+                FastMemoryCopy(DestAddr, DramAddr, (int)ReadLength);
+
+                DramAddr += ReadLength;
+                DestAddr += ReadLength + Skip;
+            }
+
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"SPDMA: Type: Read, ReadLength: {ReadLength}, Count: {Count}, Skip: {Skip}, DestAddr: 0x{RSPMemAddr & 0xFFF:X8}, Memory Type: {IMEMorDMEM}, DramAddr: 0x{DramAddr:X8}");
         }
 
         public void MI_INIT_MODE_WRITE_EVENT()
