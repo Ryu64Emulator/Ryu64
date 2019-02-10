@@ -495,7 +495,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return 0;
 
                 if (Entry.ReadArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not readable.");
+                    return 0;
 
                 return Entry.ReadArray[nonCachedIndex - Entry.StartAddress];
             }
@@ -508,7 +508,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return;
 
                 if (Entry.WriteArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not writable.");
+                    return;
 
                 Entry.WriteArray[nonCachedIndex - Entry.StartAddress] = value;
             }
@@ -527,7 +527,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return result;
 
                 if (Entry.ReadArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not readable.");
+                    return result;
 
                 nonCachedIndex -= Entry.StartAddress;
 
@@ -548,7 +548,7 @@ namespace Ryu64.MIPS
                 if (Entry.StartAddress == uint.MaxValue) return;
 
                 if (Entry.WriteArray == null)
-                    throw new Common.Exceptions.MemoryProtectionViolation($"Memory at \"0x{nonCachedIndex:x8}\" is not writable.");
+                    return;
 
                 nonCachedIndex -= Entry.StartAddress;
 

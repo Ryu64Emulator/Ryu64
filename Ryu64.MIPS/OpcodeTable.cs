@@ -234,7 +234,7 @@ namespace Ryu64.MIPS
                 }
             }
 
-            throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction.  PC: 0x{Registers.R4300.PC:x8}");
+            throw new NotImplementedException($"Instruction \"{Convert.ToString(Opcode, 2).PadLeft(32, '0')}\" isn't a implemented MIPS instruction [RSP = {RSP}, CPU = {CPU}].  PC: 0x{Registers.ReadPC(RSP, CPU):x8}");
         }
 
         private static void SetOpcode(string Encoding, InstInterp.InterpretOpcode Interpret, string FormattedASM = "", uint Cycles = 1, bool RSP = true, bool CPU = true)
