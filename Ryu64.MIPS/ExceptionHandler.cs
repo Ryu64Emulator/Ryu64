@@ -57,6 +57,19 @@ namespace Ryu64.MIPS
                 Registers.R4300.PC = 0x80000180;
         }
 
+        public static void InvokeTrap()
+        {
+            Registers.COP0.Reg[Registers.COP0.EPC_REG] = (R4300.isDelaySlot) ? Registers.R4300.PC : Registers.R4300.PC - 4;
+            Registers.COP0.Reg[Registers.COP0.CAUSE_REG] |= (uint)ExcCode.Tr | ((R4300.isDelaySlot) ? (0x80000000) : 0);
+
+            Common.Logger.PrintWarningLine($"Trap at PC: 0x{Registers.R4300.PC:X8}");
+
+            if ((Registers.COP0.Reg[Registers.COP0.STATUS_REG] & 0b00000000010000000000000000000000) == 0b00000000010000000000000000000000)
+                Registers.R4300.PC = 0xBFC00380;
+            else
+                Registers.R4300.PC = 0x80000180;
+        }
+
         public static void PollInt()
         {
             if ((uint)Registers.COP0.Reg[Registers.COP0.COUNT_REG] == (uint)Registers.COP0.Reg[Registers.COP0.COMPARE_REG])

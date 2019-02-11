@@ -260,7 +260,7 @@ namespace Ryu64.MIPS
 
         public void DPC_END_WRITE_EVENT()
         {
-            RDPWrapper.RDPExec = true;
+            RDPWrapper.RDPThread.Interrupt();
         }
 
         public void PI_WR_LEN_WRITE_EVENT()

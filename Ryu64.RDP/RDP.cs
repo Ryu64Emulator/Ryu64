@@ -85,12 +85,17 @@ namespace Ryu64.RDP
 
             Rasterizer = new SoftwareRasterizer();
 
-            Thread RDPThread = new Thread(() =>
+            MIPS.RDPWrapper.RDPThread = new Thread(() =>
             {
                 while (MIPS.Cores.R4300.R4300_ON)
                 {
-                    if (MIPS.RDPWrapper.RDPExec)
+                    try
                     {
+                        Thread.Sleep(Timeout.Infinite);
+                    }
+                    catch (ThreadInterruptedException)
+                    {
+                        if (!MIPS.Cores.R4300.R4300_ON) break;
                         PC = MIPS.Cores.R4300.memory.ReadUInt32(0x04100000);
                         if (Common.Variables.Debug)
                             Common.Logger.PrintInfoLine($"Starting Command Buffer, 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100000):x8} to 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100004):x8}.");
@@ -172,7 +177,8 @@ namespace Ryu64.RDP
                                     PC += 8;
                                     break;
                                 case 0x35: // Set Tile
-                                    // Stubbed.
+                                    byte Format = (byte)((Instruction & 0x00E0000000000000) >> 53);
+                                    byte Size   = (byte)((Instruction & 0x0018000000000000) >> 51);
                                     PC += 8;
                                     break;
                                 case 0x36: // Fill Rectangle
@@ -223,16 +229,14 @@ namespace Ryu64.RDP
                         }
                         if (Common.Variables.Debug)
                             Common.Logger.PrintInfoLine("Ended command buffer.");
-                        MIPS.RDPWrapper.RDPExec = false;
                         PC = 0;
                     }
-                    Thread.Sleep(1);
                 }
             })
             {
                 Name = "RDP"
             };
-            RDPThread.Start();
+            MIPS.RDPWrapper.RDPThread.Start();
         }
     }
 }

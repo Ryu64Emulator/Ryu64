@@ -72,7 +72,7 @@ namespace Ryu64.Graphics
                 if (PixelSize == 2U)
                 {
                     int limit = Framebuffer.Length - (Framebuffer.Length % 2);
-                    if (limit < 1) throw new Exception("Framebuffer too small to be swapped to Little Endian.");
+                    if (limit < 1) return;
 
                     for (int i = 0; i < limit - 1; i += 2)
                     {

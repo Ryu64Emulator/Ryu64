@@ -16,7 +16,7 @@ namespace Ryu64.Graphics
         private static IRenderer Renderer;
 
         public MainWindow(string GameName) : base(960, 720, GraphicsMode.Default, BaseTitle, 
-            GameWindowFlags.Default, 
+            GameWindowFlags.FixedWindow, 
             DisplayDevice.Default, 
             3, 1,
             GraphicsContextFlags.ForwardCompatible)
@@ -28,7 +28,7 @@ namespace Ryu64.Graphics
         {
             base.OnResize(e);
 
-            GL.Viewport((Width / 2) - (960 / 2), (Height / 2) - (720 / 2), 960, 720);
+            GL.Viewport(0, 0, Width, Height);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -90,6 +90,8 @@ namespace Ryu64.Graphics
 
             MIPS.Cores.R4300.R4300_ON = false;
             MIPS.Cores.RSP.RSP_ON     = false;
+            if (Common.Settings.GRAPHICS_LLE)
+                MIPS.RDPWrapper.RDPThread.Interrupt();
 
             Console.ResetColor();
         }

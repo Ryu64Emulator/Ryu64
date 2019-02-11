@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Threading;
 
 namespace Ryu64.MIPS
 {
     public class RDPWrapper
     {
-        public static bool RDPExec = false;
+        public static Thread RDPThread;
     }
 }

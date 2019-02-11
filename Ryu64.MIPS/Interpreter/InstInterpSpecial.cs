@@ -28,11 +28,19 @@ namespace Ryu64.MIPS.Interpreter
             Registers.R4300.PC += 4;
         }
 
+        public static void TEQ(OpcodeTable.OpcodeDesc Desc)
+        {
+            if ((uint)Registers.R4300.Reg[Desc.op1] == (uint)Registers.R4300.Reg[Desc.op2])
+                ExceptionHandler.InvokeTrap();
+            Registers.R4300.PC += 4;
+        }
+
         public static void BREAK(OpcodeTable.OpcodeDesc Desc)
         {
             if (Desc.CPU)
             {
                 ExceptionHandler.InvokeBreak();
+                Registers.R4300.PC += 4;
                 return;
             }
 
@@ -41,6 +49,7 @@ namespace Ryu64.MIPS.Interpreter
 
             if ((Cores.R4300.memory.ReadUInt32(0x04040010) & 0x40) > 0)
                 MI.InvokeSPInterrupt();
+            Registers.RSPReg.PC += 4;
         }
     }
 }

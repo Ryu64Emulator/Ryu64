@@ -119,6 +119,9 @@ namespace Ryu64.GUI
         private static uint   MemoryViewer_CurrAddr = 0;
         private static byte[] MemoryViewer_AddrBuf  = new byte[1024];
 
+        private static uint   Disasm_CurrAddr = 0;
+        private static byte[] Disasm_AddrBuf = new byte[1024];
+
         private static string DefaultPath = AppDomain.CurrentDomain.BaseDirectory;
 
         private static IEnumerable<string> Roms;
@@ -425,6 +428,9 @@ namespace Ryu64.GUI
 
                         if (ImGui.MenuItem("TLB Entries"))
                             WindowOpenState[10] = true;
+
+                        if (ImGui.MenuItem("Disassembler"))
+                            WindowOpenState[11] = true;
                         ImGui.EndMenu();
                     }
 
@@ -603,6 +609,7 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[10])
             {
+                if (!MIPS.Cores.R4300.R4300_ON) WindowOpenState[10] = false;
                 if (ImGui.Begin("TLB Entries", ref WindowOpenState[10], ImGuiWindowFlags.NoCollapse))
                 {
                     ImGui.Text("TLB Entries");
@@ -625,6 +632,52 @@ namespace Ryu64.GUI
                         ImGui.Text($"  Valid:         0x{Entry.Valid1:X2}");
                         ImGui.Text($"  Global:        0x{Entry.Global1:X2}");
                         ImGui.Separator();
+                    }
+
+                    ImGui.End();
+                }
+            }
+
+            if (WindowOpenState[11])
+            {
+                if (!MIPS.Cores.R4300.R4300_ON) WindowOpenState[11] = false;
+                ImGui.SetNextWindowSizeConstraints(new Vector2(570, 430), new Vector2(2048, 2048));
+                if (ImGui.Begin("Disassembler", ref WindowOpenState[11], ImGuiWindowFlags.NoCollapse))
+                {
+                    if (Disasm_AddrBuf[0] == 0)
+                    {
+                        string AddrStr = "00000000";
+
+                        byte[] AddrStrBytes = Encoding.Default.GetBytes(AddrStr);
+
+                        Buffer.BlockCopy(AddrStrBytes, 0, Disasm_AddrBuf, 0, AddrStrBytes.Length);
+                    }
+
+                    ImGui.Text("Address: 0x");
+                    ImGui.SameLine();
+                    ImGui.InputText("##Address", Disasm_AddrBuf, (uint)Disasm_AddrBuf.Length, ImGuiInputTextFlags.CharsHexadecimal);
+
+                    ImGui.SameLine();
+                    if (ImGui.Button("Go"))
+                        Disasm_CurrAddr = uint.Parse(Encoding.Default.GetString(Disasm_AddrBuf).Split('\0')[0], NumberStyles.HexNumber);
+
+
+                    for (uint i = 0; i < 128; ++i)
+                    {
+                        byte[] Inst = new byte[4];
+                        uint InstAddr = Disasm_CurrAddr + (i * 4);
+                        Inst = MIPS.Cores.R4300.memory[InstAddr, 4, false];
+                        uint InstInt = (uint)(Inst[3] | (Inst[2] << 8) | (Inst[1] << 16) | (Inst[0] << 24));
+                        try
+                        {
+                            MIPS.OpcodeTable.InstInfo   Info = MIPS.OpcodeTable.GetOpcodeInfo (InstInt, true, true);
+                            MIPS.OpcodeTable.OpcodeDesc Desc = new MIPS.OpcodeTable.OpcodeDesc(InstInt, true, true);
+                            ImGui.Text($"0x{InstAddr:X8}: {string.Format(Info.FormattedASM, Desc.op1, Desc.op2, Desc.op3, Desc.op4, Desc.Imm, Desc.Target)}");
+                        }
+                        catch (Exception)
+                        {
+                            ImGui.Text($"$0x{InstAddr:X8}: UNKNOWN");
+                        }
                     }
 
                     ImGui.End();
