@@ -13,7 +13,10 @@ namespace Ryu64.MIPS.Interpreter
                 return;
             }
             else if (RSP)
-                throw new NotImplementedException("The RSP is not implemented yet.");
+            {
+                Cores.RSP.InterpretOpcode(R4300.memory.ReadIMEMInstruction(Registers.RSPReg.PC));
+                return;
+            }
 
             throw new ArgumentException("While executing a Delay Slot RSP nor CPU was true.");
         }

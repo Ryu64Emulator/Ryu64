@@ -50,6 +50,7 @@ namespace Ryu64.Graphics
         }
 
         bool LastFrameF11;
+        bool LastFrameF1;
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
@@ -57,7 +58,8 @@ namespace Ryu64.Graphics
 
             Renderer.Update();
 
-            Title = $"{BaseTitle} | {GameName} | FPS: {RenderFrequency:N2} | CPU MHz: {Common.Variables.CPUMHz:N2}";
+            string Paused = Common.Variables.Pause ? " | Paused" : "";
+            Title = $"{BaseTitle} | {GameName} | FPS: {RenderFrequency:N2} | CPU MHz: {Common.Variables.CPUMHz:N2}{Paused}";
 
             KeyboardState KeyboardState = Keyboard.GetState();
 
@@ -67,8 +69,12 @@ namespace Ryu64.Graphics
                     WindowState = WindowState.Fullscreen;
                 else
                     WindowState = WindowState.Normal;
+            if (LastFrameF1 && KeyboardState.IsKeyUp(Key.F1) && Common.Variables.Pause)
+                Common.Variables.Step = true;
+            
 
             LastFrameF11 = KeyboardState.IsKeyDown(Key.F11);
+            LastFrameF1  = KeyboardState.IsKeyDown(Key.F1);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

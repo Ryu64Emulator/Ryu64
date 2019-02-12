@@ -416,6 +416,22 @@ namespace Ryu64.GUI
                     ImGui.EndMenu();
                 }
 
+                if (ImGui.BeginMenu("State"))
+                {
+                    string Paused = Common.Variables.Pause ? " (Paused)" : "";
+                    if (ImGui.MenuItem($"Pause/Resume{Paused}"))
+                    {
+                        Common.Variables.Pause = !Common.Variables.Pause;
+                    }
+
+                    if (ImGui.MenuItem("Step", "F1", false, Common.Variables.Pause && MIPS.Cores.R4300.R4300_ON))
+                    {
+                        Common.Variables.Step = true;
+                    }
+
+                    ImGui.EndMenu();
+                }
+
                 if (ImGui.BeginMenu("View"))
                 {
                     if (ImGui.BeginMenu("Debugger", MIPS.Cores.R4300.R4300_ON))
@@ -578,7 +594,6 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[3])
             {
-                if (!MIPS.Cores.R4300.R4300_ON) WindowOpenState[3] = false;
                 ImGui.SetNextWindowSizeConstraints(new Vector2(256, 550), new Vector2(2048, 2048));
                 if (ImGui.Begin("Register Viewer", ref WindowOpenState[3]))
                 {
@@ -602,6 +617,18 @@ namespace Ryu64.GUI
                     ImGui.Text($"RSPCOP0: (Halted = {MIPS.Cores.RSP.RSP_HALT})");
                     for (uint i = 0; i < MIPS.Registers.RSPCOP0.Reg.Length; ++i)
                         ImGui.Text($" RSPC0R[{i}]: 0x{MIPS.Registers.RSPCOP0.Reg[i]:X16}");
+                    ImGui.Separator();
+                    ImGui.Text($"RSPCOP2: (Halted = {MIPS.Cores.RSP.RSP_HALT})");
+                    for (uint i = 0; i < MIPS.Registers.RSPCOP2.Reg.Length; ++i)
+                    {
+                        ImGui.Text($" RSPC2R[{i}]: ");
+                        for (uint j = 0; j < 8; ++j)
+                        {
+                            ImGui.SameLine();
+                            if (j == 7) ImGui.Text($"{MIPS.Registers.RSPCOP2.Reg[i].GetElement(j * 2):X4}");
+                            else ImGui.Text($"{MIPS.Registers.RSPCOP2.Reg[i].GetElement(j * 2):X4}|");
+                        }
+                    }
 
                     ImGui.End();
                 }
@@ -609,7 +636,6 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[10])
             {
-                if (!MIPS.Cores.R4300.R4300_ON) WindowOpenState[10] = false;
                 if (ImGui.Begin("TLB Entries", ref WindowOpenState[10], ImGuiWindowFlags.NoCollapse))
                 {
                     ImGui.Text("TLB Entries");
@@ -640,7 +666,6 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[11])
             {
-                if (!MIPS.Cores.R4300.R4300_ON) WindowOpenState[11] = false;
                 ImGui.SetNextWindowSizeConstraints(new Vector2(570, 430), new Vector2(2048, 2048));
                 if (ImGui.Begin("Disassembler", ref WindowOpenState[11], ImGuiWindowFlags.NoCollapse))
                 {
@@ -672,7 +697,9 @@ namespace Ryu64.GUI
                         {
                             MIPS.OpcodeTable.InstInfo   Info = MIPS.OpcodeTable.GetOpcodeInfo (InstInt, true, true);
                             MIPS.OpcodeTable.OpcodeDesc Desc = new MIPS.OpcodeTable.OpcodeDesc(InstInt, true, true);
-                            ImGui.Text($"0x{InstAddr:X8}: {string.Format(Info.FormattedASM, Desc.op1, Desc.op2, Desc.op3, Desc.op4, Desc.Imm, Desc.Target)}");
+                            if (MIPS.Registers.R4300.PC == InstAddr && Common.Variables.Pause) ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
+                            ImGui.Text($"0x{InstAddr:X8}: {string.Format(Info.FormattedASM, Desc.op1, Desc.op2, Desc.op3, Desc.op4, Desc.Imm, Desc.Target, Desc.VOff, Desc.Ve)}");
+                            if (MIPS.Registers.R4300.PC == InstAddr && Common.Variables.Pause) ImGui.PopStyleColor();
                         }
                         catch (Exception)
                         {

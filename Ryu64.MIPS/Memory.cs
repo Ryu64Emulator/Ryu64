@@ -295,6 +295,8 @@ namespace Ryu64.MIPS
             else
                 SourceAddr = (RSPMemAddr & 0xFFF) + 0x04000000;
 
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"SPDMA: Type: Write, WriteLength: {WriteLength}, Count: {Count}, Skip: {Skip}, SourceAddr: 0x{RSPMemAddr & 0xFFF:X8}, Memory Type: {IMEMorDMEM}, DramAddr: 0x{DramAddr:X8}");
+
             for (uint i = 0; i < Count; ++i)
             {
                 FastMemoryCopy(DramAddr, SourceAddr, (int)WriteLength);
@@ -302,8 +304,6 @@ namespace Ryu64.MIPS
                 DramAddr   += WriteLength + Skip;
                 SourceAddr += WriteLength;
             }
-
-            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"SPDMA: Type: Write, WriteLength: {WriteLength}, Count: {Count}, Skip: {Skip}, SourceAddr: 0x{RSPMemAddr & 0xFFF:X8}, Memory Type: {IMEMorDMEM}, DramAddr: 0x{DramAddr:X8}");
         }
 
         public void SP_RD_LEN_WRITE_EVENT()
@@ -327,6 +327,8 @@ namespace Ryu64.MIPS
             else
                 DestAddr = (RSPMemAddr & 0xFFF) + 0x04000000;
 
+            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"SPDMA: Type: Read, ReadLength: {ReadLength}, Count: {Count}, Skip: {Skip}, DestAddr: 0x{RSPMemAddr & 0xFFF:X8}, Memory Type: {IMEMorDMEM}, DramAddr: 0x{DramAddr:X8}");
+
             for (uint i = 0; i < Count; ++i)
             {
                 FastMemoryCopy(DestAddr, DramAddr, (int)ReadLength);
@@ -334,8 +336,6 @@ namespace Ryu64.MIPS
                 DramAddr += ReadLength;
                 DestAddr += ReadLength + Skip;
             }
-
-            if (Common.Variables.Debug) Common.Logger.PrintInfoLine($"SPDMA: Type: Read, ReadLength: {ReadLength}, Count: {Count}, Skip: {Skip}, DestAddr: 0x{RSPMemAddr & 0xFFF:X8}, Memory Type: {IMEMorDMEM}, DramAddr: 0x{DramAddr:X8}");
         }
 
         public void MI_INIT_MODE_WRITE_EVENT()

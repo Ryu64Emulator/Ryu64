@@ -19,6 +19,8 @@ namespace Ryu64.MIPS.Cores
 
         public static void InterpretOpcode(uint Opcode)
         {
+            if (Registers.RSPReg.Reg[0] != 0) Registers.RSPReg.Reg[0] = 0;
+
             Registers.RSPCOP0.Reg[0]  = R4300.memory.ReadUInt32(0x04040000);
             Registers.RSPCOP0.Reg[1]  = R4300.memory.ReadUInt32(0x04040004);
             Registers.RSPCOP0.Reg[2]  = R4300.memory.ReadUInt32(0x04040008);
@@ -48,11 +50,19 @@ namespace Ryu64.MIPS.Cores
 
         public static void PowerOnRSP()
         {
+            for (uint i = 0; i < Registers.RSPReg.Reg.Length; ++i)
+                Registers.RSPReg.Reg[i] = 0;
+            for (uint i = 0; i < Registers.RSPCOP0.Reg.Length; ++i)
+                Registers.RSPCOP0.Reg[i] = 0;
+            for (uint i = 0; i < Registers.RSPCOP2.Reg.Length; ++i)
+                Registers.RSPCOP2.Reg[i] = new VectorRegister();
+
             RSP_ON = true;
             Thread RSPThread = new Thread(() =>
             {
                 while (RSP_ON)
                 {
+                    while (Common.Variables.Pause && !Common.Variables.Step && RSP_ON);
                     if (!RSP_HALT)
                     {
                         uint Opcode = R4300.memory.ReadIMEMInstruction(Registers.RSPReg.PC);
@@ -60,6 +70,7 @@ namespace Ryu64.MIPS.Cores
                     }
                     else
                         Thread.Sleep(2);
+                    Common.Variables.Step = false;
                 }
             })
             {

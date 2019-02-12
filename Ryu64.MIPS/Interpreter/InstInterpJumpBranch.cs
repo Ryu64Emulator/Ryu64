@@ -5,8 +5,9 @@
         public static void BEQ(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            bool Cond = (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) == (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) == (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
+            if (Cond)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
@@ -32,25 +33,28 @@
         public static void BGEZAL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            bool Cond = (int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) >= 0;
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
             Registers.SetMainReg(31, Registers.ReadPC(Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
-            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) >= 0)
+            if (Cond)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
         public static void BGTZ(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            bool Cond = (int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) > 0;
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) > 0)
+            if (Cond)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
         public static void BLEZ(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            bool Cond = (int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0;
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
+            if (Cond)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
@@ -68,25 +72,28 @@
         public static void BLTZ(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            bool Cond = (int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0;
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
+            if (Cond)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
         public static void BLTZAL(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            bool Cond = (int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0;
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
             Registers.SetMainReg(31, Registers.ReadPC(Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
-            if ((int)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) <= 0)
+            if (Cond)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 
         public static void BNE(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            bool Cond = (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) != (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            if ((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) != (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU))
+            if (Cond)
                 Registers.SetPC((uint)((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) + (short)(Desc.Imm << 2)), Desc.RSP, Desc.CPU);
         }
 

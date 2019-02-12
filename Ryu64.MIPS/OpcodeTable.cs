@@ -41,6 +41,8 @@ namespace Ryu64.MIPS
             public byte   op4;
             public ushort Imm;
             public uint   Target;
+            public byte   VOff;
+            public byte   Ve;
 
             public bool RSP;
             public bool CPU;
@@ -55,6 +57,8 @@ namespace Ryu64.MIPS
                 op4                = (byte)  ((Opcode & 0b00000000000000000000011111000000) >> 6);
                 Imm                = (ushort)((Opcode & 0b00000000000000001111111111111111));
                 Target             =         ((Opcode & 0b00000011111111111111111111111111));
+                VOff               = (byte)  ((Opcode & 0b00000000000000000000000001111111));
+                Ve                 = (byte)  ((Opcode & 0b00000001111000000000000000000000) >> 21);
 
                 this.RSP = RSP;
                 this.CPU = CPU;
@@ -79,6 +83,8 @@ namespace Ryu64.MIPS
                 {3} is the op4 part of a OpcodeDesc
                 {4} is the Imm part of a OpcodeDesc
                 {5} is the Target part of a OpcodeDesc
+                {6} is the VOff part of a OpcodeDesc
+                {7} is the Ve part of a OpcodeDesc
             */
 
             // Other Instructions
@@ -175,9 +181,14 @@ namespace Ryu64.MIPS
             SetOpcode("01000100010XXXXXXXXXX00000000000", InstInterp.CFC1, "CFC1 R[{1}], CP1R[{2}]", 1, false, true);
             SetOpcode("01000100110XXXXXXXXXX00000000000", InstInterp.CTC1, "CTC1 R[{1}], CP1R[{2}]", 1, false, true);
 
+            // COP2 (VU) Instructions
+            SetOpcode("110010XXXXXXXXXX001000000XXXXXXX", InstInterp.LQV,   "LQV VR[{1}][0], 0x{6:x4}(R[{0}])",     1, true, false);
+            SetOpcode("111010XXXXXXXXXX001000000XXXXXXX", InstInterp.SQV,   "SQV VR[{1}][0], 0x{6:x4}(R[{0}])",     1, true, false);
+            SetOpcode("0100101XXXXXXXXXXXXXXXXXXX010101", InstInterp.VSUBC, "VSUBC VR[{4}], VR[{3}], VR[{2}][{7}]", 1, true, false);
+
             // SPECIAL Instructions
             SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001100", InstInterp.SYSCALL, "SYSCALL", 1, false, true);
-            SetOpcode("000000XXXXXXXXXXXXXXXXXXXX110100", InstInterp.TEQ, "TEQ R[{0}], R[{1}]", 1, false, true);
+            SetOpcode("000000XXXXXXXXXXXXXXXXXXXX110100", InstInterp.TEQ,     "TEQ R[{0}], R[{1}]", 1, false, true);
             // BREAK is different on the RSP.
             SetOpcode("000000XXXXXXXXXXXXXXXXXXXX001101", InstInterp.BREAK, "BREAK");
             // According to the manual, the SYNC instruction is executed as a NOP on the VR4300.

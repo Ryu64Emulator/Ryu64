@@ -101,6 +101,7 @@ namespace Ryu64.RDP
                             Common.Logger.PrintInfoLine($"Starting Command Buffer, 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100000):x8} to 0x{MIPS.Cores.R4300.memory.ReadUInt32(0x04100004):x8}.");
                         while (PC < MIPS.Cores.R4300.memory.ReadUInt32(0x04100004))
                         {
+                            while (Common.Variables.Pause && !Common.Variables.Step && MIPS.Cores.R4300.R4300_ON);
                             ulong Instruction = MIPS.Cores.R4300.memory.ReadUInt64(PC);
                             byte Command = (byte)(((Instruction & 0xFF00000000000000) >> 56) & 0xFF);
                             if (Common.Variables.Debug)
@@ -226,6 +227,7 @@ namespace Ryu64.RDP
                                 default:
                                     throw new NotImplementedException($"Command 0x{Command:x2} is not an implemented RDP command.  PC: 0x{PC:x8}");
                             }
+                            Common.Variables.Step = false;
                         }
                         if (Common.Variables.Debug)
                             Common.Logger.PrintInfoLine("Ended command buffer.");

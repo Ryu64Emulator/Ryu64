@@ -13,12 +13,14 @@ namespace Ryu64.MIPS
             {
                 while (R4300.R4300_ON)
                 {
+                    while (Common.Variables.Pause && !Common.Variables.Step && R4300.R4300_ON);
                     R4300.memory.WriteScanline(CurrentScanline);
                     MI.PollVIInterrupt(CurrentScanline);
                     ++CurrentScanline;
                     if (CurrentScanline >= R4300.memory.ReadUInt32(0x04400018))
                         CurrentScanline = 0;
                     Thread.Sleep(2);
+                    Common.Variables.Step = false;
                 }
             })
             {

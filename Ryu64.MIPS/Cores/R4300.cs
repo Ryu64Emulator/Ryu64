@@ -164,6 +164,13 @@ namespace Ryu64.MIPS.Cores
             uint osVersion = 0; // 00 = 1.0, 15 = 2.5, etc.
             uint TVType    = (uint)TVtype;
 
+            for (uint i = 0; i < Registers.R4300.Reg.Length; ++i)
+                Registers.R4300.Reg[i] = 0;
+            for (uint i = 0; i < Registers.COP0.Reg.Length; ++i)
+                Registers.COP0.Reg[i] = 0;
+            for (uint i = 0; i < Registers.COP1.Reg.Length; ++i)
+                Registers.COP1.Reg[i] = 0;
+
             Registers.R4300.Reg[1]  = 0x0000000000000001;
             Registers.R4300.Reg[2]  = 0x000000000EBDA536;
             Registers.R4300.Reg[3]  = 0x000000000EBDA536;
@@ -210,12 +217,23 @@ namespace Ryu64.MIPS.Cores
                 Common.Measure.MeasureTime.Start();
                 while (R4300_ON)
                 {
+                    while (Common.Variables.Pause && !Common.Variables.Step && R4300_ON)
+                    {
+                        if (Common.Measure.MeasureTime.IsRunning) Common.Measure.MeasureTime.Stop();
+                    }
+                    if (!Common.Measure.MeasureTime.IsRunning) Common.Measure.MeasureTime.Start();
+
                     uint Opcode = memory.ReadUInt32(Registers.R4300.PC);
                     InterpretOpcode(Opcode);
 
                     Common.Variables.CPUMHz = (Common.Measure.CycleCounter / 1000000) / Common.Measure.MeasureTime.Elapsed.TotalSeconds;
+                    Common.Variables.Step = false;
                 }
-                Common.Measure.MeasureTime.Stop();
+                Common.Measure.MeasureTime.Reset();
+                Common.Measure.CycleCounter     = 0;
+                Common.Measure.InstructionCount = 0;
+                CycleCounter = 0;
+                Count = 0;
             })
             {
                 Name = "R4300"

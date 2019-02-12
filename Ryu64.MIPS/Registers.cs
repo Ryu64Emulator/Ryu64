@@ -105,12 +105,6 @@ namespace Ryu64.MIPS
             public static ulong LO;
             public static uint  PC;
             public static byte  LLbit;
-
-            public static void PrintRegisterInfo()
-            {
-                for (uint i = 0; i < Reg.Length; ++i)
-                    Common.Logger.PrintInfoLine($"R[{i}]: 0x{Reg[i]:x16}");
-            }
         }
 
         public class COP0
@@ -149,12 +143,6 @@ namespace Ryu64.MIPS
             public const int RESERVED6_REG = 0x1F;
 
             public static ulong[] Reg = new ulong[32];
-
-            public static void PrintRegisterInfo()
-            {
-                for (int i = 0; i < Reg.Length; ++i)
-                    Common.Logger.PrintInfoLine($"CP0R[{i}]: 0x{Reg[i]:x16}");
-            }
         }
 
         public class RSPReg
@@ -171,34 +159,25 @@ namespace Ryu64.MIPS
                     Cores.R4300.memory.WriteUInt32(0x04080000, (uint)value & 0xFFF);
                 }
             }
-
-            public static void PrintRegisterInfo()
-            {
-                for (uint i = 0; i < Reg.Length; ++i)
-                    Common.Logger.PrintInfoLine($"RSPR[{i}]: 0x{Reg[i]:x16}");
-            }
         }
 
         public class RSPCOP0
         {
             public static uint[] Reg = new uint[16];
+        }
 
-            public static void PrintRegisterInfo()
-            {
-                for (int i = 0; i < Reg.Length; ++i)
-                    Common.Logger.PrintInfoLine($"RSPCP0R[{i}]: 0x{Reg[i]:x16}");
-            }
+        public class RSPCOP2
+        {
+            public static ushort  VCC;
+            public static ushort  VCO;
+            public static byte    VCE;
+            public static ulong[] ACC = new ulong[8];
+            public static VectorRegister[] Reg = new VectorRegister[32];
         }
 
         public class COP1
         {
             public static ulong[] Reg = new ulong[32];
-
-            public static void PrintRegisterInfo()
-            {
-                for (int i = 0; i < Reg.Length; ++i)
-                    Common.Logger.PrintInfoLine($"CP1R[{i}]: {Reg[i]}");
-            }
         }
     }
 }
