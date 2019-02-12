@@ -367,15 +367,23 @@ namespace Ryu64.GUI
 
                     if (ImGui.Button("Ok"))
                     {
+                        bool Cond;
                         if (FileSelect)
-                        {
-                            WindowOpen = string.IsNullOrEmpty(FilePath);
-                            Result     = !string.IsNullOrEmpty(FilePath);
-                        }
+                            Cond = File.Exists(FilePath);
                         else
+                            Cond = Directory.Exists(FilePath);
+                        if (Cond)
                         {
-                            WindowOpen = false;
-                            Result     = true;
+                            if (FileSelect)
+                            {
+                                WindowOpen = string.IsNullOrEmpty(FilePath);
+                                Result = !string.IsNullOrEmpty(FilePath);
+                            }
+                            else
+                            {
+                                WindowOpen = false;
+                                Result = true;
+                            }
                         }
                     }
 
