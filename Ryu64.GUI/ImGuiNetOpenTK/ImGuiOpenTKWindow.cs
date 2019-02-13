@@ -20,7 +20,6 @@ namespace ImGuiOpenTK
         protected readonly bool _IsSuperClass;
 
         protected readonly bool[] g_MousePressed = { false, false, false };
-        protected float g_MouseWheel = 0.0f;
         protected int g_FontTexture = 0;
         protected IntPtr GuiContext;
         protected MouseState _mouse;
@@ -106,10 +105,8 @@ namespace ImGuiOpenTK
                 io.MouseDown[1] = _mouse.RightButton == ButtonState.Pressed;
                 io.MouseDown[2] = _mouse.MiddleButton == ButtonState.Pressed;
 
-                float newWheelPos = _mouse.WheelPrecise;
-                float delta = newWheelPos - g_MouseWheel;
-                g_MouseWheel = newWheelPos;
-                io.MouseWheel += delta;
+                // We should update the Mouse wheel here, but in my testing I couldn't get it to work nicely.
+                // If anyone wants to they can attempt to get it working here.
             }
         }
 

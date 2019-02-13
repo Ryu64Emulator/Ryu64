@@ -64,6 +64,8 @@ namespace Ryu64.GUI
             Graphics.Start();
         }
 
+        private ImFontPtr Font;
+
         private bool[] WindowOpenState;
 
         private string FileDialogRom_CurrPath;
@@ -133,6 +135,10 @@ namespace Ryu64.GUI
             Roms        = new string[1];
             LoadIni();
             ReloadRoms();
+
+            ImGuiIOPtr IO = ImGui.GetIO();
+
+            Font = IO.Fonts.AddFontFromFileTTF($"{AppDomain.CurrentDomain.BaseDirectory}Fonts/Roboto-Regular.ttf", 15);
         }
 
         private unsafe void MemoryViewer(ref uint Addr, ref bool WindowOpen, ref byte[] AddrBuf, string WindowTitle)
@@ -421,14 +427,14 @@ namespace Ryu64.GUI
                     }
 
                     // For Debugging the GUI only.
-                    /*
+                    
                     if (ImGui.BeginMenu("ImGui"))
                     {
                         if (ImGui.MenuItem("Style Editor"))
                             WindowOpenState[4] = true;
                         ImGui.EndMenu();
                     }
-                    */
+                    
                     ImGui.EndMenu();
                 }
 
@@ -444,6 +450,8 @@ namespace Ryu64.GUI
 
         private unsafe void SubmitUI()
         {
+            ImGui.PushFont(Font);
+
             ImGui.StyleColorsDark();
 
             ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarSize,     15);
@@ -722,6 +730,7 @@ namespace Ryu64.GUI
 
             ImGui.PopStyleVar();
             ImGui.PopStyleColor();
+            ImGui.PopFont();
         }
     }
 }

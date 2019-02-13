@@ -34,7 +34,10 @@ namespace Ryu64.Graphics
 
         public void Cleanup()
         {
-            GL.DeleteTexture(FramebufferTexture);
+            // This seems to delete the Font Atlas in the GUI?
+            // Probably tries to use the same Texture slot for the Framebuffer as the Font Atlas, thus I have commented out the delete texture.
+            // Technically this could build up over time, but this should(?) only happen if the user runs the Emulator many times in one sitting without closing it.
+            //GL.DeleteTexture(FramebufferTexture);
         }
 
         private bool firstLoop = true;
