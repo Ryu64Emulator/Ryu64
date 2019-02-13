@@ -1,11 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Platform;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace ImGuiOpenTK
 {
@@ -13,9 +9,7 @@ namespace ImGuiOpenTK
     {
 
         protected IntPtr _GLContext;
-        public IntPtr GLContext => _GLContext;
-
-        //public GameWindowFlags Flags =>;
+        public IntPtr    GLContext => _GLContext;
 
         public Action<OpenTKWindow> OnLoop;
         public bool IsAlive = false;

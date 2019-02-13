@@ -123,11 +123,19 @@
             Registers.SetPC(((Registers.ReadPC(Desc.RSP, Desc.CPU) - 4) & 0xF0000000) | (Desc.Target << 2), Desc.RSP, Desc.CPU);
         }
 
+        public static void JALR(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
+            Registers.SetMainReg(Desc.op3, Registers.ReadPC(Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+            Registers.SetPC((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
+        }
+
         public static void JR(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
             InstructionHelper.ExecuteDelaySlot(Desc.RSP, Desc.CPU);
-            Registers.SetPC((uint)(Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) & 0xFFFFFFFF), Desc.RSP, Desc.CPU);
+            Registers.SetPC((uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
         }
     }
 }

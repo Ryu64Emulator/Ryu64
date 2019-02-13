@@ -1,12 +1,9 @@
 ﻿using ImGuiNET;
 using OpenTK;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using System.IO;
-using OpenTK.Graphics;
 
 /*
 Based off of this implementation and heavily modified to work with new versions of ImGUI.NET and OpenTK:
@@ -18,9 +15,10 @@ namespace ImGuiOpenTK
     public class ImGuiOpenTKWindow : OpenTKWindow
     {
         protected readonly bool[] g_MousePressed = { false, false, false };
-        protected int g_FontTexture = 0;
-        protected float g_MouseWheel = 0.0f;
-        protected IntPtr GuiContext;
+
+        protected int        g_FontTexture = 0;
+        protected float      g_MouseWheel = 0.0f;
+        protected IntPtr     GuiContext;
         protected MouseState _mouse;
 
         public System.Numerics.Vector2 Position

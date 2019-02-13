@@ -125,7 +125,9 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXXXXXXX00000100100", InstInterp.AND,    "AND R[{2}], R[{0}], R[{1}]");
             SetOpcode("001100XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.ANDI,   "ANDI R[{1}], R[{0}], 0x{4:x4}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100010", InstInterp.SUB,    "SUB R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000101110", InstInterp.DSUB,   "DSUB R[{2}], R[{0}], R[{1}]", 1, false, true);
             SetOpcode("000000XXXXXXXXXXXXXXX00000100011", InstInterp.SUBU,   "SUBU R[{2}], R[{0}], R[{1}]");
+            SetOpcode("000000XXXXXXXXXXXXXXX00000101111", InstInterp.DSUBU,  "DSUBU R[{2}], R[{0}], R[{1}]", 1, false, true);
             SetOpcode("000000XXXXXXXXXXXXXXX00000100111", InstInterp.NOR,    "NOR R[{2}], R[{0}], R[{1}]");
             SetOpcode("000000XXXXXXXXXXXXXXX00000100110", InstInterp.XOR,    "XOR R[{2}], R[{0}], R[{1}]");
             SetOpcode("001110XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.XORI,   "XORI R[{1}], R[{0}], 0x{4:x4}");
@@ -144,10 +146,12 @@ namespace Ryu64.MIPS
             SetOpcode("000000XXXXXXXXXX0000000000011110", InstInterp.DDIV,   "DDIV R[{0}], R[{1}]",   69, false, true);
             SetOpcode("000000XXXXXXXXXX0000000000011111", InstInterp.DDIVU,  "DDIVU R[{0}], R[{1}]",  69, false, true);
             SetOpcode("00000000000XXXXXXXXXXXXXXX000000", InstInterp.SLL,    "SLL R[{2}], R[{1}], 0x{3:x2}");
+            SetOpcode("00000000000XXXXXXXXXXXXXXX111000", InstInterp.DSLL,   "DSLL R[{2}], R[{1}], 0x{3:x2}", 1, false, true);
             SetOpcode("00000000000XXXXXXXXXXXXXXX111100", InstInterp.DSLL32, "DSLL32 R[{2}], R[{1}], 0x{3:x2}", 1, false, true);
             SetOpcode("000000XXXXXXXXXXXXXXX00000000100", InstInterp.SLLV,   "SLLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("00000000000XXXXXXXXXXXXXXX000011", InstInterp.SRA,    "SRA R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("00000000000XXXXXXXXXXXXXXX111111", InstInterp.DSRA32, "DSRA32 R[{2}], R[{1}], 0x{3:x2}", 1, false, true);
+            SetOpcode("00000000000XXXXXXXXXXXXXXX111110", InstInterp.DSRL32, "DSRL32 R[{2}], R[{1}], 0x{3:x2}", 1, false, true);
             SetOpcode("00000000000XXXXXXXXXXXXXXX000010", InstInterp.SRL,    "SRL R[{2}], R[{1}], 0x{3:x2}");
             SetOpcode("000000XXXXXXXXXXXXXXX00000000110", InstInterp.SRLV,   "SRLV R[{2}], R[{1}], R[{0}]");
             SetOpcode("001010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SLTI,   "SLTI R[{1}], R[{0}], 0x{4:x4}");
@@ -169,6 +173,7 @@ namespace Ryu64.MIPS
             SetOpcode("010101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.BNEL,   "BNEL R[{0}], R[{1}], 0x{4:x4}", 1, false, true);
             SetOpcode("000010XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.J,      "J 0x{5:x8}");
             SetOpcode("000011XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.JAL,    "JAL 0x{5:x8}");
+            SetOpcode("000000XXXXX00000XXXXX00000001001", InstInterp.JALR,   "JALR R[{2}], R[{0}]");
             SetOpcode("000000XXXXX000000000000000001000", InstInterp.JR,     "JR R[{0}]");
 
             // COP0 Instructions
@@ -178,8 +183,11 @@ namespace Ryu64.MIPS
             SetOpcode("01000010000000000000000000011000", InstInterp.ERET,  "ERET", 1, false, true);
 
             // COP1 Instructions
-            SetOpcode("01000100010XXXXXXXXXX00000000000", InstInterp.CFC1, "CFC1 R[{1}], CP1R[{2}]", 1, false, true);
-            SetOpcode("01000100110XXXXXXXXXX00000000000", InstInterp.CTC1, "CTC1 R[{1}], CP1R[{2}]", 1, false, true);
+            SetOpcode("111101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.SDC1,  "SDC1 CP1R[{1}], 0x{4:x4}(R[{0}])", 1, false, true);
+            SetOpcode("110101XXXXXXXXXXXXXXXXXXXXXXXXXX", InstInterp.LDC1,  "LDC1 CP1R[{1}], 0x{4:x4}(R[{0}])", 1, false, true);
+            SetOpcode("01000100101XXXXXXXXXX00000000000", InstInterp.DMTC1, "DMTC1 R[{1}], CP1R[{2}]", 1, false, true);
+            SetOpcode("01000100010XXXXXXXXXX00000000000", InstInterp.CFC1,  "CFC1 R[{1}], CP1R[{2}]", 1, false, true);
+            SetOpcode("01000100110XXXXXXXXXX00000000000", InstInterp.CTC1,  "CTC1 R[{1}], CP1R[{2}]", 1, false, true);
 
             // COP2 (VU) Instructions
             SetOpcode("110010XXXXXXXXXX001000000XXXXXXX", InstInterp.LQV,   "LQV VR[{1}][0], 0x{6:x4}(R[{0}])",     1, true, false);

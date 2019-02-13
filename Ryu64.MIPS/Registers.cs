@@ -109,6 +109,14 @@ namespace Ryu64.MIPS
 
         public class COP0
         {
+            public static bool FR_STATUS
+            {
+                get
+                {
+                    return (Reg[STATUS_REG] & 0x4000000) > 0;
+                }
+            }
+
             public const int INDEX_REG     = 0x0;
             public const int RANDOM_REG    = 0x1;
             public const int ENTRYLO0_REG  = 0x2;

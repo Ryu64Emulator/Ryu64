@@ -70,10 +70,22 @@ namespace Ryu64.MIPS.Interpreter
             SUBU(Desc);
         }
 
+        public static void DSUB(OpcodeTable.OpcodeDesc Desc)
+        {
+            // TODO: Correctly check for underflow\
+            DSUBU(Desc);
+        }
+
         public static void SUBU(OpcodeTable.OpcodeDesc Desc)
         {
             Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op1, Desc.RSP, Desc.CPU) - (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU), Desc.RSP, Desc.CPU);
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
+        }
+
+        public static void DSUBU(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op1] - Registers.R4300.Reg[Desc.op2];
+            Registers.R4300.PC += 4;
         }
 
         public static void NOR(OpcodeTable.OpcodeDesc Desc)
@@ -190,10 +202,16 @@ namespace Ryu64.MIPS.Interpreter
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
+        public static void DSLL(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op2] << Desc.op4;
+            Registers.R4300.PC += 4;
+        }
+
         public static void DSLL32(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.SetMainReg(Desc.op3, Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) << (Desc.op4 + 32), Desc.RSP, Desc.CPU);
-            Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op2] << (Desc.op4 + 32);
+            Registers.R4300.PC += 4;
         }
 
         public static void SLLV(OpcodeTable.OpcodeDesc Desc)
@@ -202,16 +220,23 @@ namespace Ryu64.MIPS.Interpreter
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
+        // Currently Shift Arithmetic instructions are not implemented correctly.
         public static void SRA(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.SetMainReg(Desc.op3, (uint)(int)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) >> Desc.op4, Desc.RSP, Desc.CPU);
+            Registers.SetMainReg(Desc.op3, (uint)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) >> Desc.op4, Desc.RSP, Desc.CPU);
             Registers.AddPC(4, Desc.RSP, Desc.CPU);
         }
 
         public static void DSRA32(OpcodeTable.OpcodeDesc Desc)
         {
-            Registers.SetMainReg(Desc.op3, (ulong)(long)Registers.ReadMainReg(Desc.op2, Desc.RSP, Desc.CPU) >> (Desc.op4 + 32), Desc.RSP, Desc.CPU);
-            Registers.AddPC(4, Desc.RSP, Desc.CPU);
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op2] >> (Desc.op4 + 32);
+            Registers.R4300.PC += 4;
+        }
+
+        public static void DSRL32(OpcodeTable.OpcodeDesc Desc)
+        {
+            Registers.R4300.Reg[Desc.op3] = Registers.R4300.Reg[Desc.op2] >> (Desc.op4 + 32);
+            Registers.R4300.PC += 4;
         }
 
         public static void SRL(OpcodeTable.OpcodeDesc Desc)
