@@ -83,7 +83,9 @@ namespace Ryu64.MIPS
         public byte[] RI_SELECT_REG_RW = new byte[4];
 
         public byte[] RDRAM;
-        public byte[] RDRAMReg  = new byte[1048576];
+
+        public byte[] RDRAMReg = new byte[40];
+
         public byte[] PIFROM    = new byte[1984];
         public byte[] PIFRAM    = new byte[64];
 
@@ -99,7 +101,7 @@ namespace Ryu64.MIPS
 
             // RDRAM
             MemoryMapList.Add(new MemEntry(0x00000000, 0x00000000 + (uint)(RDRAM.Length - 1), RDRAM, RDRAM, "RDRAM"));
-            MemoryMapList.Add(new MemEntry(0x03F00000, 0x03FFFFFF, RDRAMReg, RDRAMReg, "RDRAM Registers"));
+            MemoryMapList.Add(new MemEntry(0x03F00000, 0x03F00027, RDRAMReg, RDRAMReg, "RDRAM Registers"));
 
             // SP Registers
             MemoryMapList.Add(new MemEntry(0x04000000, 0x04000FFF, SP_DMEM_RW,          SP_DMEM_RW,          "SP_DMEM"));

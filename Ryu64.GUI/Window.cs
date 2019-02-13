@@ -4,67 +4,29 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Numerics;
 using System.Text;
 using System.Threading;
-using Veldrid;
-using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
 using IniParser;
 using IniParser.Model;
+using ImGuiOpenTK;
 
 namespace Ryu64.GUI
 {
-    public class Window
+    public class Window : ImGuiOpenTKWindow
     {
-        private static Sdl2Window Win;
-        private static GraphicsDevice GD;
-        private static CommandList CL;
-        private static ImGuiRenderer Renderer;
-
-        [STAThread]
-        public static void RunGUI()
+        public Window() : base("Ryu64", 1280, 720)
         {
-            VeldridStartup.CreateWindowAndGraphicsDevice(
-                new WindowCreateInfo(50, 50, 1280, 720, WindowState.Normal, "Ryu64"),
-                new GraphicsDeviceOptions(false, null, true),
-                out Win,
-                out GD);
-            Win.Resized += () =>
-            {
-                GD.MainSwapchain.Resize((uint)Win.Width, (uint)Win.Height);
-                Renderer.WindowResized(Win.Width, Win.Height);
-            };
-
-            CL = GD.ResourceFactory.CreateCommandList();
-            Renderer = new ImGuiRenderer(GD, GD.MainSwapchain.Framebuffer.OutputDescription, Win.Width, Win.Height);
-
             InitUI();
-
-            while (Win.Exists)
-            {
-                InputSnapshot snapshot = Win.PumpEvents();
-                if (!Win.Exists) break;
-                Renderer.Update(1f / 60f, snapshot);
-
-                SubmitUI();
-
-                CL.Begin();
-                CL.SetFramebuffer(GD.MainSwapchain.Framebuffer);
-                CL.ClearColorTarget(0, new RgbaFloat(0.5f, 0.5f, 0.5f, 1f));
-                Renderer.Render(GD, CL);
-                CL.End();
-                GD.SubmitCommands(CL);
-                GD.SwapBuffers(GD.MainSwapchain);
-            }
-
-            GD.WaitForIdle();
-            Renderer.Dispose();
-            CL.Dispose();
-            GD.Dispose();
         }
 
-        private static void InitEmulator(string RomPath)
+        public override void ImGuiLayout()
+        {
+            base.ImGuiLayout();
+
+            SubmitUI();
+        }
+
+        private void InitEmulator(string RomPath)
         {
             Z64 Rom = new Z64(RomPath);
             Rom.Parse();
@@ -102,38 +64,38 @@ namespace Ryu64.GUI
             Graphics.Start();
         }
 
-        private static bool[] WindowOpenState;
+        private bool[] WindowOpenState;
 
-        private static string FileDialogRom_CurrPath;
-        private static string FileDialogRom_FilePath = "";
+        private string FileDialogRom_CurrPath;
+        private string FileDialogRom_FilePath = "";
 
-        private static string FolderDialogRoms_CurrPath;
-        private static string FolderDialogRoms_FilePath = "";
+        private string FolderDialogRoms_CurrPath;
+        private string FolderDialogRoms_FilePath = "";
 
-        private static bool   HideDotFilesOnUnix;
-        private static string RomDirectory;
+        private bool   HideDotFilesOnUnix;
+        private string RomDirectory;
 
-        private static bool   GraphicsLLE;
-        private static bool   ExpansionPak;
+        private bool   GraphicsLLE;
+        private bool   ExpansionPak;
 
-        private static uint   MemoryViewer_CurrAddr = 0;
-        private static byte[] MemoryViewer_AddrBuf  = new byte[1024];
+        private uint   MemoryViewer_CurrAddr = 0;
+        private byte[] MemoryViewer_AddrBuf  = new byte[1024];
 
-        private static uint   Disasm_CurrAddr = 0;
-        private static byte[] Disasm_AddrBuf = new byte[1024];
+        private uint   Disasm_CurrAddr = 0;
+        private byte[] Disasm_AddrBuf = new byte[1024];
 
-        private static string DefaultPath = AppDomain.CurrentDomain.BaseDirectory;
+        private string DefaultPath = AppDomain.CurrentDomain.BaseDirectory;
 
-        private static IEnumerable<string> Roms;
+        private IEnumerable<string> Roms;
 
-        private static FileIniDataParser IniParser;
-        private static IniData GUISettings;
-        private static IniData EMUSettings;
+        private FileIniDataParser IniParser;
+        private IniData GUISettings;
+        private IniData EMUSettings;
 
-        private static string GUISettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}GUISettings.ini";
-        private static string EMUSettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}Settings.ini";
+        private string GUISettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}GUISettings.ini";
+        private string EMUSettingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}Settings.ini";
 
-        private static void LoadIni()
+        private void LoadIni()
         {
             Common.Variables.Debug = bool.Parse(GUISettings.Global["debug"]);
             HideDotFilesOnUnix     = bool.Parse(GUISettings.Global["hidedotfilesunix"]);
@@ -142,7 +104,7 @@ namespace Ryu64.GUI
             ExpansionPak           = bool.Parse(EMUSettings.Global["EXPANSION_PAK"]);
         }
 
-        private static void SaveIni()
+        private void SaveIni()
         {
             GUISettings.Global["debug"]            = Common.Variables.Debug.ToString();
             GUISettings.Global["hidedotfilesunix"] = HideDotFilesOnUnix.ToString();
@@ -155,7 +117,7 @@ namespace Ryu64.GUI
             IniParser.WriteFile(EMUSettingsPath, EMUSettings);
         }
 
-        private static unsafe void InitUI()
+        private unsafe void InitUI()
         {
             WindowOpenState = new bool[64];
             WindowOpenState[0] = true;
@@ -163,7 +125,7 @@ namespace Ryu64.GUI
             FileDialogRom_CurrPath    = DefaultPath;
             FolderDialogRoms_CurrPath = DefaultPath;
 
-            ImGui.GetStyle().WindowTitleAlign = new Vector2(0.5f, 0.5f);
+            ImGui.GetStyle().WindowTitleAlign = new System.Numerics.Vector2(0.5f, 0.5f);
 
             IniParser   = new FileIniDataParser();
             GUISettings = IniParser.ReadFile(GUISettingsPath);
@@ -173,11 +135,11 @@ namespace Ryu64.GUI
             ReloadRoms();
         }
 
-        private static unsafe void MemoryViewer(ref uint Addr, ref bool WindowOpen, ref byte[] AddrBuf, string WindowTitle)
+        private unsafe void MemoryViewer(ref uint Addr, ref bool WindowOpen, ref byte[] AddrBuf, string WindowTitle)
         {
             if (WindowOpen)
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(570, 430), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new System.Numerics.Vector2(570, 430), new System.Numerics.Vector2(2048, 2048));
                 if (ImGui.Begin(WindowTitle, ref WindowOpen, ImGuiWindowFlags.NoCollapse))
                 {
                     byte[] Buf = new byte[256];
@@ -191,7 +153,7 @@ namespace Ryu64.GUI
 
                         byte[] AddrStrBytes = Encoding.Default.GetBytes(AddrStr);
 
-                        Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
+                        System.Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
                     }
 
                     ImGui.Text("Address: 0x");
@@ -213,7 +175,7 @@ namespace Ryu64.GUI
 
                             byte[] AddrStrBytes = Encoding.Default.GetBytes(AddrStr);
 
-                            Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
+                            System.Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
                         }
                     }
                     ImGui.SameLine();
@@ -229,7 +191,7 @@ namespace Ryu64.GUI
 
                             byte[] AddrStrBytes = Encoding.Default.GetBytes(AddrStr);
 
-                            Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
+                            System.Buffer.BlockCopy(AddrStrBytes, 0, AddrBuf, 0, AddrStrBytes.Length);
                         }
                     }
 
@@ -245,14 +207,14 @@ namespace Ryu64.GUI
             }
         }
 
-        private static unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, ref bool PermDenyOpen, ref bool HideDotFilesOnUnix, string WindowTitle, bool FileSelect)
+        private unsafe bool FileBrowser(ref string Path, ref string FilePath, ref bool WindowOpen, ref bool PermDenyOpen, ref bool HideDotFilesOnUnix, string WindowTitle, bool FileSelect)
         {
             bool Result = false;
 
             if (PermDenyOpen)
             {
                 ImGui.PushStyleColor(ImGuiCol.WindowBg, 0xEE0F0F0F);
-                ImGui.SetNextWindowSizeConstraints(new Vector2(256, 64), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new System.Numerics.Vector2(256, 64), new System.Numerics.Vector2(2048, 2048));
                 if (ImGui.Begin("Permission Denied.", ref PermDenyOpen, ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize))
                 {
                     ImGui.Text("Permission to access this directory is denied.");
@@ -265,7 +227,7 @@ namespace Ryu64.GUI
 
             if (WindowOpen)
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(798, 456), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new System.Numerics.Vector2(798, 456), new System.Numerics.Vector2(2048, 2048));
                 if (ImGui.Begin(WindowTitle, ref WindowOpen, ImGuiWindowFlags.NoCollapse))
                 {
                     string[] DecompPath = Path.Split('\\', '/');
@@ -285,7 +247,7 @@ namespace Ryu64.GUI
                     }
                     ImGui.Separator();
 
-                    if (ImGui.BeginChild("##FileDialog_Drives", new Vector2(256, ImGui.GetContentRegionMax().Y - 120.0f)))
+                    if (ImGui.BeginChild("##FileDialog_Drives", new System.Numerics.Vector2(256, ImGui.GetContentRegionMax().Y - 120.0f)))
                     {
                         if (Environment.OSVersion.Platform == PlatformID.Unix)
                         {
@@ -308,7 +270,7 @@ namespace Ryu64.GUI
                     }
                     ImGui.SameLine();
 
-                    Vector2 size = ImGui.GetContentRegionMax() - new Vector2(0.0f, 120.0f);
+                    System.Numerics.Vector2 size = ImGui.GetContentRegionMax() - new System.Numerics.Vector2(0.0f, 120.0f);
                     IEnumerable<string> Dirs  = Directory.EnumerateDirectories(Path);
                     IEnumerable<string> Files = Directory.EnumerateFiles(Path);
 
@@ -358,7 +320,7 @@ namespace Ryu64.GUI
 
                     byte[] FilePathBytes = Encoding.Default.GetBytes(FilePath);
 
-                    Buffer.BlockCopy(FilePathBytes, 0, FilenameBuffer, 0, FilePathBytes.Length);
+                    System.Buffer.BlockCopy(FilePathBytes, 0, FilenameBuffer, 0, FilePathBytes.Length);
 
                     float Width = ImGui.GetContentRegionAvailWidth();
                     ImGui.PushItemWidth(Width);
@@ -403,7 +365,7 @@ namespace Ryu64.GUI
             return Result;
         }
 
-        private static unsafe void SubmitMenuBar()
+        private unsafe void SubmitMenuBar()
         {
             if (ImGui.BeginMainMenuBar())
             {
@@ -474,13 +436,13 @@ namespace Ryu64.GUI
             }
         }
 
-        private static void ReloadRoms()
+        private void ReloadRoms()
         {
             if (!string.IsNullOrEmpty(RomDirectory))
                 Roms = Directory.EnumerateFiles(RomDirectory);
         }
 
-        private static unsafe void SubmitUI()
+        private unsafe void SubmitUI()
         {
             ImGui.StyleColorsDark();
 
@@ -532,8 +494,8 @@ namespace Ryu64.GUI
             if (WindowOpenState[0])
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0);
-                ImGui.SetNextWindowSize(new Vector2(Win.Width, Win.Height - 19.0f));
-                ImGui.SetNextWindowPos(new Vector2(0, 19.0f));
+                ImGui.SetNextWindowSize(new System.Numerics.Vector2(Width, Height - 19.0f));
+                ImGui.SetNextWindowPos(new System.Numerics.Vector2(0, 19.0f));
                 if (ImGui.Begin("##Games", ref WindowOpenState[0], ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBringToFrontOnFocus))
                 {
                     ImGui.Text("Game List");
@@ -565,7 +527,7 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[1])
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(735, 464), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new System.Numerics.Vector2(735, 464), new System.Numerics.Vector2(2048, 2048));
                 if (ImGui.Begin("Settings", ref WindowOpenState[1], ImGuiWindowFlags.NoCollapse))
                 {
                     ImGui.Text("GUI Settings");
@@ -578,7 +540,7 @@ namespace Ryu64.GUI
 
                     byte[] RomDirectoryBytes = Encoding.Default.GetBytes(RomDirectory);
 
-                    Buffer.BlockCopy(RomDirectoryBytes, 0, RomDirBuf, 0, RomDirectoryBytes.Length);
+                    System.Buffer.BlockCopy(RomDirectoryBytes, 0, RomDirBuf, 0, RomDirectoryBytes.Length);
 
                     ImGui.InputText("ROM Directory", RomDirBuf, (uint)RomDirBuf.Length, ImGuiInputTextFlags.ReadOnly);
 
@@ -602,7 +564,7 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[3])
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(256, 550), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new System.Numerics.Vector2(256, 550), new System.Numerics.Vector2(2048, 2048));
                 if (ImGui.Begin("Register Viewer", ref WindowOpenState[3]))
                 {
                     ImGui.Text($"R4300:");
@@ -674,7 +636,7 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[11])
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(570, 430), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new System.Numerics.Vector2(570, 430), new System.Numerics.Vector2(2048, 2048));
                 if (ImGui.Begin("Disassembler", ref WindowOpenState[11], ImGuiWindowFlags.NoCollapse))
                 {
                     if (Disasm_AddrBuf[0] == 0)
@@ -683,7 +645,7 @@ namespace Ryu64.GUI
 
                         byte[] AddrStrBytes = Encoding.Default.GetBytes(AddrStr);
 
-                        Buffer.BlockCopy(AddrStrBytes, 0, Disasm_AddrBuf, 0, AddrStrBytes.Length);
+                        System.Buffer.BlockCopy(AddrStrBytes, 0, Disasm_AddrBuf, 0, AddrStrBytes.Length);
                     }
 
                     ImGui.Text("Address: 0x");
@@ -750,7 +712,7 @@ namespace Ryu64.GUI
 
             if (WindowOpenState[7])
             {
-                ImGui.SetNextWindowSizeConstraints(new Vector2(256, 64), new Vector2(2048, 2048));
+                ImGui.SetNextWindowSizeConstraints(new System.Numerics.Vector2(256, 64), new System.Numerics.Vector2(2048, 2048));
                 if (ImGui.Begin("ROM Error", ref WindowOpenState[7], ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize))
                 {
                     ImGui.Text("This ROM is either a bad ROM or it is little endian (byte swapping not implemented yet)");

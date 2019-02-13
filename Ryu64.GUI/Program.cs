@@ -6,7 +6,7 @@ namespace Ryu64.GUI
     {
         static void Main(string[] args)
         {
-            Window.RunGUI();
+            using (Window GUI = new Window()) GUI.Start();
         }
     }
 }
