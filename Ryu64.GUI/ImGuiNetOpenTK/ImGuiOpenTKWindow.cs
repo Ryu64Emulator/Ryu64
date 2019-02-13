@@ -17,10 +17,9 @@ namespace ImGuiOpenTK
 {
     public class ImGuiOpenTKWindow : OpenTKWindow
     {
-        protected readonly bool _IsSuperClass;
-
         protected readonly bool[] g_MousePressed = { false, false, false };
         protected int g_FontTexture = 0;
+        protected float g_MouseWheel = 0.0f;
         protected IntPtr GuiContext;
         protected MouseState _mouse;
 
@@ -54,8 +53,6 @@ namespace ImGuiOpenTK
             string title = "ImGui.NET-OpenTK-CS Window",
             int width = 800, int height = 600) : base(title, width, height)
         {
-            _IsSuperClass = GetType() == typeof(ImGuiOpenTKWindow);
-
             GuiContext = ImGui.CreateContext();
             ImGui.SetCurrentContext(GuiContext);
 
@@ -105,8 +102,10 @@ namespace ImGuiOpenTK
                 io.MouseDown[1] = _mouse.RightButton == ButtonState.Pressed;
                 io.MouseDown[2] = _mouse.MiddleButton == ButtonState.Pressed;
 
-                // We should update the Mouse wheel here, but in my testing I couldn't get it to work nicely.
-                // If anyone wants to they can attempt to get it working here.
+                float newWheelPos = _mouse.WheelPrecise;
+                float delta = newWheelPos - g_MouseWheel;
+                g_MouseWheel = newWheelPos;
+                io.MouseWheel += delta;
             }
         }
 
@@ -121,6 +120,11 @@ namespace ImGuiOpenTK
         }
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
+        {
+            _mouse = e.Mouse;
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
             _mouse = e.Mouse;
         }
