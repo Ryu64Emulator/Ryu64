@@ -59,13 +59,8 @@ namespace ImGuiOpenTK
             ImGui.GetIO().Fonts.AddFontDefault();
 
             ImGuiOpenTKHelper.Init();
-            OnEvent = ImGuiOnEvent;
             OnLoop = ImGuiOnLoop;
-
         }
-
-        public bool ImGuiOnEvent(OpenTKWindow Window, TKEvent e)
-            => ImGuiOpenTKHelper.HandleEvent(e);
 
         public void ImGuiOnLoop(OpenTKWindow Window)
         {
@@ -107,6 +102,27 @@ namespace ImGuiOpenTK
                 g_MouseWheel = newWheelPos;
                 io.MouseWheel += delta;
             }
+        }
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            ImGuiIOPtr IO = ImGui.GetIO();
+
+            IO.AddInputCharactersUTF8($"{e.KeyChar}");
+        }
+
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            ImGuiIOPtr IO = ImGui.GetIO();
+
+            IO.KeysDown[(int)e.Key] = true;
+        }
+
+        protected override void OnKeyUp(KeyboardKeyEventArgs e)
+        {
+            ImGuiIOPtr IO = ImGui.GetIO();
+
+            IO.KeysDown[(int)e.Key] = false;
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)

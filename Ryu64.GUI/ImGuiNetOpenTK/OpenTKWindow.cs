@@ -18,7 +18,6 @@ namespace ImGuiOpenTK
         //public GameWindowFlags Flags =>;
 
         public Action<OpenTKWindow> OnLoop;
-        public Func<OpenTKWindow, TKEvent, bool> OnEvent;
         public bool IsAlive = false;
 
         public OpenTKWindow(
@@ -67,7 +66,6 @@ namespace ImGuiOpenTK
         protected override void Dispose(bool manual)
         {
             base.Dispose(manual);
-
         }
 
         ~OpenTKWindow()
@@ -80,6 +78,5 @@ namespace ImGuiOpenTK
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
     }
 }

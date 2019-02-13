@@ -1,16 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Input;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Numerics;
 using ImGuiNET;
-using TKEventType = ImGuiOpenTK.TKEvent.Type;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
 namespace ImGuiOpenTK
@@ -154,107 +146,5 @@ namespace ImGuiOpenTK
             GL.PopMatrix();
             GL.PopAttrib();
         }
-
-
-
-        public static bool HandleEvent(TKEvent tKEvent)
-        {
-            ImGuiIOPtr io = ImGui.GetIO();
-            switch (tKEvent.EventType)
-            {
-                case TKEventType.Keyboard:
-                    var KeyboardEvent = tKEvent as KeyBoardEvent;
-                    switch (KeyboardEvent.Key)
-                    {
-                        case Key.ControlLeft:
-                        case Key.ControlRight:
-                            io.KeyCtrl = KeyboardEvent.IsKeyDown;
-                            break;
-                        case Key.ShiftLeft:
-                        case Key.ShiftRight:
-                            io.KeyShift = KeyboardEvent.IsKeyDown;
-                            break;
-                        case Key.AltLeft:
-                        case Key.AltRight:
-                            io.KeyAlt = KeyboardEvent.IsKeyDown;
-                            break;
-                        default:
-                            io.KeysDown[(int)KeyboardEvent.Key] = KeyboardEvent.IsKeyDown;
-                            break;
-                    }
-                    break;
-                case TKEventType.MouseButton:
-                    var MouseButton = tKEvent as MouseButtonEvent;
-                    switch (MouseButton.Button)
-                    {
-                        case OpenTK.Input.MouseButton.Left:
-                            io.MouseDown[0] = MouseButton.IsButtonDown;
-                            break;
-                        case OpenTK.Input.MouseButton.Right:
-                            io.MouseDown[1] = MouseButton.IsButtonDown;
-                            break;
-                        case OpenTK.Input.MouseButton.Middle:
-                            io.MouseDown[2] = MouseButton.IsButtonDown;
-                            break;
-                    }
-                    break;
-                case TKEventType.MouseWheel:
-                    var MouseWheel = tKEvent as MouseWheelEvent;
-                    io.MouseWheel = MouseWheel.Value;
-                    break;
-                case TKEventType.MouseMotion:
-                    var MouseMotion = tKEvent as MouseMotionEvent;
-                    io.MousePos = new System.Numerics.Vector2(MouseMotion.Position.X, MouseMotion.Position.Y);
-                    break;
-                case TKEventType.TextInput:
-                    var TextEvent = tKEvent as TextInputEvent;
-                    unsafe
-                    {
-                        io.AddInputCharactersUTF8(TextEvent.Text);
-                    }
-                    break;
-
-            }
-
-
-            /*switch (mouse.GetState) {
-                 case SDL.SDL_EventType.SDL_MOUSEWHEEL:
-                     if (e.wheel.y > 0)
-                         mouseWheel = 1;
-                     if (e.wheel.y < 0)
-                         mouseWheel = -1;
-                     return true;
-                 case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                     if (mousePressed == null)
-                         return true;
-                     if (e.button.button == SDL.SDL_BUTTON_LEFT && mousePressed.Length > 0)
-                         mousePressed[0] = true;
-                     if (e.button.button == SDL.SDL_BUTTON_RIGHT && mousePressed.Length > 1)
-                         mousePressed[1] = true;
-                     if (e.button.button == SDL.SDL_BUTTON_MIDDLE && mousePressed.Length > 2)
-                         mousePressed[2] = true;
-                     return true;
-                 case SDL.SDL_EventType.SDL_TEXTINPUT:
-                     unsafe
-                     {
-                         // THIS IS THE ONLY UNSAFE THING LEFT!
-                         ImGui.AddInputCharactersUTF8(e.text.text);
-                     }
-                     return true;
-                 case SDL.SDL_EventType.SDL_KEYDOWN:
-                 case SDL.SDL_EventType.SDL_KEYUP:
-                     int key = (int) e.key.keysym.sym & ~SDL.SDLK_SCANCODE_MASK;
-                     io.KeysDown[key] = e.type == SDL.SDL_EventType.SDL_KEYDOWN;
-                     SDL.SDL_Keymod keyModState = SDL.SDL_GetModState();
-                     io.ShiftPressed = (keyModState & SDL.SDL_Keymod.KMOD_SHIFT) != 0;
-                     io.CtrlPressed = (keyModState & SDL.SDL_Keymod.KMOD_CTRL) != 0;
-                     io.AltPressed = (keyModState & SDL.SDL_Keymod.KMOD_ALT) != 0;
-                     io.SuperPressed = (keyModState & SDL.SDL_Keymod.KMOD_GUI) != 0;
-                     return true;
-             }
-             */
-            return true;
-        }
-
     }
 }
