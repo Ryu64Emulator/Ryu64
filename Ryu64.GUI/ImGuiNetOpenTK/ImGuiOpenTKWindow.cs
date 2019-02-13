@@ -11,7 +11,7 @@ using OpenTK.Graphics;
 /*
 Based off of this implementation and heavily modified to work with new versions of ImGUI.NET and OpenTK:
 https://github.com/emmauss/ImGuiNet.OpentK
- */
+*/
 
 namespace ImGuiOpenTK
 {
