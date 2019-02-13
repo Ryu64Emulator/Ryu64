@@ -427,13 +427,14 @@ namespace Ryu64.GUI
                     }
 
                     // For Debugging the GUI only.
-                    
+                    /*
                     if (ImGui.BeginMenu("ImGui"))
                     {
                         if (ImGui.MenuItem("Style Editor"))
                             WindowOpenState[4] = true;
                         ImGui.EndMenu();
                     }
+                    */
                     
                     ImGui.EndMenu();
                 }
